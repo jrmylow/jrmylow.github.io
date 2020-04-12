@@ -1,0 +1,15 @@
+<header id="header">
+    <div class="inner">
+        <!--  -->
+        <a href="index.html" class="image avatar"><img src="/images/avatar.jpg" alt="" /></a>
+        <h1><strong> {{page.title}} </strong></h1>
+        <h3>{{ page.subtitle }}</h3>
+        {% for paragraph in page.summary %}
+            <p>{{ paragraph.p }}</p>
+        {% endfor %}        
+        <ol>{% for section in page.sections %}
+            <li><a href = {{section.link}} >{{ section.name }}</a></li>
+            {% endfor %}
+        </ol>
+    </div>
+</header>
