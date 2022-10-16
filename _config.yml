@@ -3,7 +3,7 @@ title:               Jeremy Low
 tagline:             'Ruminations...'
 description:         'A home for essays. Written by <a href="https://twitter.com/jrmylow" target="_blank">@jrmylow</a>. <br><br>To get in touch, please check out the contact page below.'
 disclaimer:          "Opinions my own, not my employer's."
-url:                 https://jrmylow.com
+url:                 https://jrmylow.github.io
 baseurl:             ''
 paginate:            5
 permalink:           pretty

@@ -2,5 +2,5 @@
 - [X] Setup theme and SSG
 - [ ] Get build steps ready
 - [ ] Edit theme to match my tastes
-- [ ] Make sure DNS points to the right place
+- [ ] Migrate from github.io url to own url
 - [ ] Start publishing
