@@ -1,0 +1,25 @@
+# Setup
+title:               Jeremy Low
+tagline:             'Ruminations...'
+description:         'A home for essays. Written by <a href="https://twitter.com/jrmylow" target="_blank">@jrmylow</a>. <br><br>To get in touch, please check out the contact page below.'
+disclaimer:          "Opinions my own, not my employer's."
+url:                 https://jrmylow.com
+baseurl:             ''
+paginate:            5
+permalink:           pretty
+
+# About/contact
+author:
+  name:              Jeremy Low
+  url:               https://twitter.com/jrmylow
+  email:             hello@jrmylow.com
+
+# Gems
+plugins:
+  - jekyll-paginate
+
+# Custom vars
+theme_name:          Lanyon
+theme_url:           https://lanyon.getpoole.com/
+theme_version:       1.1.0
+google_analytics_id: #UA-XXXX-Y

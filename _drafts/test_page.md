@@ -1,5 +1,5 @@
 ---
-layout: blogpost
+layout: post
 # Basic title information
 title: test_page
 subtitle: sub_title
