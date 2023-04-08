@@ -216,6 +216,7 @@ a.sidebar-nav-item:focus {
 
 /* Hide the sidebar checkbox that we toggle with `.sidebar-toggle` */
 .sidebar-checkbox {
+  display: none;
   position: absolute;
   opacity: 0;
   -webkit-user-select: none;
