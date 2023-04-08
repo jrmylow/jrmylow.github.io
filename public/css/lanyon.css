@@ -35,19 +35,33 @@
  */
 
 /* Prevent scroll on narrow devices */
+
+:root {
+  --bg-main: hsl(214, 57%, 7%);
+  --bg-accent: hsl(214, 57%, 20%);
+
+  --font-base: #fff;
+  --font-accent: #fff;
+  --font-link: #fff;
+  --font-header: rgba(255,255,255,.9);
+}
+
 html,
 body {
   overflow-x: hidden;
+  background-color: var(--bg-main);  /*Note: colour A*/
+  color: rgba(255,255,255,.6);  /*Note: colour B-Fonts*/
 }
 
 html {
-  font-family: "PT Serif", Georgia, "Times New Roman", serif;
+  /* font-family: "PT Serif", Georgia, "Times New Roman", serif; */
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-weight: 400;
-  color: #313131;
+  color: rgba(255,255,255,.9); /*Note: colour C-Fonts*/
   letter-spacing: -.025rem;
 }
 
@@ -102,15 +116,15 @@ h1, h2, h3, h4, h5, h6 {
 .masthead-title {
   margin-top: 0;
   margin-bottom: 0;
-  color: #505050;
+  color: rgba(255,255,255,.9);  /*Note: colour C-Fonts*/
 }
 .masthead-title a {
-  color: #505050;
+  color: rgba(255,255,255,.9);  /*Note: colour C-Fonts*/
 }
 .masthead-title small {
   font-size: 75%;
   font-weight: 400;
-  color: #c0c0c0;
+  color: hsl(214, 57%, 50%);  /*Note: colour D-Fonts*/
   letter-spacing: 0;
 }
 
@@ -150,8 +164,8 @@ h1, h2, h3, h4, h5, h6 {
   overflow-y: auto;
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: .875rem; /* 15px */
-  color: rgba(255,255,255,.6);
-  background-color: #202020;
+  color: rgba(255,255,255,.6);  /*Note: colour B-Fonts*/
+  background-color: hsl(214, 57%, 7%);    /*Note: colour A*/
   -webkit-transition: all .3s ease-in-out;
           transition: all .3s ease-in-out;
 }
@@ -164,7 +178,7 @@ h1, h2, h3, h4, h5, h6 {
 /* Sidebar content */
 .sidebar a {
   font-weight: normal;
-  color: #fff;
+  color: rgba(255,255,255,.9);  /*Note: colour C-Fonts*/
 }
 .sidebar-item {
   padding: 1rem;
@@ -217,8 +231,8 @@ a.sidebar-nav-item:focus {
   display: flex;
   align-items: center;
   padding: .25rem .75rem;
-  color: #505050;
-  background-color: #fff;
+  color: hsl(214, 57%, 7%); /*Note: colour A*/
+  /* background-color: #202020; */
   border-radius: .25rem;
   cursor: pointer;
 }
@@ -228,14 +242,14 @@ a.sidebar-nav-item:focus {
   width: 32px;
   height: 32px;
   content: "";
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23555' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E") no-repeat;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23fff' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E") no-repeat;
 }
 
 .sidebar-toggle:active,
 #sidebar-checkbox:focus ~ .sidebar-toggle,
 #sidebar-checkbox:checked ~ .sidebar-toggle {
   color: #fff;
-  background-color: #555;
+  background-color: hsl(214, 57%, 7%);    /*Note: colour A*/
 }
 
 .sidebar-toggle:active:before,
@@ -311,7 +325,7 @@ a.sidebar-nav-item:focus {
 .page-title,
 .post-title,
 .post-title a {
-  color: #303030;
+  color: rgba(255,255,255,.9);  /*Note: colour C-Fonts*/
 }
 .page-title,
 .post-title {
@@ -323,20 +337,21 @@ a.sidebar-nav-item:focus {
   display: block;
   margin-top: -.5rem;
   margin-bottom: 1rem;
-  color: #9a9a9a;
+  color: hsl(214, 57%, 50%);  /*Note: colour D-Fonts*/
 }
 
 /* Related posts */
 .related {
   padding-top: 2rem;
   padding-bottom: 2rem;
-  border-top: 1px solid #eee;
+  border-top: 1px solid rgba(255,255,255,.9);
 }
 .related-posts {
   padding-left: 0;
   list-style: none;
 }
 .related-posts h3 {
+  color: hsl(214, 57%, 50%);  /*Note: colour D-Fonts*/
   margin-top: 0;
 }
 .related-posts li small {
@@ -436,100 +451,16 @@ a.pagination-item:hover {
  * Based on colors from Base16: http://chriskempson.github.io/base16/#default.
  */
 
-/* Red */
-.theme-base-08 .sidebar,
-.theme-base-08 .sidebar-toggle:active,
-.theme-base-08 #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: #ac4142;
+/* Custom standard */
+.theme-custom-01 .sidebar,
+.theme-custom-01 .sidebar-toggle:active,
+.theme-custom-01 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  background-color: hsl(214, 60%, 20%);
 }
-.theme-base-08 .container a,
-.theme-base-08 .sidebar-toggle,
-.theme-base-08 .related-posts li a:hover {
-  color: #ac4142;
-}
-
-/* Orange */
-.theme-base-09 .sidebar,
-.theme-base-09 .sidebar-toggle:active,
-.theme-base-09 #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: #d28445;
-}
-.theme-base-09 .container a,
-.theme-base-09 .sidebar-toggle,
-.theme-base-09 .related-posts li a:hover {
-  color: #d28445;
-}
-
-/* Yellow */
-.theme-base-0a .sidebar,
-.theme-base-0a .sidebar-toggle:active,
-.theme-base-0a #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: #f4bf75;
-}
-.theme-base-0a .container a,
-.theme-base-0a .sidebar-toggle,
-.theme-base-0a .related-posts li a:hover {
-  color: #f4bf75;
-}
-
-/* Green */
-.theme-base-0b .sidebar,
-.theme-base-0b .sidebar-toggle:active,
-.theme-base-0b #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: #90a959;
-}
-.theme-base-0b .container a,
-.theme-base-0b .sidebar-toggle,
-.theme-base-0b .related-posts li a:hover {
-  color: #90a959;
-}
-
-/* Cyan */
-.theme-base-0c .sidebar,
-.theme-base-0c .sidebar-toggle:active,
-.theme-base-0c #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: #75b5aa;
-}
-.theme-base-0c .container a,
-.theme-base-0c .sidebar-toggle,
-.theme-base-0c .related-posts li a:hover {
-  color: #75b5aa;
-}
-
-/* Blue */
-.theme-base-0d .sidebar,
-.theme-base-0d .sidebar-toggle:active,
-.theme-base-0d #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: #6a9fb5;
-}
-.theme-base-0d .container a,
-.theme-base-0d .sidebar-toggle,
-.theme-base-0d .related-posts li a:hover {
-  color: #6a9fb5;
-}
-
-/* Magenta */
-.theme-base-0e .sidebar,
-.theme-base-0e .sidebar-toggle:active,
-.theme-base-0e #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: #aa759f;
-}
-.theme-base-0e .container a,
-.theme-base-0e .sidebar-toggle,
-.theme-base-0e .related-posts li a:hover {
-  color: #aa759f;
-}
-
-/* Brown */
-.theme-base-0f .sidebar,
-.theme-base-0f .sidebar-toggle:active,
-.theme-base-0f #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: #8f5536;
-}
-.theme-base-0f .container a,
-.theme-base-0f .sidebar-toggle,
-.theme-base-0f .related-posts li a:hover {
-  color: #8f5536;
+.theme-custom-01 .container a,
+.theme-custom-01 .sidebar-toggle,
+.theme-custom-01 .related-posts li a:hover {
+  color: rgba(255,255,255,.9);
 }
 
 

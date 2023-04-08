@@ -10,9 +10,10 @@ permalink:           pretty
 
 # About/contact
 author:
-  name:              Jeremy Low
-  url:               https://twitter.com/jrmylow
-  email:             hello@jrmylow.com
+  name:             Jeremy Low
+  tw_url:           https://twitter.com/jrmylow
+  md_url:           '@jrmylow@mastodon.world'
+  email:            hello@jrmylow.com
 
 # Gems
 plugins:
