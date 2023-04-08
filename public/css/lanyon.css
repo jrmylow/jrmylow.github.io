@@ -216,7 +216,7 @@ a.sidebar-nav-item:focus {
 
 /* Hide the sidebar checkbox that we toggle with `.sidebar-toggle` */
 .sidebar-checkbox {
-  display: none;
+  display: none;  /*Note: stops scrolling to top see https://github.com/poole/lanyon/issues/192*/
   position: absolute;
   opacity: 0;
   -webkit-user-select: none;
