@@ -110,14 +110,14 @@ p {
 }
 
 strong {
-  color: #303030;
+  color: #bbbbbb;
 }
 
 
 /* Lists */
 ul, ol, dl {
-  margin-top: 0;
-  margin-bottom: 1rem;
+  margin-top: .1rem;
+  margin-bottom: .1rem;
 }
 
 dt {
