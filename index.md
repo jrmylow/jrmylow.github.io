@@ -11,16 +11,15 @@ sections:
 
 ---
 
-### About
-Placeholder for introductory section and portfolio. Soon to be updated
+### Welcome
+My name is Jeremy, and you can find me here at [jrmylow.com]({{site.url}}). I help people solve problems in planning and coordination, and dealing with complex systems at scale.
 
-"Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+I am deeply interested in all things tech and engineering (and plenty outside that). For more about me, see [here](/about).
 
----
+<!-- My essays are [here](/essays). -->
 
 ### Recent Posts
 <!-- The essays I have enjoyed the most are [here](). If you are looking for all posts instead, follow [this](). -->
-
 {% assign sorted_posts = site.posts | sort: 'date' | reverse %}
 
 {% for post in sorted_posts limit: 5 %}
