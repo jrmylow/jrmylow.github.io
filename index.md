@@ -1,7 +1,7 @@
 ---
 layout: default
 # Basic title information
-title: Jeremy Low
+title: Home page
 subtitle: 
 summary: 
 - p: A simple page to call my own

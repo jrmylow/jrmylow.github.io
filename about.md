@@ -20,5 +20,5 @@ The [most important problems](https://www.cs.virginia.edu/~robins/YouAndYourRese
 * Systems of how people set up feedback loops to help them understand the world (or at least their business). I'm particularly interested in:
   * What the "right" thing to instrument is
   * How people build understanding from the data they see
-  * Hoe people use that understanding to make their systems better
+  * How people use that understanding to make their systems better
 * Systems of how people build shared understandings across disciplines

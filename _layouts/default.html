@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en-us">
-
-  {% include head.html %}
+{% include head.html %}
 
   <body class="theme-custom-01 sidebar-overlay">
-
+    <!-- Site analytics -->
     {% include sidebar.html %}
 
     <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
@@ -27,5 +26,10 @@
     <label for="sidebar-checkbox" class="sidebar-toggle"></label>
 
     <script src='{{ site.baseurl }}/public/js/script.js'></script>
+    <script data-goatcounter="https://jrmylow-gc.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
+    <noscript>
+        <img src="https://jrmylow-gc.goatcounter.com/count?p=/INSERT-PAGE-HERE">
+    </noscript>
   </body>
 </html>
