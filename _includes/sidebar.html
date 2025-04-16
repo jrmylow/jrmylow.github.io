@@ -5,23 +5,32 @@
 <!-- Toggleable sidebar -->
 <!-- <div class="overlay sidebar-toggle" id="overlay"></div> -->
 <div class="sidebar" id="sidebar">
-  
-  <div class="sidebar-item">
-    <p>{{ site.description }}</p>
-    <p>{{ site.disclaimer }}</p>
+  <div class="sidebar-content">
+    <div class="theme-toggle">
+      <span>Theme</span>
+      <label class="toggle-switch">
+        <input type="checkbox" onchange="toggleTheme()">
+        <div class="toggle-slider"></div>
+      </label>
+    </div>
+
+    <div class="sidebar-item">
+      <p>{{ site.description }}</p>
+      <p>{{ site.disclaimer }}</p>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="sidebar-nav-item{% if page.title == 'Home' %} active{% endif %}" href="{{ '/' }}">Home</a>
+      {% assign pages_list = site.pages | sort:"url" %}
+      {% for node in pages_list %}{% if node.title != null %}{% if node.layout == "page" %}
+      <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url }}">{{ node.title }}</a>
+      {% endif %}{% endif %}{% endfor %}
+    </nav>
   </div>
 
-  <nav class="sidebar-nav">
-    <a class="sidebar-nav-item{% if page.title == 'Home' %} active{% endif %}" href="{{ '/' }}">Home</a>
-    {% assign pages_list = site.pages | sort:"url" %}
-    {% for node in pages_list %}{% if node.title != null %}{% if node.layout == "page" %}
-    <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url }}">{{ node.title }}</a>
-    {% endif %}{% endif %}{% endfor %}
-    <span class="sidebar-nav-item">Using <a href="{{ site.theme_url }}"> {{ site.theme_name }}</a> v{{ site.theme_version }}</span>
-  </nav>
-
-  <div class="sidebar-item">
+  <div class="sidebar-item sidebar-footer">
     <p>
+      Using <a href="{{ site.theme_url }}"> {{ site.theme_name }}</a> v{{ site.theme_version }}<br>
       &copy; {{ site.time | date: '%Y' }}. All rights reserved.
     </p>
   </div>
