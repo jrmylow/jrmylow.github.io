@@ -38,6 +38,7 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--sidebar-color) !important;
   display: flex !important;
   flex-direction: column !important;
+  z-index: 10 !important;
 }
 
 .sidebar-content {
@@ -204,4 +205,8 @@ pre, code {
 /* Header border */
 .masthead {
   border-bottom: 1px solid var(--header-border-color) !important;
+}
+
+.sidebar-toggle {
+  z-index: 10 !important;
 } 
