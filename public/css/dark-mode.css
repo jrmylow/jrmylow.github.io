@@ -4,6 +4,7 @@
   --link-color: #5aa5e6;
   --heading-color: #f0f0f0;
   --border-color: #1a1a1a;
+  --header-border-color: #ffffff;
   --code-bg: #2d2d2d;
   --toggle-dark: #1a1a1a;
   --toggle-light: #f2ede7;
@@ -19,6 +20,7 @@
   --link-color: #268bd2;
   --heading-color: #313131;
   --border-color: #e5e5e5;
+  --header-border-color: #1a1a1a;
   --code-bg: #eae5df;
 }
 
@@ -197,4 +199,9 @@ pre, code {
 
 .sidebar-nav-item {
   border-top: 1px solid var(--body-bg) !important;
+}
+
+/* Header border */
+.masthead {
+  border-bottom: 1px solid var(--header-border-color) !important;
 } 
