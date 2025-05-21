@@ -8,6 +8,9 @@ baseurl:             ''
 paginate:            5
 permalink:           pretty
 
+# Include directories
+include: ['_pages']
+
 # About/contact
 author:
   name:             Jeremy Low
