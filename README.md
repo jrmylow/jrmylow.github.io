@@ -1,9 +1,14 @@
 # Home
+```sh
+# Command inside WSL:
+bundle exec jekyll serve
+```
+
 - [X] Setup theme and SSG
 - [ ] Get build steps ready
 - [X] Edit theme to match my tastes
     - [ ] Update icon
-    - [ ] Add light mode
+    - [X] Add light mode
 - [X] Migrate from github.io url to own url
     - [X] HTTPS setup
 - [ ] Set up core pages

@@ -24,6 +24,10 @@ author:
 plugins:
   - jekyll-paginate
 
+kramdown:
+  auto_ids: true
+  toc_levels: 1..6
+
 # Custom vars
 theme_name:          Lanyon
 theme_url:           https://lanyon.getpoole.com/
