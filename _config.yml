@@ -26,6 +26,7 @@ plugins:
 
 kramdown:
   auto_ids: true
+  auto_id_stripping: false
   toc_levels: 1..6
 
 # Custom vars
