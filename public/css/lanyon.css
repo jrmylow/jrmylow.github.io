@@ -35,33 +35,21 @@
  */
 
 /* Prevent scroll on narrow devices */
-
-:root {
-  --bg-main: hsl(214, 57%, 7%);
-  --bg-accent: hsl(214, 57%, 20%);
-
-  --font-base: #fff;
-  --font-accent: #fff;
-  --font-link: #fff;
-  --font-header: rgba(255,255,255,.9);
-}
-
 html,
 body {
   overflow-x: hidden;
-  background-color: var(--body-bg);
-  color: var(--body-color);
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 html {
-  /* font-family: "PT Serif", Georgia, "Times New Roman", serif; */
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-weight: 400;
-  color: var(--heading-color);
   letter-spacing: -.025rem;
 }
 
@@ -77,6 +65,9 @@ h1, h2, h3, h4, h5, h6 {
 .wrap {
   position: relative;
   width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 
@@ -87,6 +78,7 @@ h1, h2, h3, h4, h5, h6 {
  */
 
 .container {
+  flex: 1;
   max-width: 28rem;
 }
 @media (min-width: 38em) {
@@ -108,10 +100,16 @@ h1, h2, h3, h4, h5, h6 {
  */
 
 .masthead {
+  position: sticky;
+  top: 0;
+  z-index: 5;
   padding-top:    1rem;
   padding-bottom: 1rem;
   margin-bottom: 3rem;
   border-bottom: 1px solid var(--border-color);
+  background-color: var(--body-bg);
+  width: 100%;
+  flex-shrink: 0;
 }
 .masthead-title {
   margin-top: 0;
@@ -226,7 +224,7 @@ a.sidebar-nav-item:focus {
 
 /* Style the `label` that we use to target the `.sidebar-checkbox` */
 .sidebar-toggle {
-  position: absolute;
+  position: fixed;
   top:  .8rem;
   left: 1rem;
   display: flex;
@@ -236,6 +234,7 @@ a.sidebar-nav-item:focus {
   background-color: var(--body-bg);
   border-radius: .25rem;
   cursor: pointer;
+  z-index: 30;
 }
 
 .sidebar-toggle::before {

@@ -36,9 +36,7 @@
  */
 
 * {
-  -webkit-box-sizing: border-box;
-     -moz-box-sizing: border-box;
-          box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 html,
@@ -52,28 +50,19 @@ html {
   font-size: 16px;
   line-height: 1.5;
 }
-@media (min-width: 38em) {
-  html {
-    font-size: 20px;
-  }
-}
 
 body {
-  color: var(--body-color);
-  background-color: var(--body-bg);
   -webkit-text-size-adjust: 100%;
-      -ms-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
-/* No `:visited` state is required by default (browsers will use `a`) */
+/* Links */
 a {
-  color: var(--link-color);
   text-decoration: none;
 }
 a strong {
   color: inherit;
 }
-/* `:focus` is linked to `:hover` for basic accessibility */
 a:hover,
 a:focus {
   text-decoration: underline;
@@ -84,24 +73,13 @@ h1, h2, h3, h4, h5, h6 {
   margin-bottom: .5rem;
   font-weight: bold;
   line-height: 1.25;
-  color: var(--heading-color);
   text-rendering: optimizeLegibility;
 }
-h1 {
-  font-size: 2rem;
-}
-h2 {
-  margin-top: 1rem;
-  font-size: 1.5rem;
-}
-h3 {
-  margin-top: 1.5rem;
-  font-size: 1.25rem;
-}
-h4, h5, h6 {
-  margin-top: 1rem;
-  font-size: 1rem;
-}
+
+h1 { font-size: 2rem; }
+h2 { margin-top: 1rem; font-size: 1.5rem; }
+h3 { margin-top: 1.5rem; font-size: 1.25rem; }
+h4, h5, h6 { margin-top: 1rem; font-size: 1rem; }
 
 /* Body text */
 p {
@@ -109,23 +87,14 @@ p {
   margin-bottom: 1rem;
 }
 
-strong {
-  color: var(--heading-color);
-}
-
-
 /* Lists */
 ul, ol, dl {
   margin-top: .1rem;
   margin-bottom: .1rem;
 }
 
-dt {
-  font-weight: bold;
-}
-dd {
-  margin-bottom: .5rem;
-}
+dt { font-weight: bold; }
+dd { margin-bottom: .5rem; }
 
 /* Misc */
 hr {
@@ -139,7 +108,6 @@ hr {
 abbr {
   font-size: 85%;
   font-weight: bold;
-  color: var(--body-color);
   text-transform: uppercase;
 }
 abbr[title] {
@@ -152,13 +120,13 @@ code,
 pre {
   font-family: Menlo, Monaco, "Courier New", monospace;
 }
+
 code {
   padding: .25em .5em;
   font-size: 85%;
-  color: #bf616a;
-  background-color: var(--code-bg);
   border-radius: 3px;
 }
+
 pre {
   display: block;
   margin-top: 0;
@@ -170,8 +138,8 @@ pre {
   white-space: pre-wrap;
   word-break: break-all;
   word-wrap: break-word;
-  background-color: var(--code-bg);
 }
+
 pre code {
   padding: 0;
   font-size: 100%;
@@ -205,7 +173,6 @@ pre code {
 }
 .gist code {
   padding: 0;
-  color: inherit;
   background-color: transparent;
   border-radius: 0;
 }
@@ -214,17 +181,10 @@ pre code {
 blockquote {
   padding: .5rem 1rem;
   margin: .8rem 0;
-  color: var(--body-color);
   border-left: .25rem solid var(--border-color);
 }
 blockquote p:last-child {
   margin-bottom: 0;
-}
-@media (min-width: 30em) {
-  blockquote {
-    padding-right: 5rem;
-    padding-left: 1.25rem;
-  }
 }
 
 img {
@@ -251,6 +211,19 @@ tbody tr:nth-child(odd) th {
   background-color: var(--code-bg);
 }
 
+/* Media Queries */
+@media (min-width: 30em) {
+  blockquote {
+    padding-right: 5rem;
+    padding-left: 1.25rem;
+  }
+}
+
+@media (min-width: 38em) {
+  html {
+    font-size: 20px;
+  }
+}
 
 /*
  * Custom type
