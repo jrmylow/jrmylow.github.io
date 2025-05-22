@@ -102,11 +102,11 @@ h1, h2, h3, h4, h5, h6 {
 .masthead {
   position: sticky;
   top: 0;
-  z-index: 5;
+  z-index: 4;
   padding-top:    1rem;
   padding-bottom: 1rem;
   margin-bottom: 3rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--header-border-color);
   background-color: var(--body-bg);
   width: 100%;
   flex-shrink: 0;
@@ -166,6 +166,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--body-bg);
   -webkit-transition: all .3s ease-in-out;
           transition: all .3s ease-in-out;
+  z-index: 5;
 }
 @media (min-width: 30em) {
   .sidebar {
@@ -198,8 +199,8 @@ h1, h2, h3, h4, h5, h6 {
 a.sidebar-nav-item:hover,
 a.sidebar-nav-item:focus {
   text-decoration: none;
-  background-color: var(--code-bg);
-  border-color: transparent;
+  background-color: var(--sidebar-hover-bg);
+  border-color: var(--sidebar-border-color);
 }
 
 @media (min-width: 48em) {
@@ -379,7 +380,7 @@ a.sidebar-nav-item:focus {
   margin-left: -1rem;
   margin-right: -1rem;
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
-  color: #ccc;
+  color: var(--pagination-color);
   text-align: center;
 }
 
@@ -387,7 +388,7 @@ a.sidebar-nav-item:focus {
 .pagination-item {
   display: block;
   padding: 1rem;
-  border: 1px solid #eee;
+  border: 1px solid var(--pagination-border);
 }
 .pagination-item:first-child {
   margin-bottom: -1px;
@@ -395,7 +396,7 @@ a.sidebar-nav-item:focus {
 
 /* Only provide a hover state for linked pagination items */
 a.pagination-item:hover {
-  background-color: #f5f5f5;
+  background-color: var(--pagination-hover-bg);
 }
 
 @media (min-width: 30em) {
@@ -477,15 +478,15 @@ a.pagination-item:hover {
           transform: translateX(0);
 }
 .sidebar-overlay #sidebar-checkbox:checked ~ .sidebar-toggle {
-  box-shadow: 0 0 0 .25rem #fff;
+  box-shadow: 0 0 0 .25rem var(--toggle-shadow);
 }
 .sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
-  box-shadow: .25rem 0 .5rem rgba(0,0,0,.1);
+  box-shadow: .25rem 0 .5rem var(--sidebar-shadow);
 }
 
 /* Only one tweak for a reverse layout */
 .layout-reverse.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
-  box-shadow: -.25rem 0 .5rem rgba(0,0,0,.1);
+  box-shadow: -.25rem 0 .5rem var(--sidebar-shadow);
 }
 
 /*
@@ -498,7 +499,7 @@ a.pagination-item:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(70, 70, 70, 0.6);
+  background-color: var(--overlay-bg);
 }
 
 /*
