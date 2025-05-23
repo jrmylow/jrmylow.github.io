@@ -1,7 +1,7 @@
 ---
-layout: default
+layout: post
 # Basic title information
-title: Home page
+title: Welcome
 subtitle: 
 summary: 
 - p: A simple page to call my own
@@ -11,8 +11,6 @@ permalink: /
 sections:
 
 ---
-
-### Welcome
 My name is Jeremy, and you can find me here at [jrmylow.com]({{site.url}}). I help people solve problems in planning and coordination, and dealing with complex systems at scale.
 
 I am deeply interested in all things tech and engineering (and plenty outside that). For more about me, see [here](/about).
