@@ -53,6 +53,14 @@ h1, h2, h3, h4, h5, h6 {
   letter-spacing: -.025rem;
 }
 
+/* Links */
+.post a,
+.page a,
+p a,
+li a {
+  text-decoration: underline;
+}
+
 
 /*
  * Wrapper
@@ -613,4 +621,21 @@ input:checked + .toggle-slider:before {
   transform: translateX(20px);
   content: "☀️";
   background-color: var(--toggle-button);
+}
+
+pre, code {
+  background-color: var(--code-bg);
+}
+
+/* Blockquotes */
+blockquote {
+  margin: 1.5rem 0;
+  padding: 1rem 1.5rem;
+  background-color: var(--code-bg);
+  border-left: 4px solid var(--link-color);
+  font-style: italic;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
 }
