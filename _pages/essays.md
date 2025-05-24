@@ -3,16 +3,15 @@ layout: page
 title: Essays
 permalink: /essays/
 ---
-My best work:
-<p>
-{% assign top_posts = site.posts | where_exp: "item", "item.tags contains 'top'" | sort: 'date' | reverse %}
-  {% for post in top_posts %}
-    <b><a href="{{ post.url }}">{{ post.title }}</a></b>
-      {% for paragraph in post.summary %}
-        <p>{{ paragraph.p }}</p>
-      {% endfor %}
-  {% endfor %}
-</p>
+> "Writing is nature's way of telling us how lousy our thinking is."
+>
+> Leslie Lamport
+
+I am writing to sharpen my thinking and indulge my curiosity. All mistakes and inaccuracies in these are my own. If you find one, I'd appreciate you [reaching out](/contact) and letting me know.
+
+<!-- TODO: Add a section for curated / top posts -->
+
+<!-- TODO: Add a section for posts by topic - collapsible -->
 
 ### Recent Essays
 <p>
