@@ -1,3 +1,20 @@
+{% comment %}
+  Related Posts Cards Include
+  
+  Usage in blog posts:
+    {% include related-posts-cards.html posts=site.related_posts limit=3 columns=3 %}
+  
+  Or specify custom posts:
+    {% assign custom_posts = site.posts | where_exp: "post", "post.tags contains 'tutorial'" | limit: 3 %}
+    {% include related-posts-cards.html posts=custom_posts columns=2 %}
+  
+  Parameters:
+    - posts: Array of posts to display (required)
+    - limit: Number of posts to show (optional, defaults to 3)
+    - columns: Number of columns (1-4, optional, defaults to 3)
+    - title: Section title (optional, defaults to "Related Posts")
+{% endcomment %}
+
 {% assign card_posts = include.posts %}
 {% if include.limit %}
   {% assign card_posts = include.posts | slice: 0, include.limit %}
@@ -14,23 +31,25 @@
   
   <div class="card-grid card-grid-{{ card_columns }}">
     {% for post in card_posts %}
-    <article class="card">
-      <div class="card-content">
-        <h4 class="card-title">
-          <a href="{{ post.url }}">{{ post.title }}</a>
-        </h4>
-        <span class="card-meta">{{ post.date | date_to_long_string }}</span>
-        <div class="card-body">
-          {% if post.summary %}
-            {% for paragraph in post.summary limit:1 %}
-              <p>{{ paragraph.p }}</p>
-            {% endfor %}
-          {% else %}
-            {{ post.excerpt }}
-          {% endif %}
+    <a href="{{ post.url }}" class="card-link">
+      <article class="card">
+        <div class="card-content">
+          <h4 class="card-title">
+            {{ post.title }}
+          </h4>
+          <span class="card-meta">{{ post.date | date_to_long_string }}</span>
+          <div class="card-body">
+            {% if post.summary %}
+              {% for paragraph in post.summary limit:1 %}
+                <p>{{ paragraph.p }}</p>
+              {% endfor %}
+            {% else %}
+              {{ post.excerpt }}
+            {% endif %}
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </a>
     {% endfor %}
   </div>
 </div>
