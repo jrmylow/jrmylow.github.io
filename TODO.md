@@ -3,8 +3,8 @@
 ## High Priority Features
 
 ### 1. Index Page (`index.html` or `_pages/index.md`)
-- [ ] Contains a section for the website introduction
-- [ ] Contains the most recent posts and their title and summary
+- [X] Contains a section for the website introduction
+- [X] Contains the most recent posts and their title and summary
 - [ ] Contains a selection of top posts and their title and summary
 - [ ] Display post title, date, and summary/excerpt
 - [ ] Add styling to match the existing Lanyon theme
