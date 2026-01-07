@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: index
 # Basic title information
 title: Welcome
 subtitle: 
