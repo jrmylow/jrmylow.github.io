@@ -1,5 +1,5 @@
 ---
-layout: post
+layout: default
 # Basic title information
 title: Welcome
 subtitle: 
