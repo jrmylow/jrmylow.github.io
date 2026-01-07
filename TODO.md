@@ -3,21 +3,20 @@
 ## High Priority Features
 
 ### 1. Index Page (`index.html` or `_pages/index.md`)
-- [ ] Create a proper blog index/home page that lists recent posts
+- [ ] Contains a section for the website introduction
+- [ ] Contains the most recent posts and their title and summary
+- [ ] Contains a selection of top posts and their title and summary
 - [ ] Display post title, date, and summary/excerpt
 - [ ] Add styling to match the existing Lanyon theme
 - [ ] Ensure responsive design for mobile devices
-- [ ] Consider adding a "featured posts" section at the top
-- [ ] Link to individual post pages
-- [ ] Test navigation from home page to posts and back
 
 ### 2. Pagination
 - [ ] Configure Jekyll pagination settings in `_config.yml`
-  - [ ] Set posts per page (currently set to 5)
+  - [ ] Set posts per page to 20
   - [ ] Verify `jekyll-paginate` plugin is working
 - [ ] Create pagination navigation UI
   - [ ] "Previous" and "Next" buttons/links
-  - [ ] Optional: Page numbers (1, 2, 3, etc.)
+  - [ ] Page numbers (1, 2, 3, etc.)
   - [ ] Handle first page (no "Previous" link)
   - [ ] Handle last page (no "Next" link)
 - [ ] Style pagination to match theme
