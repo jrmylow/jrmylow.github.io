@@ -2,8 +2,8 @@
 layout: index
 # Basic title information
 title: Welcome
-subtitle: 
-summary: 
+subtitle:
+summary:
 - p: A simple page to call my own
 permalink: /
 

@@ -2,8 +2,8 @@
 layout: default
 # Basic title information
 title: Home page
-subtitle: 
-summary: 
+subtitle:
+summary:
 - p: A simple page to call my own
 
 # Sections if needed

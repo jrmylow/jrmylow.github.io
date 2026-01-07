@@ -1,13 +1,13 @@
 {% comment %}
   Related Posts Cards Include
-  
+
   Usage in blog posts:
     {% include related-posts-cards.html posts=site.related_posts limit=3 columns=3 %}
-  
+
   Or specify custom posts:
     {% assign custom_posts = site.posts | where_exp: "post", "post.tags contains 'tutorial'" | limit: 3 %}
     {% include related-posts-cards.html posts=custom_posts columns=2 %}
-  
+
   Parameters:
     - posts: Array of posts to display (required)
     - limit: Number of posts to show (optional, defaults to 3)
@@ -28,7 +28,7 @@
 {% if card_posts.size > 0 %}
 <div class="related-posts-section">
   <h3>{{ section_title }}</h3>
-  
+
   <div class="card-grid card-grid-{{ card_columns }}">
     {% for post in card_posts %}
     <a href="{{ post.url }}" class="card-link">

@@ -23,7 +23,7 @@ function updateToggleSwitch(theme) {
 // Initialize theme
 document.addEventListener('DOMContentLoaded', () => {
   // Set initial theme
-  const savedTheme = localStorage.getItem('theme') || 
+  const savedTheme = localStorage.getItem('theme') ||
     (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
   setTheme(savedTheme);
 
@@ -33,4 +33,4 @@ document.addEventListener('DOMContentLoaded', () => {
       setTheme(e.matches ? 'light' : 'dark');
     }
   });
-}); 
+});

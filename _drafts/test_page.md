@@ -5,7 +5,7 @@ title: test_page
 subtitle: sub_title
 summary:
  - p: A meaningful summary of the article contents. Should cover approximately 2-3 lines.
- - p: 
+ - p:
 
 # Sections if needed
 sections:
@@ -16,7 +16,7 @@ sections:
  - name: Name of section 3
    link: "#id_03"
 
-date: 1
+date: 1/1/2025
 author: 2
 
 ---

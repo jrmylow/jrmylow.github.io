@@ -10,7 +10,7 @@ I've been privileged to work across ambitious projects and programmes across gov
 
 ### Purpose
 The [most important problems](https://www.cs.virginia.edu/~robins/YouAndYourResearch.html) that I think and write about are:
-* Systems of how people solve (knowledge) problems - including getting better at problem-solving. 
+* Systems of how people solve (knowledge) problems - including getting better at problem-solving.
 * Systems of how people set up feedback loops to help them understand the world (or at least their business). I'm particularly interested in:
   * What the "right" thing to instrument is
   * How people build understanding from the data they see

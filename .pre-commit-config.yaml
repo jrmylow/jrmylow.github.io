@@ -1,0 +1,35 @@
+repos:
+  # Python code formatting
+  - repo: https://github.com/psf/black
+    rev: 24.4.2
+    hooks:
+      - id: black
+        files: ^tests/.*\.py$
+
+  # Python linting
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.4
+    hooks:
+      - id: ruff
+        files: ^tests/.*\.py$
+        args: [--fix]
+
+  # General file checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # Jekyll build check (fast, no server needed)
+  # Skipped in CI - use GitHub Actions workflow instead
+  - repo: local
+    hooks:
+      - id: jekyll-build
+        name: Jekyll Build Check
+        entry: bash -c 'command -v bundle && bundle exec jekyll build --drafts || echo "Skipping Jekyll build (bundle not found)"'
+        language: system
+        pass_filenames: false
+        files: \.(md|html|yml|yaml|css|js)$

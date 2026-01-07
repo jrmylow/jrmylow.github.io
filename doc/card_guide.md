@@ -24,7 +24,7 @@ Change the class to one of these options:
 
 ```
 - Mobile: 1 column
-- Tablet: 1 column  
+- Tablet: 1 column
 - Desktop: 1 column
 
 Best for: Long excerpts, detailed summaries
