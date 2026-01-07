@@ -1,0 +1,259 @@
+/* 
+ * Reusable Card Styles
+ * These styles can be used on any page (index, blog posts, etc.)
+ */
+
+/* Card grid container */
+.card-grid {
+  display: grid;
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+/* Column configurations */
+.card-grid-1 {
+  grid-template-columns: 1fr;
+}
+
+.card-grid-2 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48em) {
+  .card-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.card-grid-3 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48em) {
+  .card-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64em) {
+  .card-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.card-grid-4 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 48em) {
+  .card-grid-4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 64em) {
+  .card-grid-4 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 80em) {
+  .card-grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Individual card */
+.card {
+  background-color: var(--code-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Card variants */
+.card.card-highlight {
+  border-color: var(--link-color);
+  border-width: 2px;
+}
+
+.card.card-no-hover:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.card.card-flat {
+  background-color: transparent;
+  border: none;
+  padding: 1rem;
+}
+
+/* Card content wrapper */
+.card-content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* Card header */
+.card-header {
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+.card-title a {
+  color: var(--heading-color);
+  text-decoration: none;
+}
+
+.card-title a:hover {
+  color: var(--link-color);
+  text-decoration: underline;
+}
+
+.card-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--body-color);
+  opacity: 0.8;
+}
+
+/* Card metadata (date, tags, etc.) */
+.card-meta {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: var(--body-color);
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+.card-meta-item {
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+.card-meta-item:last-child {
+  margin-right: 0;
+}
+
+/* Card body */
+.card-body {
+  color: var(--body-color);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.card-body p {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+.card-body p:last-child {
+  margin-bottom: 0;
+}
+
+/* Card footer */
+.card-footer {
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.9rem;
+}
+
+.card-footer a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+.card-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Card tags */
+.card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.card-tag {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--body-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--body-color);
+  text-decoration: none;
+}
+
+.card-tag:hover {
+  background-color: var(--link-color);
+  color: var(--body-bg);
+  border-color: var(--link-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 30em) {
+  .card {
+    padding: 1rem;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .card-body {
+    font-size: 0.9rem;
+  }
+}
+
+/* Special card types for specific use cases */
+
+/* Related posts card */
+.related-posts-section {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--border-color);
+}
+
+.related-posts-section h2,
+.related-posts-section h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+/* Info/callout card */
+.card.card-info {
+  background-color: var(--code-bg);
+  border-left: 4px solid var(--link-color);
+}
+
+.card.card-warning {
+  background-color: var(--code-bg);
+  border-left: 4px solid #f39c12;
+}
+
+.card.card-success {
+  background-color: var(--code-bg);
+  border-left: 4px solid #27ae60;
+}

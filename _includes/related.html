@@ -1,0 +1,37 @@
+{% assign card_posts = include.posts %}
+{% if include.limit %}
+  {% assign card_posts = include.posts | slice: 0, include.limit %}
+{% else %}
+  {% assign card_posts = include.posts | slice: 0, 3 %}
+{% endif %}
+
+{% assign card_columns = include.columns | default: 3 %}
+{% assign section_title = include.title | default: "Related Posts" %}
+
+{% if card_posts.size > 0 %}
+<div class="related-posts-section">
+  <h3>{{ section_title }}</h3>
+  
+  <div class="card-grid card-grid-{{ card_columns }}">
+    {% for post in card_posts %}
+    <article class="card">
+      <div class="card-content">
+        <h4 class="card-title">
+          <a href="{{ post.url }}">{{ post.title }}</a>
+        </h4>
+        <span class="card-meta">{{ post.date | date_to_long_string }}</span>
+        <div class="card-body">
+          {% if post.summary %}
+            {% for paragraph in post.summary limit:1 %}
+              <p>{{ paragraph.p }}</p>
+            {% endfor %}
+          {% else %}
+            {{ post.excerpt }}
+          {% endif %}
+        </div>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
