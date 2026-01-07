@@ -70,10 +70,10 @@
 /* Post card styling (extends base .card from cards.css) */
 .post-card {
   background-color: var(--code-bg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--header-border-color);
   border-radius: 8px;
   padding: 1rem;
-  transition: border-color 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -81,7 +81,14 @@
 }
 
 .post-card:hover {
-  border-color: var(--link-color);
+  background-color: var(--sidebar-hover-bg);
+  border-color: var(--sidebar-border-color);
+}
+
+.post-card:hover .post-card-title a,
+.post-card:hover .post-card-date,
+.post-card:hover .post-card-excerpt {
+  color: var(--sidebar-heading);
 }
 
 .post-card.featured {
