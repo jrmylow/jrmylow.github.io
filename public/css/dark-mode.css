@@ -1,3 +1,10 @@
+/*
+ * Dark Mode Theme
+ *
+ * CSS custom properties for theming. Dark mode is the default.
+ * The --hamburger-icon variable is the single source of truth for the menu icon.
+ */
+
 :root {
   /* Base Theme Colors */
   --body-bg: #1a1a1a;
@@ -31,6 +38,8 @@
   --toggle-dark: #1a1a1a;
   --toggle-light: #f2ede7;
   --toggle-button: #888888;
+
+  /* Hamburger Menu Icon - white for dark mode */
   --hamburger-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23ffffff' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
 }
 
@@ -46,7 +55,7 @@
   /* Header & Navigation */
   --header-border-color: #1a1a1a;
 
-  /* Theme Toggle */
+  /* Hamburger Menu Icon - dark blue for light mode */
   --hamburger-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23214B8A' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
 }
 
@@ -103,11 +112,7 @@ pre, code {
   border-bottom: 1px solid var(--header-border-color);
 }
 
-/* Hamburger icon */
-.sidebar-toggle::before {
-  background: var(--hamburger-icon) no-repeat;
-}
-
+/* Sidebar toggle uses the CSS variable defined above */
 .sidebar-toggle {
   z-index: 10;
 }
