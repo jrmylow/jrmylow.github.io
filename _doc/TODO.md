@@ -6,54 +6,25 @@
 - [X] Contains a section for the website introduction
 - [X] Contains the most recent posts and their title and summary
 - [ ] Contains a selection of top posts and their title and summary
-- [ ] Display post title, date, and summary/excerpt
-- [ ] Add styling to match the existing Lanyon theme
+- [X] Display post title, date, and summary/excerpt
+- [X] Add styling to match the existing Lanyon theme
 - [ ] Ensure responsive design for mobile devices
 
 ### 2. Pagination
-- [ ] Configure Jekyll pagination settings in `_config.yml`
-  - [ ] Set posts per page to 20
-  - [ ] Verify `jekyll-paginate` plugin is working
-- [ ] Create pagination navigation UI
-  - [ ] "Previous" and "Next" buttons/links
-  - [ ] Page numbers (1, 2, 3, etc.)
-  - [ ] Handle first page (no "Previous" link)
-  - [ ] Handle last page (no "Next" link)
-- [ ] Style pagination to match theme
-  - [ ] Use existing `.pagination` and `.pagination-item` classes
-  - [ ] Ensure proper spacing and alignment
-- [ ] Test pagination with multiple posts
-  - [ ] Create test posts if needed
-  - [ ] Verify page transitions work correctly
-  - [ ] Check that post counts are accurate
+- [X] Set up multiple draft pages
+- [ ] Set up content aggregation pages (e.g. essays) as template
+- [ ] Configure Jekyll pagination settings (20 posts per page) and verify plugin is working
+- [ ] Create pagination navigation (prev/next buttons, page numbers, first and last pages)
+- [ ] Make theme consistent
+- [ ] Test pagination
 
 ### 3. Tag Functionality
-- [ ] Design tag taxonomy
-  - [ ] Review existing posts for tag examples (e.g., "top" tag in post1)
-  - [ ] Define tag naming conventions
-  - [ ] Decide on tag display format
-- [ ] Create tag pages/views
-  - [ ] Option A: Single tag index page listing all tags
-  - [ ] Option B: Individual page per tag
-  - [ ] Option C: Both approaches
-- [ ] Implement tag filtering
-  - [ ] Display posts by tag
-  - [ ] Show tag count (number of posts per tag)
-  - [ ] Add "Related posts by tag" functionality
+- [ ] "Top" tag for top posts
+- [ ] Draft additional tags
+- [ ] Set up for automatic tag-based view / filtering?
+- [ ] Set up page that aggregates all tags?
 - [ ] Add tag display on posts
-  - [ ] Show tags at top or bottom of post
-  - [ ] Make tags clickable/linkable
-  - [ ] Style tags (badges, pills, or inline text)
-- [ ] Create tag navigation
-  - [ ] Add tags to sidebar navigation
-  - [ ] Or create dedicated "Tags" page
-- [ ] Update post layout (`_layouts/post.html`)
-  - [ ] Add tag display section
-  - [ ] Link tags to tag archive/filter pages
 - [ ] Test tag functionality
-  - [ ] Add tags to multiple posts
-  - [ ] Verify tag pages generate correctly
-  - [ ] Check tag-based navigation
 
 ## Medium Priority
 
@@ -85,16 +56,11 @@
 - [ ] Add feed auto-discovery links
   - [ ] Add `<link>` tag in `<head>` section
   - [ ] Already present in `_includes/head.html` - verify it works
-- [ ] Consider adding JSON Feed format
-  - [ ] Create `feed.json` alongside `atom.xml`
-  - [ ] Provide both RSS and JSON options
 - [ ] Add feed icon/link to sidebar
-  - [ ] Make feed URL easily discoverable
-  - [ ] Add RSS icon from Font Awesome or similar
-- [ ] Optimize feed content
-  - [ ] Include full post content vs. excerpts
-  - [ ] Add featured images if applicable
-  - [ ] Include proper author information
+
+### 7. Performance Enhancements
+- [ ] Try to find a way to reduce site size
+- [ ] Try to find a way to reduce site load time
 
 ## Implementation Notes
 
@@ -116,18 +82,8 @@
 └── atom.xml (review and test)
 ```
 
-### Configuration Updates Needed
-```yaml
-# _config.yml additions/changes
-paginate: 10 # or desired number
-paginate_path: "/page:num/"
-
-# Tag plugin (if needed)
-# Consider jekyll-tagging or manual implementation
-```
-
 ### Testing Checklist
-- [ ] Build site locally with `bundle exec jekyll serve`
+- [ ] Build site locally with `bundle exec jekyll serve --draft`
 - [ ] Check all navigation links work
 - [ ] Verify pagination on multiple pages
 - [ ] Click through tag links and verify filtering
