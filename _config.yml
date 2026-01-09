@@ -10,7 +10,7 @@ permalink:           pretty
 
 # Include directories
 include: ['_pages']
-exclude: ['doc']
+exclude: ['_doc', '_tests']
 
 # About/contact
 author:
