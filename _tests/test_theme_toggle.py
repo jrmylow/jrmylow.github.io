@@ -1,5 +1,12 @@
 from playwright.sync_api import Page
 
+from constants import (
+    ANIMATION_TIMEOUT,
+    DARK_BG_COLOR,
+    LIGHT_BG_COLOR,
+    SELECTORS,
+)
+
 
 class TestThemeToggle:
     """Tests for light/dark mode toggle functionality."""
@@ -15,15 +22,15 @@ class TestThemeToggle:
         page.goto(jekyll_server)
         self.clear_storage_and_reload(page)
 
-        html = page.locator("html")
+        html = page.locator(SELECTORS["html"])
         initial_theme = html.get_attribute("data-theme")
 
         # Open sidebar to access toggle
-        page.locator(".sidebar-toggle").click()
-        page.wait_for_timeout(400)
+        page.locator(SELECTORS["sidebar_toggle"]).click()
+        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         # Click the label/toggle container (not the hidden input)
-        toggle = page.locator(".toggle-switch")
+        toggle = page.locator(SELECTORS["theme_toggle"])
         toggle.click(force=True)
 
         # Verify theme changed
@@ -35,11 +42,11 @@ class TestThemeToggle:
         page.goto(jekyll_server)
         self.clear_storage_and_reload(page)
 
-        page.locator(".sidebar-toggle").click()
-        page.wait_for_timeout(400)
+        page.locator(SELECTORS["sidebar_toggle"]).click()
+        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
-        html = page.locator("html")
-        toggle = page.locator(".toggle-switch")
+        html = page.locator(SELECTORS["html"])
+        toggle = page.locator(SELECTORS["theme_toggle"])
 
         # Get initial state
         initial_theme = html.get_attribute("data-theme")
@@ -61,13 +68,13 @@ class TestThemeToggle:
         page.goto(jekyll_server)
         self.clear_storage_and_reload(page)
 
-        body = page.locator("body")
+        body = page.locator(SELECTORS["body"])
         initial_bg = body.evaluate("el => getComputedStyle(el).backgroundColor")
 
         # Switch theme
-        page.locator(".sidebar-toggle").click()
-        page.wait_for_timeout(400)
-        page.locator(".toggle-switch").click(force=True)
+        page.locator(SELECTORS["sidebar_toggle"]).click()
+        page.wait_for_timeout(ANIMATION_TIMEOUT)
+        page.locator(SELECTORS["theme_toggle"]).click(force=True)
 
         new_bg = body.evaluate("el => getComputedStyle(el).backgroundColor")
 
@@ -81,9 +88,9 @@ class TestThemeToggle:
         # Get initial theme from localStorage
         initial_stored = page.evaluate("() => localStorage.getItem('theme')")
 
-        page.locator(".sidebar-toggle").click()
-        page.wait_for_timeout(400)
-        page.locator(".toggle-switch").click(force=True)
+        page.locator(SELECTORS["sidebar_toggle"]).click()
+        page.wait_for_timeout(ANIMATION_TIMEOUT)
+        page.locator(SELECTORS["theme_toggle"]).click(force=True)
 
         # Check localStorage changed
         new_stored = page.evaluate("() => localStorage.getItem('theme')")
@@ -96,12 +103,12 @@ class TestThemeToggle:
         self.clear_storage_and_reload(page)
 
         # Toggle theme
-        page.locator(".sidebar-toggle").click()
-        page.wait_for_timeout(400)
-        page.locator(".toggle-switch").click(force=True)
+        page.locator(SELECTORS["sidebar_toggle"]).click()
+        page.wait_for_timeout(ANIMATION_TIMEOUT)
+        page.locator(SELECTORS["theme_toggle"]).click(force=True)
 
         # Get theme after toggle
-        html = page.locator("html")
+        html = page.locator(SELECTORS["html"])
         theme_before_reload = html.get_attribute("data-theme")
 
         # Reload page
@@ -116,11 +123,11 @@ class TestThemeToggle:
         page.goto(jekyll_server)
         self.clear_storage_and_reload(page)
 
-        page.locator(".sidebar-toggle").click()
-        page.wait_for_timeout(400)
+        page.locator(SELECTORS["sidebar_toggle"]).click()
+        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
-        toggle_input = page.locator(".theme-toggle input[type='checkbox']")
-        html = page.locator("html")
+        toggle_input = page.locator(SELECTORS["theme_toggle_input"])
+        html = page.locator(SELECTORS["html"])
 
         # Check current state
         is_checked = toggle_input.is_checked()
@@ -140,11 +147,10 @@ class TestThemeToggle:
         page.evaluate("() => { localStorage.setItem('theme', 'dark'); }")
         page.reload()
 
-        body = page.locator("body")
+        body = page.locator(SELECTORS["body"])
         bg_color = body.evaluate("el => getComputedStyle(el).backgroundColor")
 
-        # Dark theme background should be dark (#1a1a1a = rgb(26, 26, 26))
-        assert "rgb(26, 26, 26)" in bg_color or "rgba(26, 26, 26" in bg_color
+        assert DARK_BG_COLOR in bg_color or DARK_BG_COLOR.replace(" ", "") in bg_color
 
     def test_light_theme_colors(self, page: Page, jekyll_server: str):
         """Light theme should have light background."""
@@ -154,8 +160,7 @@ class TestThemeToggle:
         page.evaluate("() => { localStorage.setItem('theme', 'light'); }")
         page.reload()
 
-        body = page.locator("body")
+        body = page.locator(SELECTORS["body"])
         bg_color = body.evaluate("el => getComputedStyle(el).backgroundColor")
 
-        # Light theme background should be light (#f2ede7 = rgb(242, 237, 231))
-        assert "rgb(242, 237, 231)" in bg_color or "rgba(242, 237, 231" in bg_color
+        assert LIGHT_BG_COLOR in bg_color or LIGHT_BG_COLOR.replace(" ", "") in bg_color

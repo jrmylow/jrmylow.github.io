@@ -24,7 +24,7 @@ dev-dependencies = [
 ]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["_tests"]
 base_url = "http://localhost:4000"
 
 [tool.black]
