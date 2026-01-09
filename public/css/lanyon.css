@@ -493,7 +493,7 @@ a.pagination-item:hover {
           transform: translateX(0);
 }
 .sidebar-overlay #sidebar-checkbox:checked ~ .sidebar-toggle {
-  box-shadow: 0 0 0 .25rem var(--toggle-shadow);
+  box-shadow: 0 0 0 1px var(--toggle-shadow);
 }
 .sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
   box-shadow: .25rem 0 .5rem var(--sidebar-shadow);

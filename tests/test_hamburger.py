@@ -151,3 +151,28 @@ class TestHamburgerIcon:
         assert (
             "ffffff" in open_icon.lower() or "fff" in open_icon.lower()
         ), "Open menu icon should be white in dark mode"
+
+    def test_hamburger_outline_thickness_when_open(
+        self, page: Page, jekyll_server: str
+    ):
+        """Hamburger toggle outline should be thin (1px) when menu is open."""
+        page.goto(jekyll_server)
+
+        toggle = page.locator(".sidebar-toggle")
+
+        # Open the sidebar
+        toggle.click()
+        page.wait_for_timeout(400)
+
+        # Get box-shadow
+        box_shadow = toggle.evaluate("el => getComputedStyle(el).boxShadow")
+
+        # Should have a box-shadow
+        assert box_shadow != "none", "Toggle should have box-shadow when open"
+
+        # The spread radius (outline thickness) should be 1px, not larger
+        # box-shadow format: "rgb(r, g, b) 0px 0px 0px 1px"
+        # The last value before any trailing parts is the spread
+        assert (
+            "0px 0px 0px 1px" in box_shadow or "0 0 0 1px" in box_shadow
+        ), f"Toggle outline should be 1px, got: {box_shadow}"
