@@ -16,6 +16,17 @@
   <link rel="canonical" href="{{ page.url | absolute_url }}">
   {% endif %}
 
+  <!-- Inline theme script - must run before CSS to prevent flash -->
+  <script>
+    (function() {
+      var theme = localStorage.getItem('theme');
+      if (!theme) {
+        theme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+
   <link rel="stylesheet" href="{{ '/public/css/lanyon.css' | absolute_url }}">
   <link rel="stylesheet" href="{{ '/public/css/dark-mode.css' | absolute_url }}">
   <link rel="stylesheet" href="{{ '/public/css/monokai.css' | absolute_url }}">
