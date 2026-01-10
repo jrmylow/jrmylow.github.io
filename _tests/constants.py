@@ -29,6 +29,9 @@ SELECTORS = {
     "pagination_info": ".pagination-info",
     "pagination_prev": ".pagination-prev",
     "pagination_next": ".pagination-next",
+    "search_container": ".search-container",
+    "search_input": ".search-input",
+    "search_results": ".search-results",
 }
 
 # Test page URL path

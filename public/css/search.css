@@ -1,0 +1,113 @@
+/*
+ * Search Styles
+ *
+ * Decoupled search UI styles. The search implementation (Fuse.js, Lunr, etc.)
+ * can be swapped without changing these styles.
+ */
+
+/* ==========================================================================
+   Search Container
+   ========================================================================== */
+
+.search-container {
+  padding: 1rem;
+}
+
+@media (min-width: 48em) {
+  .search-container {
+    padding: 1rem 1.5rem;
+  }
+}
+
+/* ==========================================================================
+   Search Input
+   ========================================================================== */
+
+.search-input {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-size: 0.875rem;
+  color: var(--body-color);
+  background-color: var(--body-bg);
+  border: 1px solid var(--sidebar-border-color);
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.search-input::placeholder {
+  color: var(--body-color);
+  opacity: 0.6;
+}
+
+.search-input:focus {
+  border-color: var(--link-color);
+}
+
+@media (min-width: 48em) {
+  .search-input {
+    font-size: 0.75rem;
+  }
+}
+
+/* ==========================================================================
+   Search Results
+   ========================================================================== */
+
+.search-results {
+  margin-top: 0.5rem;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.search-results:empty {
+  display: none;
+}
+
+.search-result-item {
+  display: block;
+  padding: 0.5rem;
+  color: var(--sidebar-heading);
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.search-result-item:hover,
+.search-result-item:focus {
+  background-color: var(--sidebar-hover-bg);
+  text-decoration: none;
+}
+
+.search-result-title {
+  display: block;
+  font-weight: bold;
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.search-result-excerpt {
+  display: block;
+  font-size: 0.75rem;
+  opacity: 0.8;
+  line-height: 1.4;
+}
+
+.search-no-results {
+  padding: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--sidebar-heading);
+  opacity: 0.7;
+}
+
+/* ==========================================================================
+   Search Highlight
+   ========================================================================== */
+
+.search-highlight {
+  background-color: var(--link-color);
+  color: var(--body-bg);
+  padding: 0 0.125rem;
+  border-radius: 2px;
+}

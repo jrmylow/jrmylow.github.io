@@ -78,7 +78,8 @@
    Theme Color Applications
    ========================================================================== */
 
-/* Body */
+/* HTML and Body - both need background to prevent flash */
+html,
 body {
   background-color: var(--body-bg);
   color: var(--body-color);
