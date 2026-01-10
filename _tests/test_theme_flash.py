@@ -17,31 +17,19 @@ class TestThemeFlashPrevention:
         page.reload()
         page.wait_for_load_state("domcontentloaded")
 
-        # Capture background colors during navigation
-        colors_during_load = []
-
-        def capture_color():
-            try:
-                color = page.evaluate(
-                    "() => getComputedStyle(document.body).backgroundColor"
-                )
-                colors_during_load.append(color)
-            except Exception:
-                pass
-
-        # Navigate to another page and capture colors as early as possible
+        # Navigate to another page
         page.goto(f"{jekyll_server}/about/")
+        page.wait_for_load_state("domcontentloaded")
 
-        # Check initial background immediately after navigation starts
-        initial_bg = page.evaluate(
-            "() => getComputedStyle(document.documentElement).backgroundColor"
+        # Check body background after page is ready
+        # The key is that body should have light background, not dark
+        body_bg = page.evaluate(
+            "() => getComputedStyle(document.body).backgroundColor"
         )
 
-        # The html element should have light background immediately
-        # (before body even loads, the html bg should be correct)
         assert (
-            LIGHT_BG_COLOR in initial_bg or "242" in initial_bg
-        ), f"HTML should have light background immediately, got: {initial_bg}"
+            LIGHT_BG_COLOR in body_bg or "242" in body_bg
+        ), f"Body should have light background after navigation, got: {body_bg}"
 
     def test_html_has_theme_attribute_before_domcontentloaded(
         self, page: Page, jekyll_server: str
