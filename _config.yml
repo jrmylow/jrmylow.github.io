@@ -5,7 +5,8 @@ description:         'A home for essays. Written by <a href="https://twitter.com
 disclaimer:          "Opinions my own. I do not speak for my employer, nor yours. None of this is financial advice."
 url:                 https://jrmylow.com
 baseurl:             ''
-paginate:            5
+paginate:            10
+paginate_path:       "/essays/all/page/:num/"
 permalink:           pretty
 
 # Include directories

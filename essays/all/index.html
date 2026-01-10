@@ -1,0 +1,60 @@
+---
+layout: default
+title: All Essays
+---
+
+<h3 class="page-title">All Essays</h3>
+<p><a href="/essays/">&larr; Back to Essays</a></p>
+
+<div class="card-grid card-grid-1">
+  {% for post in paginator.posts %}
+  <a href="{{ post.url }}" class="card-link">
+    <article class="card">
+      <div class="card-content">
+        <h3 class="card-title">{{ post.title }}</h3>
+        <span class="card-meta">{{ post.date | date_to_long_string }}</span>
+        <div class="card-body">
+          {% if post.summary %}
+            {% for paragraph in post.summary limit:1 %}
+              <p>{{ paragraph.p }}</p>
+            {% endfor %}
+          {% else %}
+            {{ post.excerpt }}
+          {% endif %}
+        </div>
+      </div>
+    </article>
+  </a>
+  {% endfor %}
+</div>
+
+<!-- Pagination -->
+{% if paginator.total_pages > 1 %}
+<nav class="pagination" role="navigation" aria-label="Pagination">
+  <div class="pagination-info">
+    Page {{ paginator.page }} of {{ paginator.total_pages }}
+  </div>
+
+  <div class="pagination-links">
+    <span class="pagination-prev">
+      {% if paginator.previous_page %}
+        {% if paginator.previous_page == 1 %}
+          <a href="{{ '/essays/all/' | relative_url }}" rel="prev">&larr; Previous</a>
+        {% else %}
+          <a href="{{ '/essays/all/page/' | append: paginator.previous_page | append: '/' | relative_url }}" rel="prev">&larr; Previous</a>
+        {% endif %}
+      {% else %}
+        <span class="pagination-disabled">&larr; Previous</span>
+      {% endif %}
+    </span>
+
+    <span class="pagination-next">
+      {% if paginator.next_page %}
+        <a href="{{ '/essays/all/page/' | append: paginator.next_page | append: '/' | relative_url }}" rel="next">Next &rarr;</a>
+      {% else %}
+        <span class="pagination-disabled">Next &rarr;</span>
+      {% endif %}
+    </span>
+  </div>
+</nav>
+{% endif %}

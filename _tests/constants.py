@@ -25,7 +25,11 @@ SELECTORS = {
     "card_meta": ".card-meta",
     "card_body": ".card-body",
     "view_all_link": ".view-all-link a",
+    "pagination": ".pagination",
+    "pagination_info": ".pagination-info",
+    "pagination_prev": ".pagination-prev",
+    "pagination_next": ".pagination-next",
 }
 
-# Test page URL path (use this instead of posts)
+# Test page URL path
 TEST_PAGE_PATH = "/2020/04/12/post1/"
