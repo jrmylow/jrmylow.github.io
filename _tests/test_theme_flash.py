@@ -23,9 +23,7 @@ class TestThemeFlashPrevention:
 
         # Check body background after page is ready
         # The key is that body should have light background, not dark
-        body_bg = page.evaluate(
-            "() => getComputedStyle(document.body).backgroundColor"
-        )
+        body_bg = page.evaluate("() => getComputedStyle(document.body).backgroundColor")
 
         assert (
             LIGHT_BG_COLOR in body_bg or "242" in body_bg

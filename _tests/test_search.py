@@ -18,7 +18,9 @@ class TestSearchBar:
 
         # Search container should be visible
         search_container = page.locator(SELECTORS["search_container"])
-        assert search_container.is_visible(), "Search container should be visible in sidebar"
+        assert (
+            search_container.is_visible()
+        ), "Search container should be visible in sidebar"
 
     def test_search_input_exists(self, page: Page, jekyll_server: str):
         """Search input field should exist."""
@@ -30,7 +32,9 @@ class TestSearchBar:
         search_input = page.locator(SELECTORS["search_input"])
         assert search_input.count() == 1, "Should have one search input"
 
-    def test_search_bar_position_after_theme_toggle(self, page: Page, jekyll_server: str):
+    def test_search_bar_position_after_theme_toggle(
+        self, page: Page, jekyll_server: str
+    ):
         """Search bar should appear after theme toggle in DOM order."""
         page.goto(jekyll_server)
 
@@ -56,7 +60,9 @@ class TestSearchBar:
             }"""
         )
 
-        assert theme_toggle_index < search_index, "Theme toggle should come before search container"
+        assert (
+            theme_toggle_index < search_index
+        ), "Theme toggle should come before search container"
 
     def test_sidebar_search_no_live_results(self, page: Page, jekyll_server: str):
         """Sidebar search should not show live results while typing."""
@@ -126,7 +132,9 @@ class TestSearchIndex:
         )
         assert has_posts, "search-index.json should contain posts"
 
-    def test_search_index_post_has_required_fields(self, page: Page, jekyll_server: str):
+    def test_search_index_post_has_required_fields(
+        self, page: Page, jekyll_server: str
+    ):
         """Each post in index should have title, url, and content."""
         page.goto(f"{jekyll_server}/search-index.json")
 
@@ -156,7 +164,9 @@ class TestSearchResultsPage:
         search_input = page.locator(".search-page-input")
         assert search_input.count() == 1, "Search page should have search input"
 
-    def test_search_page_displays_results_from_query(self, page: Page, jekyll_server: str):
+    def test_search_page_displays_results_from_query(
+        self, page: Page, jekyll_server: str
+    ):
         """Search page should display results based on query parameter."""
         page.goto(f"{jekyll_server}/search/?q=test")
         page.wait_for_timeout(500)
@@ -172,7 +182,9 @@ class TestSearchResultsPage:
         value = search_input.input_value()
         assert value == "test", "Input should contain query"
 
-    def test_search_page_enter_triggers_new_search(self, page: Page, jekyll_server: str):
+    def test_search_page_enter_triggers_new_search(
+        self, page: Page, jekyll_server: str
+    ):
         """Pressing Enter on search page should trigger new search."""
         page.goto(f"{jekyll_server}/search/?q=test")
 
@@ -198,7 +210,9 @@ class TestSearchResultsPage:
 
         # Results should not change (still showing "test" results)
         current_results = page.locator(".search-result-item").count()
-        assert current_results == initial_results, "Results should not change until Enter"
+        assert (
+            current_results == initial_results
+        ), "Results should not change until Enter"
 
     def test_search_results_are_clickable(self, page: Page, jekyll_server: str):
         """Search results should be clickable links."""

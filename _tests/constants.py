@@ -11,6 +11,45 @@ WHITE_HEX_SHORT = "fff"
 # Animation/transition timing (ms)
 ANIMATION_TIMEOUT = 400
 
+# =============================================================================
+# Performance Test Constants
+# =============================================================================
+
+# Performance thresholds (milliseconds) - based on Core Web Vitals research
+# Stricter for local testing since no network latency
+PERF_THRESHOLDS = {
+    "ttfb_avg": 100,
+    "ttfb_p90": 200,
+    "dom_content_loaded_avg": 500,
+    "dom_content_loaded_p90": 800,
+    "load_complete_avg": 1000,
+    "load_complete_p90": 1500,
+}
+
+# Pages to test - representative sample of site
+PERF_TEST_PAGES = [
+    "/",
+    "/about/",
+    "/contact/",
+    "/essays/",
+    "/2025/01/01/post1/",
+]
+
+# Number of iterations per page for statistical significance
+PERF_ITERATIONS = 10
+
+# Absolute maximum for any single page load (outlier detection)
+PERF_MAX_LOAD_TIME = 3000
+
+# Resource limits
+PERF_MAX_RESOURCES = 20
+PERF_MAX_TRANSFER_BYTES = 500 * 1024  # 500KB
+PERF_MAX_DOM_NODES = 1500
+
+# =============================================================================
+# CSS Selectors
+# =============================================================================
+
 # CSS Selectors
 SELECTORS = {
     "sidebar_toggle": ".sidebar-toggle",
