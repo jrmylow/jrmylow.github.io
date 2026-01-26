@@ -1,8 +1,7 @@
----
-layout: default
----
-
-<div class="tags-page">
-  <h3 class="page-title">{{ page.title }}</h3>
-  {{ content }}
+{% if include.tags.size > 0 %}
+<div class="post-tags">
+  {% for tag in include.tags %}
+    <a href="{{ '/tags/?t=' | append: tag | relative_url }}" class="post-tag">{{ tag }}</a>
+  {% endfor %}
 </div>
+{% endif %}
