@@ -5,6 +5,29 @@
  */
 
 /* ==========================================================================
+   Tags Page Wrapper
+   ========================================================================== */
+
+/* Force tags page wrapper to match container widths */
+.tags-page {
+  display: block;
+  width: 26rem;
+  max-width: calc(100vw - 2rem);
+}
+
+@media (min-width: 38em) {
+  .tags-page {
+    width: 30rem;
+  }
+}
+
+@media (min-width: 56em) {
+  .tags-page {
+    width: 36rem;
+  }
+}
+
+/* ==========================================================================
    Post Tags (on individual posts)
    ========================================================================== */
 
@@ -91,13 +114,6 @@
 /* ==========================================================================
    Tags Page - Posts Container
    ========================================================================== */
-
-/* Ensure tags page content fills container width */
-.page .tag-cloud,
-.page .tag-posts-container {
-  width: 100%;
-  max-width: none;
-}
 
 .tag-posts-container {
   margin: 2rem 0;
