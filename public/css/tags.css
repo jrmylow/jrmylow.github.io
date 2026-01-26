@@ -8,7 +8,6 @@
    Tags Page Wrapper
    ========================================================================== */
 
-/* Force tags page wrapper to match container widths */
 .tags-page {
   display: block;
   width: 26rem;
@@ -25,6 +24,32 @@
   .tags-page {
     width: 36rem;
   }
+}
+
+/* ==========================================================================
+   Base Tag Styles (shared)
+   ========================================================================== */
+
+.post-tag,
+.tag-cloud-item {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-size: 0.75rem;
+  color: var(--body-color);
+  background-color: var(--code-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  text-decoration: none !important;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.post-tag:hover,
+.tag-cloud-item:hover,
+.tag-cloud-item.selected {
+  background-color: var(--sidebar-hover-bg);
+  border-color: var(--sidebar-border-color);
+  color: var(--sidebar-heading) !important;
+  text-decoration: none !important;
 }
 
 /* ==========================================================================
@@ -45,74 +70,24 @@
   opacity: 0.7;
 }
 
-.post-tag {
-  display: inline-block;
-  padding: 0.25rem 0.6rem;
-  font-size: 0.75rem;
-  color: var(--body-color);
-  background-color: var(--code-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  text-decoration: none !important;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-.post-tag:hover {
-  background-color: var(--sidebar-hover-bg);
-  border-color: var(--sidebar-border-color);
-  color: var(--sidebar-heading) !important;
-  text-decoration: none !important;
-}
-
 /* ==========================================================================
-   Tag Cloud (on essays/tags page)
+   Tag Cloud (on tags page)
    ========================================================================== */
 
 .tag-cloud {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
+  gap: 0.5rem;
   margin: 1.5rem 0;
-  justify-content: flex-start;
-  align-items: baseline;
 }
 
 .tag-cloud-item {
-  display: inline-block;
-  padding: 0.3rem 0.75rem;
-  color: var(--body-color);
-  background-color: var(--code-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  text-decoration: none !important;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
   cursor: pointer;
   font-family: inherit;
 }
 
-.tag-cloud-item:hover {
-  background-color: var(--sidebar-hover-bg);
-  border-color: var(--sidebar-border-color);
-  color: var(--sidebar-heading) !important;
-  text-decoration: none !important;
-}
-
-/* Selected state */
-.tag-cloud-item.selected {
-  background-color: var(--sidebar-hover-bg);
-  border-color: var(--sidebar-border-color);
-  color: var(--sidebar-heading) !important;
-}
-
-/* Tag cloud sizes (weight 1-5) */
-.tag-cloud-item[data-weight="1"] { font-size: 0.75rem; }
-.tag-cloud-item[data-weight="2"] { font-size: 0.875rem; }
-.tag-cloud-item[data-weight="3"] { font-size: 1rem; }
-.tag-cloud-item[data-weight="4"] { font-size: 1.15rem; }
-.tag-cloud-item[data-weight="5"] { font-size: 1.3rem; }
-
 /* ==========================================================================
-   Tags Page - Posts Container
+   Tags Page - Posts List
    ========================================================================== */
 
 .tag-posts-container {
@@ -127,7 +102,6 @@
   margin: 0;
 }
 
-/* Posts hidden by default - shown via JS when tags selected */
 .tag-post-item {
   display: none;
   padding: 0.5rem 0;

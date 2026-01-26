@@ -38,10 +38,7 @@ permalink: /tags/
 <div class="tag-cloud">
 {% for tag in unique_tags %}
   {% assign count = all_tags | where_exp: "t", "t == tag" | size %}
-  {% comment %} Calculate weight 1-5 based on count {% endcomment %}
-  {% assign weight_raw = count | times: 4 | divided_by: max_count | plus: 1 %}
-  {% if weight_raw > 5 %}{% assign weight = 5 %}{% else %}{% assign weight = weight_raw %}{% endif %}
-  <button type="button" class="tag-cloud-item" data-tag="{{ tag }}" data-weight="{{ weight }}">{{ tag }} ({{ count }})</button>
+  <button type="button" class="tag-cloud-item" data-tag="{{ tag }}">{{ tag }} ({{ count }})</button>
 {% endfor %}
 </div>
 
