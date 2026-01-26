@@ -63,6 +63,8 @@
   border-radius: 4px;
   text-decoration: none !important;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 .tag-cloud-item:hover {
@@ -70,6 +72,13 @@
   border-color: var(--sidebar-border-color);
   color: var(--sidebar-heading) !important;
   text-decoration: none !important;
+}
+
+/* Selected state */
+.tag-cloud-item.selected {
+  background-color: var(--sidebar-hover-bg);
+  border-color: var(--sidebar-border-color);
+  color: var(--sidebar-heading) !important;
 }
 
 /* Tag cloud sizes (weight 1-5) */
@@ -80,30 +89,13 @@
 .tag-cloud-item[data-weight="5"] { font-size: 1.3rem; }
 
 /* ==========================================================================
-   Tags Page
+   Tags Page - Posts Container
    ========================================================================== */
 
-.tag-section {
+.tag-posts-container {
   margin: 2rem 0;
   padding-top: 1rem;
   border-top: 1px solid var(--border-color);
-}
-
-.tag-section:first-of-type {
-  border-top: none;
-  padding-top: 0;
-}
-
-.tag-section-title {
-  margin-top: 0;
-  margin-bottom: 1rem;
-}
-
-.tag-section-title .tag-count {
-  font-weight: normal;
-  font-size: 0.85rem;
-  color: var(--body-color);
-  opacity: 0.7;
 }
 
 .tag-post-list {
@@ -112,7 +104,9 @@
   margin: 0;
 }
 
+/* Posts hidden by default - shown via JS when tags selected */
 .tag-post-item {
+  display: none;
   padding: 0.5rem 0;
   border-bottom: 1px solid var(--border-color);
 }
