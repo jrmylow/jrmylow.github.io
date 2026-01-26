@@ -22,6 +22,16 @@ class TestPostTags:
         tags = page.locator(".post-tag")
         assert tags.count() >= 1, "Post should have at least one tag"
 
+    def test_post_tags_have_text_content(self, page: Page, jekyll_server: str):
+        """Post tags should contain actual tag text, not be empty."""
+        page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
+
+        first_tag = page.locator(".post-tag").first
+        tag_text = first_tag.text_content().strip()
+
+        assert len(tag_text) > 0, "Tag should have text content"
+        assert tag_text != "{{ tag }}", "Tag should render Liquid variable, not raw template"
+
     def test_tags_are_clickable_links(self, page: Page, jekyll_server: str):
         """Tags should be clickable links."""
         page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
