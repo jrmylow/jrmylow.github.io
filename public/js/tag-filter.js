@@ -65,7 +65,7 @@
           // Check if post has ALL selected tags (AND logic)
           const postTags = (post.getAttribute('data-tags') || '').split(',');
           const hasAllTags = selected.every(tag => postTags.includes(tag));
-          post.style.display = hasAllTags ? '' : 'none';
+          post.style.display = hasAllTags ? 'block' : 'none';
         }
       });
     }

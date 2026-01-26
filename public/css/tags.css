@@ -92,6 +92,13 @@
    Tags Page - Posts Container
    ========================================================================== */
 
+/* Ensure tags page content fills container width */
+.page .tag-cloud,
+.page .tag-posts-container {
+  width: 100%;
+  max-width: none;
+}
+
 .tag-posts-container {
   margin: 2rem 0;
   padding-top: 1rem;

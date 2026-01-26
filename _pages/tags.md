@@ -33,7 +33,7 @@ permalink: /tags/
 {% comment %}
   Tag Cloud - clickable toggle buttons
 {% endcomment %}
-<p>Select tags to filter posts. Multiple tags use AND logic.</p>
+<p>To filter all posts on this site, select tags that you are interested in. The essays shown will match all tags you select.</p>
 
 <div class="tag-cloud">
 {% for tag in unique_tags %}
