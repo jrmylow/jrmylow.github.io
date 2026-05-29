@@ -1,8 +1,7 @@
 """Tests for tag functionality."""
 
-from playwright.sync_api import Page
-
 from constants import TEST_PAGE_PATH
+from playwright.sync_api import Page
 
 
 class TestPostTags:
@@ -74,6 +73,7 @@ class TestPostTags:
         page.reload()
 
         tag = page.locator(".post-tag").first
+        page.add_style_tag(content="*, *::before, *::after { transition: none !important; }")
 
         # Get color before hover
         color_before = tag.evaluate("el => getComputedStyle(el).color")
@@ -84,9 +84,9 @@ class TestPostTags:
         # Get color after hover
         color_after = tag.evaluate("el => getComputedStyle(el).color")
 
-        assert color_before != color_after, (
-            f"Tag color should change on hover. Before: {color_before}, After: {color_after}"
-        )
+        assert (
+            color_before != color_after
+        ), f"Tag color should change on hover. Before: {color_before}, After: {color_after}"
 
 
 class TestTagsPage:
@@ -134,6 +134,7 @@ class TestTagsPage:
         page.reload()
 
         tag = page.locator(".tag-cloud-item").first
+        page.add_style_tag(content="*, *::before, *::after { transition: none !important; }")
 
         # Get color before hover
         color_before = tag.evaluate("el => getComputedStyle(el).color")
@@ -144,9 +145,9 @@ class TestTagsPage:
         # Get color after hover
         color_after = tag.evaluate("el => getComputedStyle(el).color")
 
-        assert color_before != color_after, (
-            f"Tag cloud color should change on hover. Before: {color_before}, After: {color_after}"
-        )
+        assert (
+            color_before != color_after
+        ), f"Tag cloud color should change on hover. Before: {color_before}, After: {color_after}"
 
     def test_tag_cloud_no_underline_on_hover(self, page: Page, jekyll_server: str):
         """Tag cloud items should not have underline on hover."""
@@ -237,9 +238,9 @@ class TestTagFiltering:
         tag_name = tag.get_attribute("data-tag")
         tag.click()
 
-        assert f"t={tag_name}" in page.url or f"t%3D{tag_name}" in page.url, (
-            f"URL should contain selected tag. URL: {page.url}"
-        )
+        assert (
+            f"t={tag_name}" in page.url or f"t%3D{tag_name}" in page.url
+        ), f"URL should contain selected tag. URL: {page.url}"
 
     def test_url_query_preselects_tags(self, page: Page, jekyll_server: str):
         """Loading page with query param should pre-select tags."""

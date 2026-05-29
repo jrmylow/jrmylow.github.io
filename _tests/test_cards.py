@@ -1,8 +1,7 @@
 """Tests for card component styles and functionality."""
 
-from playwright.sync_api import Page
-
 from constants import SELECTORS
+from playwright.sync_api import Page
 
 
 class TestCardStyles:
@@ -56,6 +55,7 @@ class TestCardStyles:
     def test_card_hover_changes_style(self, page: Page, jekyll_server: str):
         """Card should change background on hover."""
         page.goto(jekyll_server)
+        page.add_style_tag(content="*, *::before, *::after { transition: none !important; }")
 
         card = page.locator(SELECTORS["card"]).first
 
@@ -87,9 +87,7 @@ class TestCardStyles:
         card_grid = page.locator(SELECTORS["card_grid"]).first
 
         # At desktop width (1280px from fixture), should have multiple columns
-        grid_template = card_grid.evaluate(
-            "el => getComputedStyle(el).gridTemplateColumns"
-        )
+        grid_template = card_grid.evaluate("el => getComputedStyle(el).gridTemplateColumns")
 
         # Should have more than one column value (not just "1fr" or similar)
         assert grid_template != "none", "Grid should have column template"

@@ -31,13 +31,35 @@ def jekyll_server():
     # Start server locally
     if sys.platform == "win32":
         proc = subprocess.Popen(
-            ["bundle", "exec", "jekyll", "serve", "--port", "4000"],
+            [
+                "bundle",
+                "exec",
+                "jekyll",
+                "serve",
+                "--source",
+                "docs",
+                "--destination",
+                "docs/_site",
+                "--port",
+                "4000",
+            ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
     else:
         proc = subprocess.Popen(
-            ["bundle", "exec", "jekyll", "serve", "--port", "4000"],
+            [
+                "bundle",
+                "exec",
+                "jekyll",
+                "serve",
+                "--source",
+                "docs",
+                "--destination",
+                "docs/_site",
+                "--port",
+                "4000",
+            ],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             preexec_fn=os.setsid,
