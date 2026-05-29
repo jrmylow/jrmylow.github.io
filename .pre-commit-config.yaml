@@ -29,7 +29,7 @@ repos:
     hooks:
       - id: jekyll-build
         name: Jekyll Build Check
-        entry: bash -c 'command -v bundle && bundle exec jekyll build --drafts --source docs || echo "Skipping Jekyll build (bundle not found)"'
+        entry: bash -c 'command -v bundle && bundle exec jekyll build --drafts --source docs --destination docs/_site || echo "Skipping Jekyll build (bundle not found)"'
         language: system
         pass_filenames: false
         files: \.(md|html|yml|yaml|css|js)$
