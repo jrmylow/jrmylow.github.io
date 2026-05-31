@@ -2,6 +2,7 @@
 layout: page
 title: Essays
 permalink: /essays/
+nav_order: 30
 ---
 > "Writing is nature's way of telling us how lousy our thinking is."
 >

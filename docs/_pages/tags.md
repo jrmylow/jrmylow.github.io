@@ -2,6 +2,7 @@
 layout: page
 title: Tags
 permalink: /tags/
+nav_order: 40
 ---
 
 {% comment %}

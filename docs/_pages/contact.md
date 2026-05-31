@@ -2,6 +2,7 @@
 layout: page
 title: Contact
 permalink: /contact/
+nav_order: 20
 ---
 I'm Jeremy, and you can find me here at [jrmylow.com]({{site.url}}). I'm also contactable through any of the methods below:
 

@@ -2,6 +2,7 @@
 layout: page
 title: About
 permalink: /about/
+nav_order: 10
 ---
 
 My name is Jeremy, and you can find me here at [jrmylow.com]({{site.url}}). I help people solve problems in planning and coordination, and dealing with complex systems at scale.
