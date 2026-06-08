@@ -1,8 +1,7 @@
 """Tests for essays pages and pagination."""
 
-from playwright.sync_api import Page
-
 from constants import SELECTORS
+from playwright.sync_api import Page
 
 
 class TestEssaysLandingPage:
@@ -43,6 +42,12 @@ class TestEssaysLandingPage:
 
         essays_link = page.locator(".sidebar-nav-item", has_text="Essays")
         assert essays_link.count() >= 1, "Essays should appear in sidebar"
+
+    def test_essays_landing_shows_intro_prose(self, page: Page, jekyll_server: str):
+        """Essays landing should render the Markdown body (Lamport quote)."""
+        page.goto(f"{jekyll_server}/essays/")
+        body_text = page.locator(".page").inner_text()
+        assert "Leslie Lamport" in body_text, "Intro prose/quote should render in the page body"
 
 
 class TestEssaysArchivePagination:
