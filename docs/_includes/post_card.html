@@ -1,0 +1,28 @@
+{% comment %}
+  Post card -- single source of truth for post-preview markup.
+
+  Usage:
+    {% include post_card.html post=post %}
+    {% include post_card.html post=post heading="h4" %}
+
+  Parameters:
+    - post    (required) : the post object to render
+    - heading (optional) : heading tag for the title, "h3" by default.
+                           Set per call site so the title sits at the correct
+                           level beneath that page's surrounding heading.
+
+  The caller owns post selection, ordering, limits, and the .card-grid
+  wrapper. This include renders exactly one card.
+{% endcomment %}
+{% assign card_heading = include.heading | default: "h3" %}
+<a href="{{ post.url | relative_url }}" class="card-link">
+  <article class="card">
+    <div class="card-content">
+      <{{ card_heading }} class="card-title">{{ post.title }}</{{ card_heading }}>
+      <span class="card-meta">{{ post.date | date_to_long_string }}</span>
+      <div class="card-body">
+        {% if post.summary %}{% for paragraph in post.summary limit:1 %}<p>{{ paragraph.p }}</p>{% endfor %}{% else %}{{ post.excerpt }}{% endif %}
+      </div>
+    </div>
+  </article>
+</a>
