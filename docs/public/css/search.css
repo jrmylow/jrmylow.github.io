@@ -116,25 +116,6 @@
    Search Page
    ========================================================================== */
 
-/* Force search page wrapper to match container widths */
-.search-page {
-  display: block;
-  width: 26rem;
-  max-width: calc(100vw - 2rem);
-}
-
-@media (min-width: 38em) {
-  .search-page {
-    width: 30rem;
-  }
-}
-
-@media (min-width: 56em) {
-  .search-page {
-    width: 36rem;
-  }
-}
-
 .search-page-container {
   display: block;
   width: 100%;

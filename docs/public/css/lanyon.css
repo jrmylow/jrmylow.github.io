@@ -76,9 +76,16 @@ html {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
-  font-weight: 400;
+  font-weight: bold;
   letter-spacing: -.025rem;
+  font-size: 1.1em;
+  margin-bottom: 0.5em;
 }
+
+h1 { font-size: 1.3em; }
+h2 { font-size: 1.2em; }
+h3 { font-size: 1.1em; }
+h4, h5, h6 { font-size: 1em; }
 
 /* Links */
 a {
@@ -229,6 +236,7 @@ tbody tr:nth-child(odd) th {
 
 .container {
   flex: 1;
+  width: 100%;
   max-width: 28rem;
   margin-left: auto;
   margin-right: auto;
@@ -394,7 +402,7 @@ a.sidebar-nav-item:focus {
 .sidebar-toggle:active::before,
 #sidebar-checkbox:focus ~ .sidebar-toggle::before,
 #sidebar-checkbox:checked ~ .sidebar-toggle::before {
-  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23ffffff' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E") no-repeat;
+  background: var(--hamburger-icon-active) no-repeat;
 }
 
 .sidebar-toggle:active,
@@ -589,7 +597,7 @@ a.pagination-item:hover {
 .theme-custom-01 .sidebar,
 .theme-custom-01 .sidebar-toggle:active,
 .theme-custom-01 #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: hsl(214, 60%, 20%);
+  background-color: var(--sidebar-bg);
 }
 
 .theme-custom-01 .container a,

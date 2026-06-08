@@ -227,3 +227,18 @@ class TestSearchResultsPage:
 
         expect(page.locator(".search-result-item").first).to_be_visible()
         assert page.locator(".search-result-item").count() > 0, "Fuzzy search should find results with typos"
+
+    def test_search_page_uses_shared_page_width(self, page: Page, jekyll_server: str):
+        """Search content uses the shared .page wrapper at container width."""
+        page.set_viewport_size({"width": 1280, "height": 900})
+
+        page.goto(f"{jekyll_server}/about/")
+        about = page.locator(".page").first.bounding_box()
+
+        page.goto(f"{jekyll_server}/search/")
+        search = page.locator(".page").first.bounding_box()
+
+        assert about and search, "Both pages should render a .page wrapper"
+        assert (
+            abs(about["width"] - search["width"]) < 1
+        ), f"Search width {search['width']} should match site page width {about['width']}"

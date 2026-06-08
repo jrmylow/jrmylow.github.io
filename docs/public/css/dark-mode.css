@@ -6,7 +6,8 @@
  * - CSS variables for both themes
  * - Theme color applications (colors, backgrounds, borders)
  *
- * Layout and structure are in lanyon.css.
+ * Layout and structure, including structural heading typography (weight and
+ * size scale), live in lanyon.css. This file carries only color/theme concerns.
  */
 
 
@@ -48,8 +49,12 @@
   --toggle-light: #f2ede7;
   --toggle-button: #888888;
 
-  /* Hamburger Menu Icon - white for dark mode */
+  /* Hamburger Menu Icon - default state, white for dark mode */
   --hamburger-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23ffffff' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
+
+  /* Hamburger Menu Icon - active state (sidebar open over the dark sidebar bg,
+     so always white in both themes) */
+  --hamburger-icon-active: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23ffffff' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
 }
 
 
@@ -71,6 +76,7 @@
 
   /* Hamburger Menu Icon - dark blue for light mode */
   --hamburger-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23214B8A' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  /* --hamburger-icon-active inherits white from :root (open sidebar is dark in both themes) */
 }
 
 
@@ -85,18 +91,10 @@ body {
   color: var(--body-color);
 }
 
-/* Headings - authoritative sizes and colors */
+/* Headings - color only; weight, size scale and margins live in lanyon.css */
 h1, h2, h3, h4, h5, h6 {
   color: var(--heading-color);
-  font-size: 1.1em;
-  margin-bottom: 0.5em;
-  font-weight: bold;
 }
-
-h1 { font-size: 1.3em; }
-h2 { font-size: 1.2em; }
-h3 { font-size: 1.1em; }
-h4, h5, h6 { font-size: 1em; }
 
 /* Sidebar theme colors */
 .sidebar {
