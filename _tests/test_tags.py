@@ -164,6 +164,12 @@ class TestTagsPage:
         decoration_after = tag.evaluate("el => getComputedStyle(el).textDecoration")
         assert "underline" not in decoration_after, "Tag cloud item should not have underline on hover"
 
+    def test_tags_page_shows_intro_prose(self, page: Page, jekyll_server: str):
+        """Tags page should render the Markdown body (filter instructions)."""
+        page.goto(f"{jekyll_server}/tags/")
+        body_text = page.locator(".page").inner_text()
+        assert "select tags" in body_text.lower(), "Intro prose should render in the page body"
+
 
 class TestTagFiltering:
     """Tests for multi-tag filtering functionality."""
