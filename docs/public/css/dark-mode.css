@@ -118,6 +118,15 @@ pre, code {
   color: var(--link-color);
 }
 
+/* In-content links render in the heading color (carried over from the removed
+   .theme-custom-01 rule). Scoped to .container.content for (0,3,0) specificity,
+   so it reliably beats `.post a, .page a` regardless of stylesheet load order.
+   --link-color is consequently unused for prose; delete this block to switch
+   prose links to blue. */
+.container.content a {
+  color: var(--heading-color);
+}
+
 /* Sidebar nav theme borders */
 .sidebar-nav {
   border-bottom: 1px solid var(--sidebar-border-color);

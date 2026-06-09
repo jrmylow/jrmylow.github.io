@@ -409,7 +409,7 @@ a.sidebar-nav-item:focus {
 #sidebar-checkbox:focus ~ .sidebar-toggle,
 #sidebar-checkbox:checked ~ .sidebar-toggle {
   color: var(--heading-color);
-  background-color: var(--code-bg);
+  background-color: var(--sidebar-bg);
 }
 
 @media (min-width: 30.1em) {
@@ -510,7 +510,7 @@ a.sidebar-nav-item:focus {
 }
 
 .related-posts li a:hover {
-  color: var(--link-color);
+  color: var(--heading-color);
   text-decoration: none;
 }
 
@@ -587,23 +587,6 @@ a.pagination-item:hover {
   -webkit-transform: translateX(-14rem);
       -ms-transform: translateX(-14rem);
           transform: translateX(-14rem);
-}
-
-
-/* ==========================================================================
-   Themes
-   ========================================================================== */
-
-.theme-custom-01 .sidebar,
-.theme-custom-01 .sidebar-toggle:active,
-.theme-custom-01 #sidebar-checkbox:checked ~ .sidebar-toggle {
-  background-color: var(--sidebar-bg);
-}
-
-.theme-custom-01 .container a,
-.theme-custom-01 .sidebar-toggle,
-.theme-custom-01 .related-posts li a:hover {
-  color: var(--heading-color);
 }
 
 
