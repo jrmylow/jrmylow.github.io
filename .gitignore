@@ -5,6 +5,7 @@ _site
 .jekyll-cache
 docs/_site
 docs/.jekyll-cache
+docs/_drafts/
 
 # Numerous always-ignore extensions
 *.diff
