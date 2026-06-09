@@ -9,6 +9,25 @@ paginate:            10
 paginate_path:       "/essays/all/page/:num/"
 permalink:           pretty
 
+# Collections
+# `previews` are unlisted, shareable essays: they build at the same permalink a
+# post would, but are not in `site.posts`, so they stay out of the essays
+# listing, archive, tags, search index, and feed automatically. Promote one to
+# a published post by moving the file from _previews/ to _posts/ (same name) --
+# the permalink is unchanged.
+collections:
+  previews:
+    output: true
+    permalink: /:year/:month/:day/:title/
+
+# Defaults
+defaults:
+  - scope:
+      path: ""
+      type: previews
+    values:
+      layout: post
+
 # Include directories
 include: ['_pages']
 exclude: ['_doc', '_tests']
