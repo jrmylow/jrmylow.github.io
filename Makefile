@@ -3,11 +3,12 @@
 # at /app, and the Python venv lives in a named volume so `uv add` persists.
 #
 # Targets:
-#   make build   build/refresh the image (run after a lockfile or Gemfile change)
-#   make shell   drop into an interactive bash shell in the container
-#   make serve   preview the site at http://localhost:4000 (this machine only)
-#   make sync    re-sync the venv volume from uv.lock (networked)
-#   make test    run the pytest/Playwright suite sealed offline
+#   make build    build/refresh the image (run after a lockfile or Gemfile change)
+#   make shell    drop into an interactive bash shell in the container
+#   make serve    preview the site at http://localhost:4000 (this machine only)
+#   make preview  like serve, but also renders _drafts (local WIP preview)
+#   make sync     re-sync the venv volume from uv.lock (networked)
+#   make test     run the pytest/Playwright suite sealed offline
 #
 # `make test IT=` disables the TTY flags for CI (no terminal attached).
 
@@ -16,7 +17,7 @@ VENV   := jrmylow-venv
 MOUNTS := -v $(CURDIR):/app -v $(VENV):/opt/venv
 IT     := -it
 
-.PHONY: build shell serve sync test
+.PHONY: build shell serve preview sync test
 
 build:
 	podman build -t $(IMAGE) .
@@ -29,6 +30,12 @@ serve:
 	  bundle exec jekyll serve --source docs --destination docs/_site \
 	  --config docs/_config.yml,docs/_config_dev.yml \
 	  --host 0.0.0.0 --port 4000
+
+preview:
+	podman run --rm $(IT) -e JEKYLL_ENV=production -p 127.0.0.1:4000:4000 $(MOUNTS) $(IMAGE) \
+	  bundle exec jekyll serve --source docs --destination docs/_site \
+	  --config docs/_config.yml,docs/_config_dev.yml \
+	  --drafts --host 0.0.0.0 --port 4000
 
 sync:
 	podman run --rm $(IT) $(MOUNTS) $(IMAGE) uv sync
