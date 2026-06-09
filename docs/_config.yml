@@ -30,7 +30,6 @@ defaults:
 
 # Include directories
 include: ['_pages']
-exclude: ['_doc', '_tests']
 
 # About/contact
 author:
@@ -54,5 +53,4 @@ kramdown:
 theme_name:          Lanyon
 theme_url:           https://lanyon.getpoole.com/
 theme_version:       1.1.0
-google_analytics_id: #UA-XXXX-Y
 destination: _site
