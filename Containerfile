@@ -11,9 +11,9 @@
 #
 # ---------------------------------------------------------------------------
 # Base: official Ruby image. This is a from-source, version-pinned Ruby on a
-# Debian Bookworm base, maintained by the Docker official-images team. Pin the
-# tag to match what GitHub Pages builds with once you adopt the github-pages
-# gem (see DECISION below). Bump deliberately.
+# Debian Bookworm base, maintained by the Docker official-images team. The repo
+# uses the github-pages gem, which pins Jekyll 3.10; keep this tag aligned with
+# the Ruby that GitHub Pages builds with. Bump deliberately.
 # ---------------------------------------------------------------------------
 FROM docker.io/library/ruby:3.3-slim-bookworm
 

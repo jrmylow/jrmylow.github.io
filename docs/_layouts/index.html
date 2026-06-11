@@ -27,7 +27,7 @@ layout: default
 
 {% comment %}
 <!-- Featured Essays Section - Uncomment when you have posts tagged as "top" -->
-{% assign top_posts = site.posts | where_exp: "post", "post.tags contains 'top'" | limit: 3 %}
+{% assign top_posts = site.posts | where_exp: "post", "post.tags contains 'top'" | limit: 6 %}
 {% if top_posts.size > 0 %}
 <h2>Featured Essays</h2>
 
