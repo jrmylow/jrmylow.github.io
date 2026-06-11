@@ -1,29 +1,26 @@
 """Tests for tag functionality."""
 
-from constants import TEST_PAGE_PATH
+import discovery
+import pytest
 from playwright.sync_api import Page
 
 
+@pytest.mark.parametrize("post_url", discovery.params(discovery.tagged_post_urls(), "tagged posts"))
 class TestPostTags:
-    """Tests for tag display on post pages."""
+    def test_post_has_tags_container(self, page: Page, jekyll_server: str, post_url: str):
+        page.goto(f"{jekyll_server}{post_url}")
+        assert page.locator(".post-tags").count() == 1, "Post should have tags container"
 
-    def test_post_has_tags_container(self, page: Page, jekyll_server: str):
-        """Post page should have a tags container."""
-        page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
-
-        tags_container = page.locator(".post-tags")
-        assert tags_container.count() == 1, "Post should have tags container"
-
-    def test_post_displays_tags(self, page: Page, jekyll_server: str):
+    def test_post_displays_tags(self, page: Page, jekyll_server: str, post_url: str):
         """Post should display its tags."""
-        page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
+        page.goto(f"{jekyll_server}{post_url}")
 
         tags = page.locator(".post-tag")
         assert tags.count() >= 1, "Post should have at least one tag"
 
-    def test_post_tags_have_text_content(self, page: Page, jekyll_server: str):
+    def test_post_tags_have_text_content(self, page: Page, jekyll_server: str, post_url: str):
         """Post tags should contain actual tag text, not be empty."""
-        page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
+        page.goto(f"{jekyll_server}{post_url}")
 
         first_tag = page.locator(".post-tag").first
         tag_text = first_tag.text_content().strip()
@@ -31,27 +28,27 @@ class TestPostTags:
         assert len(tag_text) > 0, "Tag should have text content"
         assert tag_text != "{{ tag }}", "Tag should render Liquid variable, not raw template"
 
-    def test_tags_are_clickable_links(self, page: Page, jekyll_server: str):
+    def test_tags_are_clickable_links(self, page: Page, jekyll_server: str, post_url: str):
         """Tags should be clickable links."""
-        page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
+        page.goto(f"{jekyll_server}{post_url}")
 
         tag_link = page.locator(".post-tag").first
         href = tag_link.get_attribute("href")
         assert href is not None, "Tag should be a link"
         assert "/tags/" in href, "Tag should link to tags page"
 
-    def test_tag_links_include_tag_name(self, page: Page, jekyll_server: str):
+    def test_tag_links_include_tag_name(self, page: Page, jekyll_server: str, post_url: str):
         """Tag links should include the tag name as query param."""
-        page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
+        page.goto(f"{jekyll_server}{post_url}")
 
         tag_link = page.locator(".post-tag").first
         tag_name = tag_link.text_content().strip()
         href = tag_link.get_attribute("href")
         assert f"t={tag_name}" in href, f"Tag link should have query param, got: {href}"
 
-    def test_tag_no_underline_on_hover(self, page: Page, jekyll_server: str):
+    def test_tag_no_underline_on_hover(self, page: Page, jekyll_server: str, post_url: str):
         """Tags should not have underline on hover."""
-        page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
+        page.goto(f"{jekyll_server}{post_url}")
 
         tag = page.locator(".post-tag").first
 
@@ -64,9 +61,9 @@ class TestPostTags:
         decoration_after = tag.evaluate("el => getComputedStyle(el).textDecoration")
         assert "underline" not in decoration_after, "Tag should not have underline on hover"
 
-    def test_tag_hover_color_light_mode(self, page: Page, jekyll_server: str):
+    def test_tag_hover_color_light_mode(self, page: Page, jekyll_server: str, post_url: str):
         """Tag text should change color on hover in light mode."""
-        page.goto(f"{jekyll_server}{TEST_PAGE_PATH}")
+        page.goto(f"{jekyll_server}{post_url}")
 
         # Set light mode
         page.evaluate("() => localStorage.setItem('theme', 'light')")
@@ -248,13 +245,10 @@ class TestTagFiltering:
             f"t={tag_name}" in page.url or f"t%3D{tag_name}" in page.url
         ), f"URL should contain selected tag. URL: {page.url}"
 
-    def test_url_query_preselects_tags(self, page: Page, jekyll_server: str):
-        """Loading page with query param should pre-select tags."""
-        page.goto(f"{jekyll_server}/tags/?t=tag1")
-
-        tag = page.locator(".tag-cloud-item[data-tag='tag1']")
-        assert "selected" in tag.get_attribute("class"), "Tag should be pre-selected from URL"
-
+    def test_url_query_preselects_tags(self, page: Page, jekyll_server: str, any_post_tag: str):
+        page.goto(f"{jekyll_server}/tags/?t={any_post_tag}")
+        tag = page.locator(f".tag-cloud-item[data-tag='{any_post_tag}']")
+        assert "selected" in (tag.get_attribute("class") or ""), f"Tag {any_post_tag!r} should be pre-selected from URL"
         posts = page.locator(".tag-post-item:visible")
         assert posts.count() >= 1, "Posts should be visible from URL selection"
 

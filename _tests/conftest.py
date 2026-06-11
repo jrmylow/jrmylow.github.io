@@ -4,7 +4,26 @@ import subprocess
 import sys
 import time
 
+import discovery
 import pytest
+
+
+@pytest.fixture
+def any_post_url() -> str:
+    """A representative published post URL; skips if _posts is empty."""
+    urls = discovery.post_urls()
+    if not urls:
+        pytest.skip("no _posts found in source tree")
+    return urls[0]
+
+
+@pytest.fixture
+def any_post_tag() -> str:
+    """A tag declared by some published post; skips if none exist."""
+    tags = discovery.post_tags()
+    if not tags:
+        pytest.skip("no post tags found in source tree")
+    return tags[0]
 
 
 @pytest.fixture(scope="session")

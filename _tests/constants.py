@@ -26,14 +26,8 @@ PERF_THRESHOLDS = {
     "load_complete_p90": 1500,
 }
 
-# Pages to test - representative sample of site
-PERF_TEST_PAGES = [
-    "/",
-    "/about/",
-    "/contact/",
-    "/essays/",
-    "/2025/01/01/post1/",
-]
+# Pages to test - stable pages only; test_performance appends a real post at runtime
+PERF_STABLE_PAGES = ["/", "/about/", "/contact/", "/essays/"]
 
 # Number of iterations per page for statistical significance
 PERF_ITERATIONS = 10
@@ -72,6 +66,3 @@ SELECTORS = {
     "search_input": ".search-input",
     "search_results": ".search-results",
 }
-
-# Test page URL path
-TEST_PAGE_PATH = "/2020/04/12/post1/"
