@@ -6,24 +6,16 @@ layout: default
   <h1 class="post-title">{{ page.title }}</h1>
   <span class="post-date">{{ page.date | date_to_string }}</span>
   {% include tags.html tags=page.tags %}
+  {% include series.html %}
   {% include toc.html html=content %}
   {{ content }}
+  {% include backlinks.html %}
+  {% unless page.collection == "previews" %}{% include webmentions.html %}{% endunless %}
 </div>
 
-{% if site.related_posts.size >= 1 %}
-<div class="related">
-  <h2>Related posts</h2>
-  <ul class="related-posts">
-    {% for post in site.related_posts limit:3 %}
-      <li>
-        <h3>
-          <a href="{{ site.baseurl }}{{ post.url }}">
-            {{ post.title }}
-            <small>{{ post.date | date_to_string }}</small>
-          </a>
-        </h3>
-      </li>
-    {% endfor %}
-  </ul>
-</div>
-{% endif %}
+{% comment %}
+  Related essays. Replaces the old `site.related_posts` block, which on GitHub
+  Pages was just the most recent posts (LSI disabled). related.html ranks by
+  shared tags instead and is a no-op when nothing matches.
+{% endcomment %}
+{% include related.html %}

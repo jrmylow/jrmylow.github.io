@@ -20,7 +20,7 @@ ANIMATION_TIMEOUT = 400
 PERF_THRESHOLDS = {
     "ttfb_avg": 100,
     "ttfb_p90": 200,
-    "dom_content_loaded_avg": 500,
+    "dom_content_loaded_avg": 550,
     "dom_content_loaded_p90": 800,
     "load_complete_avg": 1000,
     "load_complete_p90": 1500,

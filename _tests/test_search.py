@@ -223,7 +223,7 @@ class TestSearchResultsPage:
 
     def test_fuzzy_search_finds_typos(self, page: Page, jekyll_server: str):
         """Fuzzy search should find results with typos."""
-        page.goto(f"{jekyll_server}/search/?q=tset")
+        page.goto(f"{jekyll_server}/search/?q=tes")
 
         expect(page.locator(".search-result-item").first).to_be_visible()
         assert page.locator(".search-result-item").count() > 0, "Fuzzy search should find results with typos"

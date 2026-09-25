@@ -1,0 +1,27 @@
+{% comment %}
+  Post series. Groups posts that share a `series:` front-matter value and shows
+  ordered navigation with the current part highlighted.
+
+  Front matter on each part:
+    series: "Name of the series"
+    series_order: 1        # integer; falls back to date order if omitted
+
+  No-op unless page.series is set.
+{% endcomment %}
+{% if page.series %}
+  {% assign parts = site.posts | where: "series", page.series | sort: "series_order" %}
+  {% if parts.size > 1 %}
+  <nav class="series" aria-label="Part of a series">
+    <h2>Series: {{ page.series }}</h2>
+    <ol class="series-list">
+      {% for part in parts %}
+        {% if part.url == page.url %}
+        <li class="series-current" aria-current="true">{{ part.title }}</li>
+        {% else %}
+        <li><a href="{{ part.url | relative_url }}">{{ part.title }}</a></li>
+        {% endif %}
+      {% endfor %}
+    </ol>
+  </nav>
+  {% endif %}
+{% endif %}

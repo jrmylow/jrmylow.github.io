@@ -1,0 +1,25 @@
+{% comment %}
+  Backlinks ("Referenced by"): other published posts whose body links to this
+  page. Turns the flat archive into a small idea-graph.
+
+  Match is `post.content contains page.url`, e.g. "/2024/01/02/slug/". With
+  pretty permalinks ending in "slug/" a substring collision is unlikely; if you
+  ever get a false positive, tighten to an href-quoted match.
+
+  No-op when nothing links here. Previews are excluded automatically because
+  they are not in `site.posts`.
+{% endcomment %}
+{% capture backlinks_html %}
+  {% for post in site.posts %}
+    {% if post.url != page.url and post.content contains page.url %}
+      <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
+{% assign backlinks_trimmed = backlinks_html | strip %}
+{% if backlinks_trimmed != "" %}
+<nav class="backlinks" aria-label="Referenced by">
+  <h2>Referenced by</h2>
+  <ul class="backlinks-list">{{ backlinks_html }}</ul>
+</nav>
+{% endif %}

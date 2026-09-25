@@ -209,3 +209,26 @@
   color: var(--body-color);
   opacity: 0.7;
 }
+
+.search-result-item mark {
+  background: var(--link-color);
+  color: #fff;
+  padding: 0 0.1em;
+  border-radius: 2px;
+}
+
+.search-result-tags {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.search-result-tag {
+  display: inline-block;
+  margin-right: 0.35rem;
+  padding: 0.05rem 0.4rem;
+  font-size: 0.7rem;
+  color: var(--body-color);
+  border: 1px solid var(--sidebar-border-color);
+  border-radius: 3px;
+  opacity: 0.8;
+}

@@ -3,18 +3,13 @@ title:               Jeremy Low
 tagline:             'Ruminations...'
 description:         'A home for essays. Written by <a href="https://twitter.com/jrmy_low" >@jrmy_low</a>. <br><br>To get in touch, please check out the contact page below.'
 disclaimer:          "Opinions my own. I do not speak for my employer, nor yours. None of this is financial advice."
-url:                 ''
+url:                 "https://jrmylow.com"
 baseurl:             ''
 paginate:            10
 paginate_path:       "/essays/all/page/:num/"
 permalink:           pretty
 
 # Collections
-# `previews` are unlisted, shareable essays: they build at the same permalink a
-# post would, but are not in `site.posts`, so they stay out of the essays
-# listing, archive, tags, search index, and feed automatically. Promote one to
-# a published post by moving the file from _previews/ to _posts/ (same name) --
-# the permalink is unchanged.
 collections:
   previews:
     output: true
@@ -34,15 +29,22 @@ include: ['_pages']
 # About/contact
 author:
   name:             Jeremy Low
+  twitter:          jrmy_low        # seo-tag reads this for twitter:creator
+  tw_url:           jrmy_low        # used by the contact page link
   gh_url:           jrmylow
-  tw_url:           jrmy_low
   md_url:           '@jrmylow@mastodon.world'
   email:            hello@jrmylow.com
   hn_url:           jrmylow
 
+# jekyll-seo-tag social defaults
+twitter:
+  username: jrmy_low
+  card:     summary
+
 # Gems
 plugins:
   - jekyll-paginate
+  - jekyll-seo-tag
 
 kramdown:
   auto_ids: true

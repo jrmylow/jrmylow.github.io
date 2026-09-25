@@ -1,0 +1,19 @@
+{% comment %}
+  Webmentions display. Fetches replies/likes/reposts for this page from
+  webmention.io (client-side, no plugin) and renders them under the post.
+
+  Setup (see README, decision required):
+    1. Register your domain at https://webmention.io and add to head.html:
+         <link rel="webmention" href="https://webmention.io/YOUR-DOMAIN/webmention">
+         <link rel="me" href="https://mastodon.world/@jrmylow">
+    2. Set `url:` in _config.yml so the canonical link resolves to a real origin;
+       the loader keys off it.
+
+  Only included on real posts (post.html guards on collection != previews), so
+  it never loads on About/Contact/Essays and stays off the perf budget there.
+{% endcomment %}
+<section id="webmentions" class="webmentions" hidden>
+  <h2>Webmentions</h2>
+  <ul class="webmentions-list"></ul>
+</section>
+<script src="{{ '/public/js/webmentions.js' | absolute_url }}" defer></script>

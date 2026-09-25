@@ -1,0 +1,177 @@
+/*
+ * features.css
+ *
+ * Styles for the new features, one sectioned file so head.html gains a single
+ * <link> rather than five (each stylesheet is a resource against the perf
+ * budget of 20/page). Each section is self-contained and safe to delete with
+ * its feature. Colours reuse the existing theme variables.
+ *
+ * Sections:
+ *   1. Post navs (related, backlinks, series)
+ *   2. Sidenotes
+ *   3. Command palette
+ *   4. Webmentions
+ */
+
+/* ==========================================================================
+   1. Post navs: related / backlinks / series
+   ========================================================================== */
+
+.related,
+.backlinks,
+.series {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sidebar-border-color);
+}
+
+.related h2,
+.backlinks h2,
+.series h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.related-list,
+.backlinks-list,
+.series-list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.related-list li,
+.backlinks-list li,
+.series-list li {
+  margin-bottom: 0.35rem;
+}
+
+.related-date {
+  margin-left: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--body-color);
+  opacity: 0.6;
+}
+
+.series-current {
+  font-weight: bold;
+  opacity: 0.85;
+}
+
+/* ==========================================================================
+   3. Command palette (Cmd/Ctrl-K)
+   ========================================================================== */
+
+.command-palette[hidden] {
+  display: none;
+}
+
+.command-palette {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12vh 1rem 1rem;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.command-palette-panel {
+  width: 100%;
+  max-width: 34rem;
+  background: var(--body-bg);
+  border: 1px solid var(--sidebar-border-color);
+  border-radius: 6px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+.command-palette-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.9rem 1rem;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-size: 1rem;
+  color: var(--body-color);
+  background: var(--body-bg);
+  border: 0;
+  border-bottom: 1px solid var(--sidebar-border-color);
+  outline: none;
+}
+
+.command-palette-results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.command-palette-results li {
+  margin: 0;
+}
+
+.command-palette-result {
+  display: block;
+  padding: 0.6rem 1rem;
+  color: var(--body-color);
+  text-decoration: none;
+}
+
+.command-palette-results li[aria-selected="true"] {
+  background: var(--link-color);
+}
+
+.command-palette-results li[aria-selected="true"] .command-palette-result {
+  color: #fff;
+}
+
+.command-palette-open {
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   4. Webmentions
+   ========================================================================== */
+
+.webmentions[hidden] {
+  display: none;
+}
+
+.webmentions {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--sidebar-border-color);
+}
+
+.webmentions h2 {
+  font-size: 1rem;
+}
+
+.webmentions-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.webmention {
+  display: flex;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.webmention-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.webmention-author {
+  font-weight: bold;
+}
+
+.webmention-content {
+  margin: 0.25rem 0 0;
+  font-size: 0.9rem;
+}
