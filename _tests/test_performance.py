@@ -162,7 +162,8 @@ class TestPageLoadPerformance:
         )
         print(
             f"{'DOM Interactive':<25} {agg['dom_interactive_avg']:>10.0f}ms "
-            f"{agg['dom_interactive_p90']:>10.0f}ms {'N/A':>12}"
+            f"{agg['dom_interactive_p90']:>10.0f}ms "
+            f"{PERF_THRESHOLDS['dom_interactive_p90']:>10}ms"
         )
         print(
             f"{'DOMContentLoaded':<25} {agg['dom_content_loaded_avg']:>10.0f}ms "
@@ -180,6 +181,10 @@ class TestPageLoadPerformance:
         assert (
             agg["ttfb_p90"] < PERF_THRESHOLDS["ttfb_p90"]
         ), f"TTFB P90 {agg['ttfb_p90']:.0f}ms exceeds {PERF_THRESHOLDS['ttfb_p90']}ms"
+        assert agg["dom_interactive_p90"] < PERF_THRESHOLDS["dom_interactive_p90"], (
+            f"DOM Interactive P90 {agg['dom_interactive_p90']:.0f}ms "
+            f"exceeds {PERF_THRESHOLDS['dom_interactive_p90']}ms"
+        )
         assert agg["dom_content_loaded_p90"] < PERF_THRESHOLDS["dom_content_loaded_p90"], (
             f"DOMContentLoaded P90 {agg['dom_content_loaded_p90']:.0f}ms "
             f"exceeds {PERF_THRESHOLDS['dom_content_loaded_p90']}ms"

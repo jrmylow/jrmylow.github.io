@@ -1,11 +1,23 @@
 import os
-import signal
 import subprocess
 import sys
 import time
+import urllib.parse
+import urllib.request
 
 import discovery
 import pytest
+
+JEKYLL_BUILD = "bundle exec jekyll build --source docs".split()
+
+
+def _answers(url: str) -> bool:
+    """True if something responds at url."""
+    try:
+        urllib.request.urlopen(url, timeout=1)
+        return True
+    except OSError:
+        return False
 
 
 @pytest.fixture
@@ -27,79 +39,44 @@ def any_post_tag() -> str:
 
 
 @pytest.fixture(scope="session")
-def jekyll_server():
+def jekyll_server(tmp_path_factory):
     """
-    Start Jekyll server before tests, stop after.
+    Build the site once into a temp dir and serve it statically for the session.
 
-    In CI, Jekyll is started separately, so we just return the URL.
-    Locally, we start and stop the server.
+    If a server already answers at JEKYLL_URL (e.g. CI), reuse it.
+    Uses http.server rather than `jekyll serve`: WEBrick stalls ~40ms per
+    response on keep-alive connections, which dominated page-load timings.
     """
     base_url = os.environ.get("JEKYLL_URL", "http://localhost:4000")
-
-    # Check if server is already running (CI environment)
-    import urllib.request
-
-    try:
-        urllib.request.urlopen(base_url, timeout=2)
-        # Server already running, just return URL
+    if _answers(base_url):
         yield base_url
         return
-    except Exception:
-        pass
 
-    # Start server locally
-    if sys.platform == "win32":
-        proc = subprocess.Popen(
-            [
-                "bundle",
-                "exec",
-                "jekyll",
-                "serve",
-                "--source",
-                "docs",
-                "--destination",
-                "docs/_site",
-                "--port",
-                "4000",
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-    else:
-        proc = subprocess.Popen(
-            [
-                "bundle",
-                "exec",
-                "jekyll",
-                "serve",
-                "--source",
-                "docs",
-                "--destination",
-                "docs/_site",
-                "--port",
-                "4000",
-            ],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            preexec_fn=os.setsid,
-        )
+    # `jekyll serve` rewrites site.url to localhost in dev; `build` does not, so
+    # absolute_url would point at production without this override.
+    tmp = tmp_path_factory.mktemp("jekyll")
+    site = tmp / "_site"
+    override = tmp / "_config_test.yml"
+    override.write_text(f'url: "{base_url}"\n')
+    subprocess.run([*JEKYLL_BUILD, "--destination", str(site), "--config", f"docs/_config.yml,{override}"], check=True)
 
-    # Wait for server to start
-    for _ in range(10):
-        time.sleep(1)
-        try:
-            urllib.request.urlopen(base_url, timeout=2)
-            break
-        except Exception:
-            continue
-
-    yield base_url
-
-    # Cleanup
-    if sys.platform == "win32":
+    port = str(urllib.parse.urlsplit(base_url).port or 80)
+    proc = subprocess.Popen(
+        [sys.executable, "-m", "http.server", port, "--bind", "127.0.0.1", "--directory", str(site)],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    try:
+        for _ in range(50):
+            if _answers(base_url):
+                break
+            time.sleep(0.1)
+        else:
+            raise RuntimeError(f"http.server did not answer at {base_url} within 5s")
+        yield base_url
+    finally:
         proc.terminate()
-    else:
-        os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+        proc.wait()
 
 
 @pytest.fixture(scope="session")

@@ -20,10 +20,11 @@ ANIMATION_TIMEOUT = 400
 PERF_THRESHOLDS = {
     "ttfb_avg": 100,
     "ttfb_p90": 200,
-    "dom_content_loaded_avg": 550,
-    "dom_content_loaded_p90": 800,
-    "load_complete_avg": 1000,
-    "load_complete_p90": 1500,
+    "dom_interactive_p90": 200,
+    "dom_content_loaded_avg": 250,
+    "dom_content_loaded_p90": 250,
+    "load_complete_avg": 250,
+    "load_complete_p90": 250,
 }
 
 # Pages to test - stable pages only; test_performance appends a real post at runtime

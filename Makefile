@@ -16,6 +16,7 @@ IMAGE  := jrmylow-dev
 VENV   := jrmylow-venv
 MOUNTS := -v $(CURDIR):/app -v $(VENV):/opt/venv
 IT     := -it
+ARGS   :=
 
 .PHONY: build shell serve preview sync test
 
@@ -40,5 +41,6 @@ preview:
 sync:
 	podman run --rm $(IT) $(MOUNTS) $(IMAGE) uv sync
 
+#   make test     run the pytest/Playwright suite sealed offline (ARGS="..." passes flags to pytest)
 test:
-	podman run --rm $(IT) $(MOUNTS) $(IMAGE) uv run pytest
+	podman run --rm $(IT) --network=none $(MOUNTS) $(IMAGE) uv run pytest $(ARGS)
