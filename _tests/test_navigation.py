@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import List, Optional
 
 import yaml
-from constants import ANIMATION_TIMEOUT, SELECTORS
+from constants import SELECTORS
 from playwright.sync_api import Page
 
 # --- Front-matter discovery (matches Jekyll's site.pages) --------------------
@@ -82,7 +82,6 @@ def expected_nav_labels() -> List[str]:
 def _open_sidebar(page: Page, jekyll_server: str):
     page.goto(f"{jekyll_server}/")
     page.locator(SELECTORS["sidebar_toggle"]).click()
-    page.wait_for_timeout(ANIMATION_TIMEOUT)
 
 
 def _nav_labels(page: Page) -> List[str]:

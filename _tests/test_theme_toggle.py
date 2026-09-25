@@ -1,11 +1,9 @@
-from playwright.sync_api import Page
-
 from constants import (
-    ANIMATION_TIMEOUT,
     DARK_BG_COLOR,
     LIGHT_BG_COLOR,
     SELECTORS,
 )
+from playwright.sync_api import Page
 
 
 class TestThemeToggle:
@@ -27,11 +25,10 @@ class TestThemeToggle:
 
         # Open sidebar to access toggle
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         # Click the label/toggle container (not the hidden input)
         toggle = page.locator(SELECTORS["theme_toggle"])
-        toggle.click(force=True)
+        toggle.click()
 
         # Verify theme changed
         new_theme = html.get_attribute("data-theme")
@@ -43,7 +40,6 @@ class TestThemeToggle:
         self.clear_storage_and_reload(page)
 
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         html = page.locator(SELECTORS["html"])
         toggle = page.locator(SELECTORS["theme_toggle"])
@@ -52,11 +48,11 @@ class TestThemeToggle:
         initial_theme = html.get_attribute("data-theme")
 
         # Click once
-        toggle.click(force=True)
+        toggle.click()
         first_toggle_theme = html.get_attribute("data-theme")
 
         # Click again
-        toggle.click(force=True)
+        toggle.click()
         second_toggle_theme = html.get_attribute("data-theme")
 
         # Should return to initial
@@ -73,8 +69,7 @@ class TestThemeToggle:
 
         # Switch theme
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
-        page.locator(SELECTORS["theme_toggle"]).click(force=True)
+        page.locator(SELECTORS["theme_toggle"]).click()
 
         new_bg = body.evaluate("el => getComputedStyle(el).backgroundColor")
 
@@ -89,8 +84,7 @@ class TestThemeToggle:
         initial_stored = page.evaluate("() => localStorage.getItem('theme')")
 
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
-        page.locator(SELECTORS["theme_toggle"]).click(force=True)
+        page.locator(SELECTORS["theme_toggle"]).click()
 
         # Check localStorage changed
         new_stored = page.evaluate("() => localStorage.getItem('theme')")
@@ -104,8 +98,7 @@ class TestThemeToggle:
 
         # Toggle theme
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
-        page.locator(SELECTORS["theme_toggle"]).click(force=True)
+        page.locator(SELECTORS["theme_toggle"]).click()
 
         # Get theme after toggle
         html = page.locator(SELECTORS["html"])
@@ -124,7 +117,6 @@ class TestThemeToggle:
         self.clear_storage_and_reload(page)
 
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         toggle_input = page.locator(SELECTORS["theme_toggle_input"])
         html = page.locator(SELECTORS["html"])

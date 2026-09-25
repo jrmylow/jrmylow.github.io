@@ -8,9 +8,6 @@ LIGHT_BG_COLOR = "rgb(242, 237, 231)"
 WHITE_HEX = "ffffff"
 WHITE_HEX_SHORT = "fff"
 
-# Animation/transition timing (ms)
-ANIMATION_TIMEOUT = 400
-
 # =============================================================================
 # Performance Test Constants
 # =============================================================================

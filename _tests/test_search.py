@@ -1,6 +1,6 @@
 """Tests for search functionality."""
 
-from constants import ANIMATION_TIMEOUT, SELECTORS
+from constants import SELECTORS
 from playwright.sync_api import Page, expect
 
 
@@ -13,18 +13,16 @@ class TestSearchBar:
 
         # Open sidebar
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         # Search container should be visible
         search_container = page.locator(SELECTORS["search_container"])
-        assert search_container.is_visible(), "Search container should be visible in sidebar"
+        expect(search_container).to_be_visible()
 
     def test_search_input_exists(self, page: Page, jekyll_server: str):
         """Search input field should exist."""
         page.goto(jekyll_server)
 
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         search_input = page.locator(SELECTORS["search_input"])
         assert search_input.count() == 1, "Should have one search input"
@@ -34,7 +32,6 @@ class TestSearchBar:
         page.goto(jekyll_server)
 
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         # Check DOM order: theme-toggle should come before search-container
         sidebar = page.locator(".sidebar")
@@ -62,11 +59,10 @@ class TestSearchBar:
         page.goto(jekyll_server)
 
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         search_input = page.locator(SELECTORS["search_input"])
         search_input.fill("test")
-        page.wait_for_timeout(300)
+        page.wait_for_timeout(300)  # negative assertion: give live results a chance to appear
 
         # Sidebar should NOT have results container with content
         sidebar_results = page.locator(".sidebar .search-results")
@@ -77,7 +73,6 @@ class TestSearchBar:
         page.goto(jekyll_server)
 
         page.locator(SELECTORS["sidebar_toggle"]).click()
-        page.wait_for_timeout(ANIMATION_TIMEOUT)
 
         search_input = page.locator(SELECTORS["search_input"])
         search_input.fill("test")
@@ -198,7 +193,7 @@ class TestSearchResultsPage:
         # Type without pressing Enter
         search_input = page.locator(".search-page-input")
         search_input.fill("xyznonexistent")
-        page.wait_for_timeout(300)
+        page.wait_for_timeout(300)  # negative assertion: give live results a chance to appear
 
         # Results should not change (still showing "test" results)
         current_results = page.locator(".search-result-item").count()

@@ -38,7 +38,6 @@ class TestEssaysLandingPage:
         page.goto(f"{jekyll_server}/")
 
         page.locator(".sidebar-toggle").click()
-        page.wait_for_timeout(400)
 
         essays_link = page.locator(".sidebar-nav-item", has_text="Essays")
         assert essays_link.count() >= 1, "Essays should appear in sidebar"

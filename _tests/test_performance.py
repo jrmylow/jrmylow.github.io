@@ -75,14 +75,13 @@ def collect_metrics_for_page(page: Page, url: str, iterations: int) -> List[Perf
     """Collect performance metrics over multiple page loads."""
     metrics = []
     for _ in range(iterations):
-        # Clear cache between runs to get consistent measurements
+        # Clears cookies only; the HTTP cache persists, so runs after the first are warm
         page.context.clear_cookies()
 
         # Navigate and wait for load
         page.goto(url, wait_until="load")
 
-        # Small delay to ensure loadEventEnd is populated
-        page.wait_for_timeout(50)
+        page.wait_for_function("performance.getEntriesByType('navigation')[0].loadEventEnd > 0")
 
         metric = get_performance_metrics(page)
         metrics.append(metric)

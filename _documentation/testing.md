@@ -23,7 +23,7 @@ or to specific markup.
   a pytest temp directory, serves it with Python's `http.server`, and stops the
   server afterward. The browser runs headless at 1280x720.
 - **`constants.py`** is the single source of shared values: `SELECTORS`, the
-  theme colours (`DARK_BG_COLOR`, `LIGHT_BG_COLOR`), `ANIMATION_TIMEOUT`, and the
+  theme colours (`DARK_BG_COLOR`, `LIGHT_BG_COLOR`), and the
   `PERF_` budget. Import from here rather than hardcoding, so a UI change is a
   one-line edit.
 
@@ -55,6 +55,18 @@ third-party origin fails there, so scripts the site needs are vendored into
 `docs/public/js/`; Fuse.js, used by search, is vendored for this reason.
 Third-party requests the tests don't depend on, such as Google Fonts and
 GoatCounter, fail fast offline and are harmless.
+
+## Waiting
+
+No fixed sleeps. Playwright actions already wait for an element to be visible,
+stable and in view, and `expect(...)` assertions retry until they pass, so wait
+on the condition rather than the clock. Two traps:
+
+- `force=True` skips those waits, and one-shot reads such as `is_visible()` or
+  `get_attribute()` check once without retrying. Both can catch the sidebar
+  mid-transition.
+- A negative assertion ("live results never appear") has no event to wait on,
+  so it keeps a short fixed window before asserting absence.
 
 ## Red-green-refactor
 
@@ -164,6 +176,7 @@ file should be confirmed in the repo.
 
 ## References
 - Playwright (Python): <https://playwright.dev/python/docs/intro>
+- Playwright actionability checks: <https://playwright.dev/python/docs/actionability>
 - pytest: <https://docs.pytest.org/>
 - Navigation Timing: <https://developer.mozilla.org/en-US/docs/Web/API/Performance_API/Navigation_timing>
 - Python `http.server`: <https://docs.python.org/3/library/http.server.html>
