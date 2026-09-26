@@ -1,7 +1,22 @@
 """Tests for essays pages and pagination."""
 
+import math
+
+import discovery
+import pytest
 from constants import SELECTORS
 from playwright.sync_api import Page
+
+# The archive's expected shape, computed from the sources so every assertion runs at any corpus size.
+CONFIG = discovery.site_config()
+PAGE_SIZE = CONFIG["paginate"]
+POST_URLS = discovery.post_urls()
+PAGES = max(1, math.ceil(len(POST_URLS) / PAGE_SIZE))
+
+
+def archive_path(n: int) -> str:
+    """Archive page n: page 1 is the archive root; later pages follow paginate_path."""
+    return "/essays/all/" if n == 1 else CONFIG["paginate_path"].replace(":num", str(n))
 
 
 class TestEssaysLandingPage:
@@ -78,53 +93,40 @@ class TestEssaysArchivePagination:
         back_link = page.locator("a[href='/essays/']")
         assert back_link.count() >= 1, "Should have back link"
 
-    def test_pagination_shows_page_info(self, page: Page, jekyll_server: str):
-        """Pagination should show page info when multiple pages exist."""
-        page.goto(f"{jekyll_server}/essays/all/")
+    @pytest.mark.allow_http_errors
+    def test_archive_has_exactly_the_expected_pages(self, page: Page, jekyll_server: str):
+        """Pages 1..N exist for N = ceil(posts / paginate), and page N+1 does not."""
+        for n in range(1, PAGES + 1):
+            assert page.goto(f"{jekyll_server}{archive_path(n)}").status == 200, f"archive page {n} is missing"
+        extra = page.goto(f"{jekyll_server}{archive_path(PAGES + 1)}")
+        assert extra.status == 404, f"archive has an unexpected page {PAGES + 1}"
 
-        pagination = page.locator(".pagination")
-        if pagination.count() > 0:
-            page_info = page.locator(".pagination-info")
-            assert page_info.count() == 1, "Should show page info"
+    def test_archive_lists_every_post_exactly_once(self, page: Page, jekyll_server: str):
+        """Across the archive each post appears once, PAGE_SIZE per page except the last."""
+        listed, sizes = [], []
+        for n in range(1, PAGES + 1):
+            page.goto(f"{jekyll_server}{archive_path(n)}")
+            links = page.locator(f"{SELECTORS['card_grid']} {SELECTORS['card_link']}").all()
+            listed += [link.get_attribute("href") for link in links]
+            sizes.append(len(links))
 
-            text = page_info.text_content()
-            assert "Page" in text, "Should display 'Page X of Y'"
+        assert sorted(listed) == sorted(POST_URLS)
+        assert sizes == [PAGE_SIZE] * (PAGES - 1) + [len(POST_URLS) - PAGE_SIZE * (PAGES - 1)]
 
-    def test_pagination_next_link(self, page: Page, jekyll_server: str):
-        """First page should have next link when multiple pages exist."""
-        page.goto(f"{jekyll_server}/essays/all/")
+    @pytest.mark.skipif(PAGES > 1, reason="archive spans several pages")
+    def test_single_page_archive_has_no_nav(self, page: Page, jekyll_server: str):
+        """With one page of posts the template renders no pagination nav."""
+        page.goto(f"{jekyll_server}{archive_path(1)}")
+        assert page.locator(SELECTORS["pagination"]).count() == 0
 
-        pagination_info = page.locator(".pagination-info")
-        if pagination_info.count() > 0:
-            text = pagination_info.text_content()
-            if "of 1" not in text:
-                next_link = page.locator(".pagination-next a")
-                assert next_link.count() > 0, "Should have next link"
+    @pytest.mark.skipif(PAGES == 1, reason="archive fits on one page; multi-page nav needs the designed corpus")
+    @pytest.mark.parametrize("n", range(1, PAGES + 1))
+    def test_nav_matches_position(self, page: Page, jekyll_server: str, n: int):
+        """Page n reads 'Page n of N' and links only to its neighbours (page 1 is the archive root)."""
+        page.goto(f"{jekyll_server}{archive_path(n)}")
+        assert page.locator(SELECTORS["pagination_info"]).inner_text().strip() == f"Page {n} of {PAGES}"
 
-    def test_pagination_next_works(self, page: Page, jekyll_server: str):
-        """Clicking next should navigate to page 2."""
-        page.goto(f"{jekyll_server}/essays/all/")
-
-        next_link = page.locator(".pagination-next a")
-        if next_link.count() > 0:
-            next_link.click()
-            assert "/page/2" in page.url
-
-    def test_page_two_has_prev_link(self, page: Page, jekyll_server: str):
-        """Page 2 should have previous link."""
-        response = page.goto(f"{jekyll_server}/essays/all/page/2/")
-
-        if response.status == 200:
-            prev_link = page.locator(".pagination-prev a")
-            assert prev_link.count() > 0, "Page 2 should have prev link"
-
-    def test_prev_link_to_page_one(self, page: Page, jekyll_server: str):
-        """Previous on page 2 should link to /essays/all/ (not page/1)."""
-        response = page.goto(f"{jekyll_server}/essays/all/page/2/")
-
-        if response.status == 200:
-            prev_link = page.locator(".pagination-prev a")
-            if prev_link.count() > 0:
-                href = prev_link.get_attribute("href")
-                assert "/essays/all/" in href
-                assert "/page/1" not in href
+        prev_links = page.locator(f"{SELECTORS['pagination_prev']} a").all()
+        next_links = page.locator(f"{SELECTORS['pagination_next']} a").all()
+        assert [a.get_attribute("href") for a in prev_links] == ([archive_path(n - 1)] if n > 1 else [])
+        assert [a.get_attribute("href") for a in next_links] == ([archive_path(n + 1)] if n < PAGES else [])

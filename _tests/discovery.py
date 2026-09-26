@@ -60,8 +60,25 @@ def url_for(path: Path) -> str | None:
     return f"/{yyyy}/{mm}/{dd}/{_slugify(title)}/"
 
 
+def _site_root() -> Path:
+    """DOCS, once it's confirmed to be a Jekyll source tree.
+
+    A wrong root must fail loudly: content-driven tests parametrize over discovery,
+    and an empty result would quietly turn every one of them into a skip.
+    """
+    if not (DOCS / "_config.yml").is_file():
+        raise FileNotFoundError(f"No _config.yml in {DOCS}; discovery is pointed at the wrong site root")
+    return DOCS
+
+
+def site_config() -> dict:
+    """The site's _config.yml, for values tests must follow (e.g. paginate)."""
+    return yaml.safe_load((_site_root() / "_config.yml").read_text(encoding="utf-8"))
+
+
 def _docs_in(dirname: str) -> list[Path]:
-    d = DOCS / dirname
+    # A missing collection folder is legitimate: git doesn't track empty dirs.
+    d = _site_root() / dirname
     if not d.is_dir():
         return []
     return sorted(p for p in d.iterdir() if p.is_file() and p.suffix in DOC_SUFFIXES)

@@ -1,0 +1,20 @@
+# Runs the same sealed suite as `make test`, in the same image.
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    # ubuntu-24.04 ships Podman 4.9.3 (actions/runner-images#14642).
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+      - name: Build the dev image
+        run: make build
+      - name: Sync the venv volume (networked)
+        run: make sync IT=
+      - name: Run the suite sealed offline
+        run: make test IT=

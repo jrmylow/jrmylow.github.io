@@ -140,11 +140,8 @@ class TestPageLoadPerformance:
 
         for path in PERF_TEST_PAGES:
             url = f"{jekyll_server}{path}"
-            try:
-                metrics = collect_metrics_for_page(page, url, iterations=PERF_ITERATIONS)
-                all_metrics.extend(metrics)
-            except Exception as e:
-                pytest.skip(f"Could not load {path}: {e}")
+            metrics = collect_metrics_for_page(page, url, iterations=PERF_ITERATIONS)
+            all_metrics.extend(metrics)
 
         agg = aggregate_metrics(all_metrics)
 
@@ -198,11 +195,8 @@ class TestPageLoadPerformance:
 
         for path in PERF_TEST_PAGES:
             url = f"{jekyll_server}{path}"
-            try:
-                metrics = collect_metrics_for_page(page, url, iterations=PERF_ITERATIONS)
-                results[path] = aggregate_metrics(metrics)
-            except Exception:
-                results[path] = None
+            metrics = collect_metrics_for_page(page, url, iterations=PERF_ITERATIONS)
+            results[path] = aggregate_metrics(metrics)
 
         # Report per-page results
         print(f"\n{'='*70}")
@@ -213,10 +207,6 @@ class TestPageLoadPerformance:
 
         failures = []
         for path, agg in results.items():
-            if agg is None:
-                print(f"{path:<20} {'SKIP':>8} {'SKIP':>12} {'SKIP':>10} {'SKIPPED':>10}")
-                continue
-
             status = "PASS"
             if agg["load_complete_avg"] >= PERF_THRESHOLDS["load_complete_avg"]:
                 status = "FAIL"
@@ -238,13 +228,10 @@ class TestPageLoadPerformance:
 
         for path in PERF_TEST_PAGES:
             url = f"{jekyll_server}{path}"
-            try:
-                metrics = collect_metrics_for_page(page, url, iterations=5)
-                for i, m in enumerate(metrics):
-                    if m.load_complete > PERF_MAX_LOAD_TIME:
-                        outliers.append(f"{path} run {i+1}: {m.load_complete:.0f}ms")
-            except Exception:
-                pass
+            metrics = collect_metrics_for_page(page, url, iterations=5)
+            for i, m in enumerate(metrics):
+                if m.load_complete > PERF_MAX_LOAD_TIME:
+                    outliers.append(f"{path} run {i+1}: {m.load_complete:.0f}ms")
 
         assert len(outliers) == 0, f"Found {len(outliers)} loads exceeding {PERF_MAX_LOAD_TIME}ms: {outliers}"
 

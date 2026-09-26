@@ -80,6 +80,7 @@ RUN uv run playwright install --with-deps chromium firefox \
     && rm -rf /var/lib/apt/lists/*
 
 # Default to an interactive shell; `make` overrides the command per target.
-ENV JEKYLL_URL=http://localhost:4000
+# No JEKYLL_URL default: the test fixture treats JEKYLL_URL as a request to
+# test an already-running server, so a default would stop it building its own.
 EXPOSE 4000
 CMD ["bash"]

@@ -17,11 +17,12 @@ or to specific markup.
 
 `uv` + `pytest` + `pytest-playwright`. Tests live in `_tests/`.
 
-- **`conftest.py`** provides the session-scoped `jekyll_server` fixture. If a
-  server already answers at `JEKYLL_URL` (default `http://localhost:4000`) it is
-  reused; this is the CI case. Otherwise the fixture runs `jekyll build` once into
-  a pytest temp directory, serves it with Python's `http.server`, and stops the
-  server afterward. The browser runs headless at 1280x720.
+- **`conftest.py`** provides the session-scoped `jekyll_server` fixture. It runs
+  `jekyll build` once into a pytest temp directory, serves it with Python's
+  `http.server` on a free port, and stops the server afterward. Set
+  `JEKYLL_URL` to test an already-running server instead; it must answer. The
+  autouse `http_errors` fixture fails tests on HTTP errors (below). The browser
+  runs headless at 1280x720.
 - **`constants.py`** is the single source of shared values: `SELECTORS`, the
   theme colours (`DARK_BG_COLOR`, `LIGHT_BG_COLOR`), and the
   `PERF_` budget. Import from here rather than hardcoding, so a UI change is a
@@ -46,7 +47,19 @@ The fixture's design choices, recorded so they don't get undone:
   directory to correct this.
 - **Source reads are live.** `discovery.py` and the nav tests read front matter
   from `docs/` directly, not from the snapshot. Editing source mid-run can make
-  their expectations drift from the build.
+  their expectations drift from the build. `discovery.py` raises if `docs/` has
+  no `_config.yml`, so a wrong root can't turn content tests into skips.
+- **Free port; external servers only on request.** The fixture never probes
+  `localhost:4000`, so a running `make serve` can't stand in for the build
+  under test. It writes a token into each build, and `test_harness.py` checks
+  the server returns it.
+
+## HTTP errors fail tests
+
+`page.goto` does not raise on a 404, so a wrong URL loads an error page and the
+test runs against it. The autouse `http_errors` fixture fails any test whose
+top-level navigation returns 400 or above. A test that expects an error page
+opts out with `@pytest.mark.allow_http_errors` and asserts the status itself.
 
 ## Hermetic runs
 
@@ -102,7 +115,8 @@ By area (`_tests/<file>` -> what it guards):
 - `test_cards` — card grid presence, required card elements, clickable cards,
   hover styling.
 - `test_pagination` — the essays landing (max 5 posts + archive link) and the
-  paginated `/essays/all/` archive (page info, prev/next).
+  paginated `/essays/all/` archive: the page count follows `paginate`, every
+  post appears exactly once, and each page's nav matches its position.
 - `test_search` — sidebar search, the `/search/` page, and `search-index.json`
   shape/contents.
 - `test_analytics` — the GoatCounter script and dynamic noscript fallback (see
@@ -110,6 +124,9 @@ By area (`_tests/<file>` -> what it guards):
 - `test_performance` — the budget below.
 - `test_previews` — previews are reachable, carry `noindex`, and are absent from
   the listing, archive, search index, and feed.
+- `test_harness`, `test_discovery` — the suite itself: HTTP errors fail tests,
+  the server is this session's build, the pre-commit gates fail when they
+  should, and discovery refuses a wrong site root.
 
 Tag and callout suites may also exist depending on what has shipped; check
 `_tests/` for the current set.
@@ -152,11 +169,12 @@ uv run pytest _tests/test_search.py
 uv run pytest _tests/test_theme_toggle.py::TestThemeToggle::test_toggle_switches_theme
 ```
 
-Stop `make serve` first. Otherwise the fixture reuses its WEBrick server at
-`localhost:4000`, and the performance budget fails.
+The test server uses a free port, so `make serve` can keep running.
 
-Pre-commit runs `black` and `ruff` over `_tests/` plus a local Jekyll build
-check; install it once with `uv run pre-commit install`.
+Pre-commit runs `black` and `ruff` over `_tests/` (ruff's `BLE` rules reject a
+blind `except Exception`), a Jekyll build check that fails when the build
+fails, and a hook that rejects anything under `docs/_drafts/`. Install it once
+with `uv run pre-commit install`.
 
 ## Fixture / drafts gotcha
 
@@ -166,18 +184,19 @@ fixture lives in `docs/_previews/` (committed), not `docs/_drafts/`.
 
 ## CI
 
-The harness is CI-ready: point `JEKYLL_URL` at a running build and the fixture
-reuses it instead of building its own. That server must serve a static build
-(`jekyll build` plus any static file server), not `jekyll serve`, or the
-performance budget fails. Pre-commit intentionally defers the Jekyll build to CI.
-Verify whether `.github/workflows/` actually contains the workflow that builds
-the site and runs the suite — the harness assumes one exists, but the workflow
-file should be confirmed in the repo.
+`.github/workflows/test.yml` runs on every push and pull request. It builds the
+image, syncs the venv volume, and runs `make test IT=`, so CI and local runs
+use the same sealed container.
+
+To test a server that is already running instead, set `JEKYLL_URL`. It must
+serve a static build (`jekyll build` plus any static file server), not
+`jekyll serve`, or the performance budget fails.
 
 ## References
 - Playwright (Python): <https://playwright.dev/python/docs/intro>
 - Playwright actionability checks: <https://playwright.dev/python/docs/actionability>
 - pytest: <https://docs.pytest.org/>
+- pre-commit `fail` hooks for blocking files by name: <https://adamj.eu/tech/2024/01/24/pre-commit-fail-hook/>
 - Navigation Timing: <https://developer.mozilla.org/en-US/docs/Web/API/Performance_API/Navigation_timing>
 - Python `http.server`: <https://docs.python.org/3/library/http.server.html>
 - `TCP_NODELAY` and delayed ACK, behind the WEBrick stall: <https://man7.org/linux/man-pages/man7/tcp.7.html>

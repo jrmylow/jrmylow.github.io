@@ -29,7 +29,15 @@ repos:
     hooks:
       - id: jekyll-build
         name: Jekyll Build Check
-        entry: bash -c 'command -v bundle && bundle exec jekyll build --drafts --source docs --destination docs/_site || echo "Skipping Jekyll build (bundle not found)"'
+        # Skip only when bundle is missing; a failed build must fail the hook.
+        entry: bash -c 'if ! command -v bundle >/dev/null; then echo "Skipping Jekyll build (bundle not found)"; exit 0; fi; bundle exec jekyll build --drafts --source docs --destination docs/_site'
         language: system
         pass_filenames: false
         files: \.(md|html|yml|yaml|css|js)$
+
+      # Drafts are local-only (see _documentation/workflow.md); this is the backstop.
+      - id: no-drafts
+        name: Keep drafts out of commits
+        entry: Drafts are local-only; unstage anything under docs/_drafts/
+        language: fail
+        files: ^docs/_drafts/

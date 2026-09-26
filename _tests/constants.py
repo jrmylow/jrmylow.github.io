@@ -8,6 +8,9 @@ LIGHT_BG_COLOR = "rgb(242, 237, 231)"
 WHITE_HEX = "ffffff"
 WHITE_HEX_SHORT = "fff"
 
+# Written into each session's build so tests can confirm which server they hit
+BUILD_TOKEN_FILE = "__test_build_token__.txt"
+
 # =============================================================================
 # Performance Test Constants
 # =============================================================================
