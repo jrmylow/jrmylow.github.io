@@ -1,76 +1,70 @@
-"""Tests for preventing theme flash on page navigation."""
+"""No flash of the wrong theme: data-theme is on <html> before any stylesheet exists.
 
+The CSS defaults to dark and keys the light theme on data-theme, so the attribute
+must be set before the first stylesheet is inserted and keep that value for the
+rest of the load. An init script records DOM mutations from document start, in
+document order, so this needs no timing.
+
+Cases cover every stored choice x OS preference, so a script that sets the wrong
+theme first and corrects it later (a flash) fails as well.
+"""
+
+import itertools
+
+import pytest
 from playwright.sync_api import Page
 
-from constants import LIGHT_BG_COLOR
+# Logs each data-theme write on <html> (with the value it replaced) and each
+# stylesheet insertion, starting before the parser creates <html>.
+RECORDER = """
+(() => {
+  const log = [];
+  const SHEETS = 'link[rel~="stylesheet" i], style';
+  const isSheet = (node) => node.nodeType === 1 && (node.matches(SHEETS) || node.querySelector(SHEETS) !== null);
+  const take = (records) => {
+    for (const record of records) {
+      if (record.type === 'attributes') {
+        if (record.target === document.documentElement) log.push({kind: 'theme', old: record.oldValue});
+      } else {
+        for (const node of record.addedNodes) if (isSheet(node)) log.push({kind: 'stylesheet'});
+      }
+    }
+  };
+  const observer = new MutationObserver(take);
+  observer.observe(document, {
+    subtree: true, childList: true, attributes: true, attributeFilter: ['data-theme'], attributeOldValue: true,
+  });
+  window.__paintOrder = () => { take(observer.takeRecords()); return log; };
+})();
+"""
+
+CASES = [
+    pytest.param(stored, os_theme, id=f"{stored or 'none'}-{os_theme}")
+    for stored, os_theme in itertools.product([None, "light", "dark"], ["light", "dark"])
+]
 
 
-class TestThemeFlashPrevention:
-    """Tests to ensure no flash when navigating in light mode."""
+def _paint_order(page: Page) -> tuple[list[str], list[str | None]]:
+    """(event kinds in document order, each value data-theme took, in order)."""
+    log = page.evaluate("window.__paintOrder()")
+    final = page.evaluate("document.documentElement.getAttribute('data-theme')")
+    olds = [entry["old"] for entry in log if entry["kind"] == "theme"]
+    # A record carries the value its write replaced, so write n's value is record n+1's old value.
+    writes = olds[1:] + [final] if olds else []
+    return [entry["kind"] for entry in log], writes
 
-    def test_light_mode_no_flash_on_navigation(self, page: Page, jekyll_server: str):
-        """When in light mode, navigating should not flash dark background."""
-        page.goto(jekyll_server)
 
-        # Set light mode
-        page.evaluate("() => localStorage.setItem('theme', 'light')")
-        page.reload()
-        page.wait_for_load_state("domcontentloaded")
+@pytest.mark.parametrize("stored,os_theme", CASES)
+def test_theme_is_set_before_first_stylesheet(page: Page, jekyll_server: str, stored: str | None, os_theme: str):
+    """data-theme precedes every stylesheet and never changes afterwards during load."""
+    page.emulate_media(color_scheme=os_theme)
+    if stored:
+        page.add_init_script(f"localStorage.setItem('theme', '{stored}')")
+    page.add_init_script(RECORDER)
+    page.goto(f"{jekyll_server}/about/")
 
-        # Navigate to another page
-        page.goto(f"{jekyll_server}/about/")
-        page.wait_for_load_state("domcontentloaded")
-
-        # Check body background after page is ready
-        # The key is that body should have light background, not dark
-        body_bg = page.evaluate("() => getComputedStyle(document.body).backgroundColor")
-
-        assert (
-            LIGHT_BG_COLOR in body_bg or "242" in body_bg
-        ), f"Body should have light background after navigation, got: {body_bg}"
-
-    def test_html_has_theme_attribute_before_domcontentloaded(
-        self, page: Page, jekyll_server: str
-    ):
-        """Theme attribute should be set on html before DOMContentLoaded."""
-        page.goto(jekyll_server)
-
-        # Set light mode
-        page.evaluate("() => localStorage.setItem('theme', 'light')")
-
-        # Navigate and check theme attribute is set early
-        page.goto(f"{jekyll_server}/essays/")
-
-        # The data-theme should be set
-        theme = page.locator("html").get_attribute("data-theme")
-        assert theme == "light", f"Theme should be light, got: {theme}"
-
-    def test_inline_script_sets_theme_before_css_renders(
-        self, page: Page, jekyll_server: str
-    ):
-        """An inline script should set theme before stylesheets apply."""
-        page.goto(jekyll_server)
-
-        # Set light mode
-        page.evaluate("() => localStorage.setItem('theme', 'light')")
-
-        # Check that head contains inline theme script (not deferred)
-        page.goto(f"{jekyll_server}/contact/")
-
-        # Verify inline script exists in head
-        inline_script = page.evaluate(
-            """
-            () => {
-                const scripts = document.head.querySelectorAll('script:not([src])');
-                for (const script of scripts) {
-                    if (script.textContent.includes('localStorage') &&
-                        script.textContent.includes('theme')) {
-                        return true;
-                    }
-                }
-                return false;
-            }
-        """
-        )
-
-        assert inline_script, "Should have inline theme script in head"
+    kinds, writes = _paint_order(page)
+    assert "stylesheet" in kinds, f"the recorder saw no stylesheet, so nothing was measured: {kinds}"
+    assert "theme" in kinds, "data-theme was never set on <html>"
+    assert kinds.index("theme") < kinds.index("stylesheet"), f"data-theme set after a stylesheet was inserted: {kinds}"
+    assert set(writes) == {stored or os_theme}, f"data-theme took {writes}; expected only {stored or os_theme!r}"

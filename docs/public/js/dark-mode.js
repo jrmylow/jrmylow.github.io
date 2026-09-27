@@ -1,36 +1,45 @@
-// Function to set theme
-function setTheme(theme) {
+// Theme. An explicit choice (localStorage 'theme') wins; with nothing stored the
+// site follows the OS preference live. Only a toggle stores a choice, so a first
+// visit never pins the OS theme.
+//
+// The inline script in _includes/head.html sets the initial theme before first
+// paint. This file keeps the toggle checkbox in sync and handles toggles and OS
+// changes. Tests: _tests/test_theme_matrix.py, _tests/test_theme_flash.py.
+
+const osPrefersLight = window.matchMedia('(prefers-color-scheme: light)');
+
+function storedTheme() {
+  return localStorage.getItem('theme');
+}
+
+function osTheme() {
+  return osPrefersLight.matches ? 'light' : 'dark';
+}
+
+// Show a theme without storing it.
+function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-  updateToggleSwitch(theme);
-}
-
-// Function to toggle theme
-function toggleTheme() {
-  const currentTheme = localStorage.getItem('theme') || 'dark';
-  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-  setTheme(newTheme);
-}
-
-// Function to update toggle switch state
-function updateToggleSwitch(theme) {
   const toggleInput = document.querySelector('.theme-toggle input');
   if (toggleInput) {
     toggleInput.checked = theme === 'light';
   }
 }
 
-// Initialize theme
-document.addEventListener('DOMContentLoaded', () => {
-  // Set initial theme
-  const savedTheme = localStorage.getItem('theme') ||
-    (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-  setTheme(savedTheme);
+// Called by the sidebar checkbox. Flips the theme shown, which came from the OS
+// when nothing is stored, and stores the result as the user's choice.
+function toggleTheme() {
+  const shown = document.documentElement.getAttribute('data-theme') || storedTheme() || osTheme();
+  const next = shown === 'light' ? 'dark' : 'light';
+  localStorage.setItem('theme', next);
+  applyTheme(next);
+}
 
-  // Listen for system theme changes
-  window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
-    if (!localStorage.getItem('theme')) {
-      setTheme(e.matches ? 'light' : 'dark');
-    }
-  });
+document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(storedTheme() || osTheme());
+});
+
+osPrefersLight.addEventListener('change', () => {
+  if (!storedTheme()) {
+    applyTheme(osTheme());
+  }
 });

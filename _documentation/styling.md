@@ -36,7 +36,9 @@ Division of labour: structural typography (heading weight, size scale, margins) 
 </script>
 ```
 
-Because it runs before CSS and before paint, the correct theme is applied with no flash. `dark-mode.js` (deferred) still owns the interactive toggle (`toggleTheme`) and writes the choice to `localStorage` under the `theme` key; the inline script only sets the initial value, falling back to `prefers-color-scheme` when nothing is stored. `test_theme_flash.py` guards all of this.
+Because it runs before CSS and before paint, the correct theme is applied with no flash. `test_theme_flash.py` guards this: an init script records DOM mutations from document start, and for every combination of stored choice and OS preference, `data-theme` must be set before the first stylesheet is inserted and keep that value for the rest of the load.
+
+**Stored choice vs OS.** An explicit choice wins; with nothing stored, the site follows `prefers-color-scheme` live. `dark-mode.js` (deferred) keeps the toggle checkbox in sync, follows OS changes while nothing is stored, and writes `localStorage` (key `theme`) only when the user toggles, so a first visit never pins the OS preference. A toggle flips the theme shown, which is the OS theme when nothing is stored. The key is a contract with returning visitors: renaming it discards their saved choice. `test_theme_matrix.py` checks all 18 combinations of stored choice (none, light, dark), OS preference (light, dark) and event (load, toggle, OS change).
 
 ## Cards
 
@@ -51,4 +53,5 @@ In `cards.css`, `.card-grid` is a CSS grid (gap `1rem`, vertical margin `2rem`);
 
 ## References
 - Render-blocking CSS / FOUC: <https://web.dev/articles/critical-rendering-path/render-blocking-css>
+- `MutationObserver`, which `test_theme_flash.py` uses to see write order: <https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver>
 - `prefers-color-scheme`: <https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-color-scheme>

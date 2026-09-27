@@ -81,6 +81,11 @@ on the condition rather than the clock. Two traps:
 - A negative assertion ("live results never appear") has no event to wait on,
   so it keeps a short fixed window before asserting absence.
 
+An emulated OS preference change arrives as a media-query `change` event, with
+no DOM change to wait on. `test_theme_matrix.py` listens for that event itself
+and then waits one animation frame. Browsers fire every `change` listener
+before animation frame callbacks, so its negative cases need no fixed window.
+
 ## Red-green-refactor
 
 Features are built test-first:
@@ -109,8 +114,12 @@ By area (`_tests/<file>` -> what it guards):
 
 - `test_navigation` — the sidebar nav is derived from `nav_order` front matter
   and the rendered order matches the derived order.
-- `test_theme_toggle`, `test_theme_flash` — the toggle switches and persists the
-  theme; the inline script sets the theme before paint (no flash on navigation).
+- `test_theme_matrix` — the theme over its whole state space: stored choice
+  (none, light, dark) × OS preference × load, toggle or OS change. Each case
+  checks the theme shown, the background, the toggle checkbox and what is
+  stored.
+- `test_theme_flash` — `data-theme` is set on `<html>` before the first
+  stylesheet is inserted and keeps that value for the rest of the load.
 - `test_hamburger` — the sidebar toggle icon renders per theme.
 - `test_cards` — card grid presence, required card elements, clickable cards,
   hover styling.
@@ -166,7 +175,7 @@ site itself (needs Ruby and Bundler on the host):
 ```sh
 uv run pytest
 uv run pytest _tests/test_search.py
-uv run pytest _tests/test_theme_toggle.py::TestThemeToggle::test_toggle_switches_theme
+uv run pytest "_tests/test_theme_matrix.py::test_theme_state[none-light-toggle]"
 ```
 
 The test server uses a free port, so `make serve` can keep running.
@@ -196,6 +205,8 @@ serve a static build (`jekyll build` plus any static file server), not
 - Playwright (Python): <https://playwright.dev/python/docs/intro>
 - Playwright actionability checks: <https://playwright.dev/python/docs/actionability>
 - pytest: <https://docs.pytest.org/>
+- HTML event loop, where media-query `change` events fire before animation frame callbacks: <https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model>
+- `MutationObserver`: <https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver>
 - pre-commit `fail` hooks for blocking files by name: <https://adamj.eu/tech/2024/01/24/pre-commit-fail-hook/>
 - Navigation Timing: <https://developer.mozilla.org/en-US/docs/Web/API/Performance_API/Navigation_timing>
 - Python `http.server`: <https://docs.python.org/3/library/http.server.html>
