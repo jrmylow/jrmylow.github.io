@@ -47,4 +47,5 @@
   <script src="{{ '/public/js/search.js' | absolute_url }}" defer></script>
   <script src="{{ '/public/js/tag-filter.js' | absolute_url }}" defer></script>
   <script src="{{ '/public/js/command-palette.js' | absolute_url }}" defer></script>
+  {% if page.math %}<script src="{{ '/public/js/mathjax/tex-svg.js' | absolute_url }}" defer></script>{% endif %}
 </head>

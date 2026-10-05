@@ -7,7 +7,7 @@ layout: default
   <span class="post-date">{{ page.date | date_to_string }}</span>
   {% include tags.html tags=page.tags %}
   {% include series.html %}
-  {% include toc.html html=content %}
+  {% if page.toc %}{% include toc.html html=content %}{% endif %}
   {{ content }}
   {% include backlinks.html %}
   {% unless page.collection == "previews" %}{% include webmentions.html %}{% endunless %}
