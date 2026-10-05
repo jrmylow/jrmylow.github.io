@@ -3,10 +3,10 @@ title: Sidenotes demo
 date: 2024-01-01
 ---
 
-This preview exists only as a stable fixture for the sidenotes test, the same
-way `docs/_previews/` already holds the fixture for the previews suite. It is
-unlisted and carries `noindex`, so it never appears in the essays listing,
-archive, tags, search index, or feed.
+A fixture preview for the sidenotes test, injected into the designed build only
+(see _tests/corpus.py). Like every preview it is unlisted and carries
+`noindex`, so it never appears in the essays listing, archive, tags, search
+index, or feed.
 
 The first claim needs a note.[^one] A later sentence needs another one.[^two]
 

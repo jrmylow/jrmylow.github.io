@@ -1,0 +1,33 @@
+---
+layout: null
+---
+{% comment %}
+  Test-only page, injected into each test build by _tests/sites.py and never
+  published. It records what Jekyll made of every document, so tests take URLs,
+  dates and tags from Jekyll instead of re-deriving its permalink rules.
+  Same pattern as docs/search-index.json.
+{% endcomment %}
+{
+  "posts": [
+    {% for doc in site.posts %}
+    {
+      "path": {{ doc.path | jsonify }},
+      "url": {{ doc.url | jsonify }},
+      "title": {{ doc.title | jsonify }},
+      "date": {{ doc.date | date_to_xmlschema | jsonify }},
+      "tags": {{ doc.tags | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ],
+  "previews": [
+    {% for doc in site.previews %}
+    {
+      "path": {{ doc.path | jsonify }},
+      "url": {{ doc.url | jsonify }},
+      "title": {{ doc.title | jsonify }},
+      "date": {{ doc.date | date_to_xmlschema | jsonify }},
+      "tags": {{ doc.tags | jsonify }}
+    }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}

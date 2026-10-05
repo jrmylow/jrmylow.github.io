@@ -1,19 +1,20 @@
 """Tests for Tufte-style sidenotes built from kramdown footnotes.
 
-Uses the committed preview fixture docs/_previews/2024-01-01-sidenotes-demo.md,
-which has two footnotes, so these are deterministic rather than corpus-dependent.
+Uses the fixture preview _tests/fixtures/_previews/2024-01-01-sidenotes-demo.md,
+which has two footnotes and is served by the designed build, so these are
+deterministic rather than corpus-dependent.
 """
 
 import pytest
 from playwright.sync_api import Page, expect
 
 pytestmark = pytest.mark.skip(reason="sidenotes parked: margin layout doesn't fit Lanyon's centered column")
-FIXTURE_PATH = "/2024/01/01/sidenotes-demo/"
+FIXTURE = "2024-01-01-sidenotes-demo.md"
 
 
 @pytest.fixture
-def fixture_url(jekyll_server: str) -> str:
-    return f"{jekyll_server}{FIXTURE_PATH}"
+def fixture_url(designed_site) -> str:
+    return f"{designed_site.url}{designed_site.document(FIXTURE)['url']}"
 
 
 class TestSidenotesWide:

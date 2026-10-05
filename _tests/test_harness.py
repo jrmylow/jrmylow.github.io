@@ -1,4 +1,4 @@
-"""The suite's own guarantees: it fails on HTTP errors, tests the build it made, and its gates gate."""
+"""The suite's own guarantees: it fails on HTTP errors, tests the builds it made, and its gates gate."""
 
 import os
 import re
@@ -8,12 +8,18 @@ import subprocess
 import urllib.request
 from pathlib import Path
 
+import corpus
+import discovery
 import pytest
 import yaml
 from constants import BUILD_TOKEN_FILE
 from playwright.sync_api import Page
 
 REPO = Path(__file__).resolve().parent.parent
+
+
+def _names(entries: list[dict]) -> list[str]:
+    return sorted(Path(entry["path"]).name for entry in entries)
 
 
 def _precommit_hooks() -> dict:
@@ -35,6 +41,27 @@ def test_server_is_this_sessions_build(jekyll_server: str, build_token: str | No
         pytest.skip("JEKYLL_URL is set: testing an external server on purpose")
     with urllib.request.urlopen(f"{jekyll_server}/{BUILD_TOKEN_FILE}", timeout=5) as response:
         assert response.read().decode() == build_token
+
+
+def test_designed_server_is_this_sessions_build(designed_site):
+    """The designed build is served by this session too, on its own port."""
+    with urllib.request.urlopen(f"{designed_site.url}/{BUILD_TOKEN_FILE}", timeout=5) as response:
+        assert response.read().decode() == designed_site.token
+
+
+def test_real_manifest_matches_sources(real_site):
+    """Jekyll built every document in docs/ and nothing else, so its manifest can stand in for the sources."""
+    if real_site.manifest is None:
+        pytest.skip("JEKYLL_URL server was built without the test manifest")
+    assert _names(real_site.manifest["posts"]) == sorted(path.name for path in discovery.post_paths())
+    assert _names(real_site.manifest["previews"]) == sorted(path.name for path in discovery.preview_paths())
+
+
+def test_designed_manifest_matches_corpus(designed_site, pytestconfig):
+    """The designed build holds exactly corpus.py's content, including any --scale-posts filler."""
+    posts = corpus.posts(pytestconfig.getoption("scale_posts"))
+    assert _names(designed_site.manifest["posts"]) == sorted(post.filename for post in posts)
+    assert _names(designed_site.manifest["previews"]) == corpus.preview_files()
 
 
 @pytest.mark.skipif(shutil.which("bundle") is None, reason="needs bundle; runs in the container")

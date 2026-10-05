@@ -17,12 +17,14 @@ or to specific markup.
 
 `uv` + `pytest` + `pytest-playwright`. Tests live in `_tests/`.
 
-- **`conftest.py`** provides the session-scoped `jekyll_server` fixture. It runs
-  `jekyll build` once into a pytest temp directory, serves it with Python's
-  `http.server` on a free port, and stops the server afterward. Set
-  `JEKYLL_URL` to test an already-running server instead; it must answer. The
-  autouse `http_errors` fixture fails tests on HTTP errors (below). The browser
-  runs headless at 1280x720.
+- **`conftest.py`** provides the session-scoped `real_site` and `designed_site`
+  fixtures (below) and `jekyll_server`, the real build's URL, which most tests
+  use. The autouse `http_errors` fixture fails tests on HTTP errors (below). The
+  browser runs headless at 1280x720.
+- **`sites.py`** builds and serves both sites and loads each build's manifest.
+- **`corpus.py`** is the designed build's content: hand-picked cases as data,
+  plus generated filler for scale runs. The fixture files it copies in live in
+  `_tests/fixtures/`.
 - **`constants.py`** is the single source of shared values: `SELECTORS`, the
   theme colours (`DARK_BG_COLOR`, `LIGHT_BG_COLOR`), and the
   `PERF_` budget. Import from here rather than hardcoding, so a UI change is a
@@ -30,29 +32,38 @@ or to specific markup.
 
 ## Test server
 
-The fixture's design choices, recorded so they don't get undone:
+The fixtures' design choices, recorded so they don't get undone:
 
 - **Static server, not `jekyll serve`.** WEBrick, the server behind
   `jekyll serve`, stalls about 40 ms per response on reused keep-alive
   connections. At 13 CSS/JS files per page, that added roughly 400 ms to every
   load and dominated the performance budget. `http.server` serves each file in
   about 1 ms.
-- **A snapshot built at session start.** Nothing watches for changes; re-run the
-  suite to test new content. Building into a temp directory keeps the snapshot
-  private, so `make serve` or `make preview` can run alongside a test run
-  without either overwriting the other's output.
+- **Two builds, each a snapshot.** `real_site` builds `docs/` as-is;
+  `designed_site` builds the same layouts and pages with `corpus.py`'s posts
+  and previews in place of `docs/_posts` and `docs/_previews`. Each builds once,
+  on first use, from a temp copy of `docs/` (a copy, not symlinks: Pages builds
+  in safe mode). Nothing watches for changes; re-run the suite to test new
+  content. The temp copies keep the builds private, so `make serve` or
+  `make preview` can run alongside a test run.
+- **A manifest, not re-derived URLs.** Each build gets
+  `_tests/fixtures/test-manifest.json`, a test-only Liquid page listing every
+  post and preview as Jekyll built it: path, URL, title, date and tags.
+  `Site.document(filename)` looks one up by source file name, so tests take URLs
+  from Jekyll instead of re-deriving its permalink rules. `test_harness.py`
+  checks each manifest lists exactly its build's sources.
 - **`site.url` override.** `jekyll serve` rewrites `site.url` to localhost in
   development; `jekyll build` does not, so `absolute_url` would point assets at
-  production. The fixture writes a one-line config override into its temp
-  directory to correct this.
+  production. Each build gets a one-line config override, written outside its
+  source copy, to correct this.
 - **Source reads are live.** `discovery.py` and the nav tests read front matter
   from `docs/` directly, not from the snapshot. Editing source mid-run can make
   their expectations drift from the build. `discovery.py` raises if `docs/` has
   no `_config.yml`, so a wrong root can't turn content tests into skips.
-- **Free port; external servers only on request.** The fixture never probes
-  `localhost:4000`, so a running `make serve` can't stand in for the build
-  under test. It writes a token into each build, and `test_harness.py` checks
-  the server returns it.
+- **Free ports; external servers only on request.** The fixtures never probe
+  `localhost:4000`, so a running `make serve` can't stand in for a build under
+  test. Each build gets its own token, and `test_harness.py` checks each server
+  returns its own.
 
 ## HTTP errors fail tests
 
@@ -101,12 +112,14 @@ This is the working loop for new work, not just a description of past work.
 
 Real posts come and go, so tests never hardcode their URLs:
 
-- `TEST_PAGE_PATH` and a dedicated fixture page are used for page-level checks
-  instead of a real post.
-- `test_previews.py` walks the source folders, derives each document's URL the
-  way Jekyll does (`YYYY-MM-DD-slug` -> `/YYYY/MM/DD/slug/`, honouring an
-  explicit `permalink`), and parametrises over whatever it finds. Previews are
-  tested in full; posts are sampled to bound runtime.
+- Tests that need particular content run on the designed build, whose content
+  is data in `corpus.py`. Fixture files, such as the previews in
+  `_tests/fixtures/_previews/`, are copied into the designed build only, so they
+  are never published.
+- Tests over real content parametrise over the source files that exist
+  (`discovery.py`) and take each file's URL from the real build's manifest.
+  `POST_SAMPLE_SIZE` limits `test_previews.py`'s published-post check to the
+  first N posts; by default it checks every post.
 
 ## Coverage
 
@@ -131,11 +144,13 @@ By area (`_tests/<file>` -> what it guards):
 - `test_analytics` — the GoatCounter script and dynamic noscript fallback (see
   `analytics.md`).
 - `test_performance` — the budget below.
-- `test_previews` — previews are reachable, carry `noindex`, and are absent from
-  the listing, archive, search index, and feed.
-- `test_harness`, `test_discovery` — the suite itself: HTTP errors fail tests,
-  the server is this session's build, the pre-commit gates fail when they
-  should, and discovery refuses a wrong site root.
+- `test_previews` — preview fixtures (designed build) are reachable, carry
+  `noindex`, and are absent from the listing, archive, search index, and feed;
+  published posts (real build) are not noindexed.
+- `test_harness`, `test_discovery`, `test_corpus` — the suite itself: HTTP
+  errors fail tests, each server is this session's build, each manifest lists
+  exactly its build's sources, the pre-commit gates fail when they should,
+  discovery refuses a wrong site root, and the corpus scales as asked.
 
 Tag and callout suites may also exist depending on what has shipped; check
 `_tests/` for the current set.
@@ -178,18 +193,26 @@ uv run pytest _tests/test_search.py
 uv run pytest "_tests/test_theme_matrix.py::test_theme_state[none-light-toggle]"
 ```
 
-The test server uses a free port, so `make serve` can keep running.
+The test servers use free ports, so `make serve` can keep running.
+
+Scale runs build the designed site with N posts in total: its designed cases
+plus generated filler, all older than the designed cases. Only tests on the
+designed build see them; the real build is always production content.
+
+```sh
+make test ARGS="--scale-posts=1000"
+```
 
 Pre-commit runs `black` and `ruff` over `_tests/` (ruff's `BLE` rules reject a
 blind `except Exception`), a Jekyll build check that fails when the build
 fails, and a hook that rejects anything under `docs/_drafts/`. Install it once
 with `uv run pre-commit install`.
 
-## Fixture / drafts gotcha
+## Fixtures and drafts
 
-The `jekyll_server` fixture builds **without** `--drafts`, so any page a test
-navigates to must be reachable in a normal build. That is why the preview test
-fixture lives in `docs/_previews/` (committed), not `docs/_drafts/`.
+Neither build uses `--drafts`, so any page a test navigates to must be reachable
+in a normal build. Test fixtures live in `_tests/fixtures/` and are copied into
+the designed build only; nothing test-only is published.
 
 ## CI
 
@@ -199,7 +222,8 @@ use the same sealed container.
 
 To test a server that is already running instead, set `JEKYLL_URL`. It must
 serve a static build (`jekyll build` plus any static file server), not
-`jekyll serve`, or the performance budget fails.
+`jekyll serve`, or the performance budget fails. It replaces the real build
+only, and tests that need the manifest skip unless that server has one.
 
 ## References
 - Playwright (Python): <https://playwright.dev/python/docs/intro>

@@ -22,6 +22,7 @@ repos:
       - id: end-of-file-fixer
       - id: check-yaml
       - id: check-added-large-files
+        exclude: ^docs/public/js/mathjax/
 
   # Jekyll build check (fast, no server needed)
   # Skipped in CI - use GitHub Actions workflow instead
