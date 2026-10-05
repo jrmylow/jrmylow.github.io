@@ -178,35 +178,49 @@ This makes our life significantly easier, because we can rely on this to reason 
 * A term for the recursive sort through the $$K$$-funnels that feed the top funnel, which are identical to Theorem 2's result and are *already cache-optimal sorts*.
 
 We convert Theorem 2's formula into $$K$$ for the purposes of our analysis, use $$d=3$$, and pull the exponent out of the log term:
+
 $$
 O(\frac{1}{B}(1 + \sum_{i=0}^{\infty} (\frac{2}{3})^i \log_M K^3))
 $$
+
 The sum of the infinite geometric series is simply 3, which is nice for our purposes. We can now add the term for the top funnel from here. In the case of a $$K$$-funnel at the top:
+
 $$
 O(\frac{1}{B}(1 + \log_M K^3 + \sum_{i=0}^{\infty} (\frac{2}{3})^i \log_M K^3))
 $$
+
 This simplifies to the following, dropping the constant term:
+
 $$
 O(\frac{1}{B}(4\log_M K^3))
 $$
+
 On the other hand, if we have a $$C$$-funnel at the top:
+
 $$
 O(\frac{1}{B}(1 + \log_M C^3 + \sum_{i=0}^{\infty} (\frac{2}{3})^i \log_M K^3))
 $$
+
 This simplifies to the following result by dropping the constant term:
+
 $$
 O(\frac{1}{B}(1 + \log_M C^3 + 3\log_M K^3)) = O(\frac{1}{B}(3 \log_M (CK^3)))
 $$
+
 This leads to the finding that using a $$K$$-funnel at the top incurs slightly more transfers, by a factor of:
+
 $$
 \frac{4\log_M K^3}{3\log_M CK^3} = \frac{4 \log_M(K)}{\log_M(C) + 3 \log_M(K)}
 $$
+
 **Result 2: it is always more efficient to use a $$C$$-funnel than a $$K$$-funnel**. Because $$1 < C < K$$, we can see that the first approach, using $$K$$ as the initial funnel size is at best as good as using $$C$$ (in the case when $$C = K$$) and at worst $$4/3$$ times the total memory transfers, a sizeable 33% difference.
 
 Incidentally, this analysis also demonstrates that the use of a $$C$$-funnel at the top achieves the intended sorting lower bound for memory transfers, since converting it to N satisfies the per-merge lower bound from Brodal and Fagerberg exactly:
+
 $$
 O(\frac{1}{B}(3 \log_M (CK^3))) = O(d \log_M(N)/B)
 $$
+
 Of course, we cannot always achieve a result where $$C$$ forms an idealised funnel, but by minimising the value of $$C$$, this minimises the unit cost of a merge through the funnel. We can minimise the inefficiency by choosing the smallest $$C' > C$$ such that $$C'= K(j)$$ for some $$j$$, in the spirit of wanting exact funnels throughout. Because $$C'$$ is at most $$K(i)$$, the asymptotic performance of this approach is at most 33% worse off compared to using exact roots.
 
 ## Conclusions
