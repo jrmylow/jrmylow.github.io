@@ -1,4 +1,4 @@
-"""Colour helpers for the accessibility tests (test_a11y_*.py).
+"""Colour helpers for the accessibility tests (test_a11y.py).
 
 WCAG 2.2 relative luminance and contrast ratio, plus page-side functions that
 resolve what a reader actually sees. Text and border colours are composited
@@ -13,10 +13,9 @@ for this site's layout (no text is positioned over an unrelated element).
 
 from playwright.sync_api import Locator
 
-# The minimums from WCAG 2.2 1.4.3 (text) and 1.4.11 (UI component boundaries,
-# focus indicators). Large text is >= 24px, or >= 18.66px (14pt) at bold.
+# The minimums from WCAG 2.2 1.4.3 (normal-size text) and 1.4.11 (UI component
+# boundaries, focus indicators).
 TEXT_MIN = 4.5
-LARGE_TEXT_MIN = 3.0
 NON_TEXT_MIN = 3.0
 
 _COMPOSITE_JS = """
@@ -83,21 +82,6 @@ def parse_rgb(css: str) -> list[float]:
     inner = css[css.index("(") + 1 : css.rindex(")")]
     parts = [float(p) for p in inner.replace(",", " ").replace("/", " ").split()]
     return parts if len(parts) == 4 else parts + [1.0]
-
-
-def text_contrast(locator: Locator) -> tuple[float, list[int], list[int]]:
-    """(ratio, fg, bg) for the element's text as rendered, opacity and alpha included."""
-    colours = locator.evaluate(TEXT_COLOURS_JS)
-    return contrast(colours["fg"], colours["bg"]), colours["fg"], colours["bg"]
-
-
-def text_minimum(locator: Locator) -> float:
-    """The 1.4.3 minimum for the element's text: 3:1 if large, else 4.5:1."""
-    size, weight = locator.evaluate(
-        "el => { const s = getComputedStyle(el); return [parseFloat(s.fontSize), s.fontWeight]; }"
-    )
-    large = size >= 24 or (size >= 18.66 and int(weight) >= 700)
-    return LARGE_TEXT_MIN if large else TEXT_MIN
 
 
 def against_backdrop(locator: Locator, css_colour: str) -> float:

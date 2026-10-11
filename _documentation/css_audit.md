@@ -2,16 +2,19 @@
 
 An audit of the seven stylesheets under `docs/public/css/`. It lists the problems found and the CSS that replaced each one. Theming background is in `styling.md`.
 
-**Status:** A1–A9 and B1–B8 are applied. The regression tests that guard them are `_tests/test_a11y_*.py` and `_tests/test_stylesheets.py`; see `testing.md`. B9 (heading levels, landmarks, `aria-pressed`/`aria-current`, closing the menu with Escape, and a focus trap for the command palette) changes HTML and JS and is still open.
+**Status.** This audit is landing in stages:
 
-**Found while writing the tests, and fixed:**
-- **A5:** Monokai's pink `#f92672` (operators, imports, tags) was 3.93:1; it is now `#fb4f8b` (4.67:1).
+- **Accessibility (this change):** the WCAG 2.2 A/AA fixes, A1–A9, are applied, along with the gaps the first round of regression tests found (listed below). `_tests/test_a11y.py` guards them; see `testing.md`. To keep the change focused, it gives `--border-color` new values rather than renaming it to `--rule-color`. It also keeps the `!important` overrides (B1).
+- **Follow-up (size and hygiene):** B1–B8, plus a pass that makes the stylesheets smaller. These are consistency and size changes, not WCAG fixes.
+- **Open, outside CSS (B9):** the heading levels and landmarks, `aria-pressed`/`aria-current`, closing the menu with Escape, and two markup issues the axe scan reports. These are switched off in the scan only on the views where they occur:
+  - kramdown writes `role="doc-endnote"` on footnotes, a role DPUB-ARIA 1.1 deprecated (axe `aria-deprecated-role`, WCAG 4.1.2).
+  - The command palette's `role="listbox"` has no name, and each `role="option"` row contains a link (axe `aria-input-field-name`, `nested-interactive`). Fixing them means choosing an ARIA pattern for the palette: a combobox with `aria-activedescendant`, or a plain list of links.
+
+**Found by the regression tests, and fixed:**
+- **A5:** Monokai's pink `#f92672` (operators, imports, tags) was 3.93:1. It is now `#fb4f8b` (4.67:1).
 - **A3:** the command palette's placeholder kept Chromium's default grey (3.78:1 dark, 3.96:1 light). One global `::placeholder` rule now covers every input.
-- **A8:** the palette's result links kept the outset ring, which the panel clipped. On the selected row it was also the same colour as the fill. Their ring is now inset, and drawn in `--on-link-color` on the selected row.
+- **A8:** the palette's result links kept the outset focus ring, which the panel clipped. On the selected row it was also the same colour as the row's fill. Their ring is now inset, and drawn in `--on-link-color` on the selected row.
 - **A2:** the switch was named "Light theme" while its visible label said "Toggle dark mode" (WCAG 2.5.3 Label in Name). The visible label is now "Light theme".
-- **B7:** four more dead classes were deleted: `.card-meta-item`, `.related-posts-section`, `.search-results` and `.post-tags-label`.
-
-**Size:** after the fixes, a pass for size merged duplicate rules and media queries, grouped Monokai by colour, deleted declarations that restated defaults, and cut comments to their reasons. The seven sheets went from 41,193 to 22,980 bytes (−44%), and from 9,515 to 7,580 bytes gzipped (−20%). A computed-style diff of every element (10 pages, both themes, 1280px and 375px, sidebar open and closed) found no visible change beyond the fixes listed here.
 
 ## Method
 

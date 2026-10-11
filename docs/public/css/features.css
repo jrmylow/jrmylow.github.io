@@ -1,21 +1,33 @@
 /*
- * Feature styles in one file, so head.html loads one stylesheet instead of
- * several (the perf budget counts resources). Each section can be deleted
- * with its feature. Sidenotes are parked (see _tests/test_sidenotes.py).
+ * features.css
+ *
+ * Styles for the new features, one sectioned file so head.html gains a single
+ * <link> rather than five (each stylesheet is a resource against the perf
+ * budget of 20/page). Each section is self-contained and safe to delete with
+ * its feature. Colours reuse the existing theme variables.
+ *
+ * Sections:
+ *   1. Post navs (related, backlinks, series)
+ *   2. Sidenotes
+ *   3. Command palette
+ *   4. Webmentions
  */
 
-/* Post navs and webmentions: related, backlinks, series */
+/* ==========================================================================
+   1. Post navs: related / backlinks / series
+   ========================================================================== */
 
 .related,
 .backlinks,
-.series,
-.webmentions {
+.series {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--rule-color);
+  border-top: 1px solid var(--border-color);
 }
 
-:is(.related, .backlinks, .series, .webmentions) h2 {
+.related h2,
+.backlinks h2,
+.series h2 {
   margin: 0 0 0.5rem;
   font-size: 1rem;
 }
@@ -27,7 +39,9 @@
   padding-left: 1.25rem;
 }
 
-:is(.related-list, .backlinks-list, .series-list) li {
+.related-list li,
+.backlinks-list li,
+.series-list li {
   margin-bottom: 0.35rem;
 }
 
@@ -39,9 +53,12 @@
 
 .series-current {
   font-weight: bold;
+  opacity: 0.85;
 }
 
-/* Command palette (Cmd/Ctrl-K) */
+/* ==========================================================================
+   3. Command palette (Cmd/Ctrl-K)
+   ========================================================================== */
 
 .command-palette[hidden] {
   display: none;
@@ -63,19 +80,27 @@
   max-width: 34rem;
   background: var(--body-bg);
   border: 1px solid var(--control-border);
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
 
 .command-palette-input {
   width: 100%;
+  box-sizing: border-box;
   padding: 0.9rem 1rem;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: 1rem;
   color: var(--body-color);
   background: var(--body-bg);
   border: 0;
-  border-bottom: 1px solid var(--rule-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* The panel clips its contents, so its focus rings are drawn inside */
+.command-palette-input:focus-visible,
+.command-palette-result:focus-visible {
+  outline-offset: -2px;
 }
 
 .command-palette-results {
@@ -86,16 +111,15 @@
   overflow-y: auto;
 }
 
+.command-palette-results li {
+  margin: 0;
+}
+
 .command-palette-result {
   display: block;
   padding: 0.6rem 1rem;
   color: var(--body-color);
   text-decoration: none;
-}
-
-/* The panel clips its contents, so focus rings are drawn inside */
-:is(.command-palette-input, .command-palette-result):focus-visible {
-  outline-offset: -2px;
 }
 
 .command-palette-results li[aria-selected="true"] {
@@ -111,7 +135,23 @@
   overflow: hidden;
 }
 
-/* Webmentions */
+/* ==========================================================================
+   4. Webmentions
+   ========================================================================== */
+
+.webmentions[hidden] {
+  display: none;
+}
+
+.webmentions {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.webmentions h2 {
+  font-size: 1rem;
+}
 
 .webmentions-list {
   margin: 0;

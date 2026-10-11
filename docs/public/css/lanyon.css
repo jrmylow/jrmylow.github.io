@@ -1,18 +1,46 @@
 /*
- * Lanyon by @mdo, released under the MIT license: https://github.com/poole/lanyon.
- * Poole's base styles are merged in. Layout and type live here; colours live in
- * dark-mode.css. Decisions are recorded in _documentation/styling.md.
+ *  ___
+ * /\_ \
+ * \//\ \      __      ___   __  __    ___     ___
+ *   \ \ \   /'__`\  /' _ `\/\ \/\ \  / __`\ /' _ `\
+ *    \_\ \_/\ \_\.\_/\ \/\ \ \ \_\ \/\ \_\ \/\ \/\ \
+ *    /\____\ \__/.\_\ \_\ \_\/`____ \ \____/\ \_\ \_\
+ *    \/____/\/__/\/_/\/_/\/_/`/___/> \/___/  \/_/\/_/
+ *                               /\___/
+ *                               \/__/
+ *
+ * Designed, built, and released under MIT license by @mdo. Learn more at
+ * https://github.com/poole/lanyon.
+ *
+ * This file combines the original Poole base styles with Lanyon theme styles.
  */
 
-/* Base */
+
+/*
+ * Contents
+ *
+ * Base resets (from Poole)
+ * Typography
+ * Global resets
+ * Wrapper
+ * Container
+ * Masthead
+ * Sidebar
+ * Slide effect
+ * Posts and pages
+ * Pagination
+ * Reverse layout
+ * Overlay sidebar
+ * Theme Toggle
+ */
+
+
+/* ==========================================================================
+   Base Resets (from Poole)
+   ========================================================================== */
 
 * {
   box-sizing: border-box;
-}
-
-:root {
-  --font-sans: "PT Sans", Helvetica, Arial, sans-serif;
-  --font-mono: Menlo, Monaco, "Courier New", monospace;
 }
 
 html,
@@ -21,35 +49,39 @@ body {
   padding: 0;
 }
 
+/* The viewport scrolls (not body), so jumps and focus land below the sticky masthead */
 html {
-  -webkit-text-size-adjust: 100%;
-          text-size-adjust: 100%;
-  font-family: var(--font-sans);
-  font-size: 100%;
-  line-height: 1.5;
-  /* In-page jumps and focus scrolling land below the sticky masthead */
   scroll-padding-top: 4.5rem;
 }
 
+body {
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+html {
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
 @media (min-width: 38em) {
-  html { font-size: 125%; }
+  html {
+    font-size: 20px;
+  }
 }
-
-button,
-input {
-  font: inherit;
-}
-
-::placeholder {
-  color: var(--muted-color);
-  opacity: 1;
-}
-
-/* Typography */
 
 h1, h2, h3, h4, h5, h6 {
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  font-weight: bold;
   letter-spacing: -.025rem;
-  margin-bottom: .5em;
+  font-size: 1.1em;
+  margin-bottom: 0.5em;
 }
 
 h1 { font-size: 1.3em; }
@@ -57,13 +89,17 @@ h2 { font-size: 1.2em; }
 h3 { font-size: 1.1em; }
 h4, h5, h6 { font-size: 1em; }
 
+/* Links */
 a {
   text-decoration: none;
 }
 
+a strong {
+  color: inherit;
+}
+
 a:hover,
-a:focus-visible,
-:where(.post, .page, p, li) a {
+a:focus {
   text-decoration: underline;
 }
 
@@ -72,8 +108,28 @@ a:focus-visible,
   outline-offset: 2px;
 }
 
-p, ul, ol, dl, pre, table, img {
-  margin: 0 0 1rem;
+::placeholder {
+  color: var(--muted-color);
+  opacity: 1;
+}
+
+.post a,
+.page a,
+p a,
+li a {
+  text-decoration: underline;
+}
+
+/* Paragraphs */
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+/* Lists */
+ul, ol, dl {
+  margin-top: 0;
+  margin-bottom: 1rem;
 }
 
 li > ul,
@@ -89,19 +145,19 @@ dd {
   margin-bottom: .5rem;
 }
 
-hr,
-blockquote {
-  margin: 1.5rem 0;
-}
-
+/* Horizontal rules */
 hr {
+  position: relative;
+  margin: 1.5rem 0;
   border: 0;
-  border-top: 1px solid var(--rule-color);
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--body-bg);
 }
 
+/* Code */
 code,
 pre {
-  font-family: var(--font-mono);
+  font-family: Menlo, Monaco, "Courier New", monospace;
 }
 
 code {
@@ -111,11 +167,16 @@ code {
 }
 
 pre {
+  display: block;
+  margin-top: 0;
+  margin-bottom: 1rem;
   padding: 1rem;
   font-size: .8rem;
   line-height: 1.4;
+  white-space: pre;
   white-space: pre-wrap;
-  overflow-wrap: anywhere;
+  word-break: break-all;
+  word-wrap: break-word;
 }
 
 pre code {
@@ -125,7 +186,9 @@ pre code {
   background-color: transparent;
 }
 
+/* Blockquotes */
 blockquote {
+  margin: 1.5rem 0;
   padding: 1rem 1.5rem;
   background-color: var(--code-bg);
   border-left: 4px solid var(--link-color);
@@ -136,42 +199,57 @@ blockquote p:last-child {
   margin-bottom: 0;
 }
 
-/* Display maths scrolls inside its own box instead of being clipped */
+/* Display maths scrolls in its own box on narrow screens */
 mjx-container[display="true"] {
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
 }
 
+/* Images */
 img {
   display: block;
   max-width: 100%;
+  margin: 0 0 1rem;
   border-radius: 5px;
 }
 
+/* Tables */
 table {
+  margin-bottom: 1rem;
   width: 100%;
+  border: 1px solid var(--border-color);
   border-collapse: collapse;
 }
 
 td,
 th {
   padding: .25rem .5rem;
-  border: 1px solid var(--rule-color);
+  border: 1px solid var(--border-color);
 }
 
-tbody tr:nth-child(odd) {
+tbody tr:nth-child(odd) td,
+tbody tr:nth-child(odd) th {
   background-color: var(--code-bg);
 }
 
-/* Layout */
+
+/* ==========================================================================
+   Wrapper
+   ========================================================================== */
 
 .wrap {
   position: relative;
+  width: 100%;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
+
+
+/* ==========================================================================
+   Container
+   ========================================================================== */
 
 .container {
   flex: 1;
@@ -184,31 +262,43 @@ tbody tr:nth-child(odd) {
 }
 
 @media (min-width: 38em) {
-  .container { max-width: 32rem; }
+  .container {
+    max-width: 32rem;
+  }
 }
 
 @media (min-width: 56em) {
-  .container { max-width: 38rem; }
+  .container {
+    max-width: 38rem;
+  }
 }
+
+
+/* ==========================================================================
+   Masthead
+   ========================================================================== */
 
 .masthead {
   position: sticky;
   top: 0;
   z-index: 4;
-  padding: 1rem 0;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
   margin-bottom: 3rem;
   background-color: var(--body-bg);
+  width: 100%;
   flex-shrink: 0;
 }
 
-/* Short viewports (landscape phones, high zoom): the masthead scrolls away */
 @media (max-height: 30em) {
   html { scroll-padding-top: 0; }
   .masthead { position: static; }
 }
 
 .masthead-title {
-  margin: 0;
+  margin-top: 0;
+  margin-bottom: 0;
+  color: var(--heading-color);
 }
 
 .masthead-title a {
@@ -222,27 +312,19 @@ tbody tr:nth-child(odd) {
   letter-spacing: 0;
 }
 
-@media (width < 48em) {
-  .masthead-title { text-align: center; }
-  .masthead-title small { display: none; }
+@media (max-width: 48em) {
+  .masthead-title {
+    text-align: center;
+  }
+  .masthead-title small {
+    display: none;
+  }
 }
 
-.page,
-.post {
-  margin-bottom: 4em;
-}
 
-.page-title,
-.post-title {
-  margin-top: 0;
-}
-
-.post-date {
-  display: block;
-  margin: -.5rem 0 1rem;
-}
-
-/* Sidebar */
+/* ==========================================================================
+   Sidebar
+   ========================================================================== */
 
 .sidebar {
   position: fixed;
@@ -252,13 +334,28 @@ tbody tr:nth-child(odd) {
   width: 14rem;
   visibility: hidden;
   overflow-y: auto;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: .875rem;
-  transition: transform .3s ease-in-out, visibility .3s, box-shadow .3s;
+  color: var(--body-color);
+  background-color: var(--body-bg);
+  -webkit-transition: all .3s ease-in-out;
+          transition: all .3s ease-in-out;
   z-index: 5;
 }
 
-.sidebar-item,
-.theme-toggle {
+@media (min-width: 30em) {
+  .sidebar {
+    font-size: .75rem;
+  }
+}
+
+/* Sidebar content */
+.sidebar a {
+  font-weight: normal;
+  color: var(--heading-color);
+}
+
+.sidebar-item {
   padding: 1rem;
 }
 
@@ -266,25 +363,31 @@ tbody tr:nth-child(odd) {
   margin-bottom: 0;
 }
 
+/* Sidebar nav */
 .sidebar-nav-item {
   display: block;
   padding: .5rem 1rem;
 }
 
 .sidebar-nav-item.active,
-a.sidebar-nav-item:is(:hover, :focus-visible) {
+a.sidebar-nav-item:hover,
+a.sidebar-nav-item:focus {
   text-decoration: none;
   background-color: var(--sidebar-hover-bg);
+  border-color: var(--sidebar-border-color);
 }
 
 @media (min-width: 48em) {
-  .sidebar { font-size: .75rem; }
-  .sidebar-item { padding: 1.5rem; }
-  .sidebar-nav-item,
-  .theme-toggle { padding-left: 1.5rem; padding-right: 1.5rem; }
+  .sidebar-item {
+    padding: 1.5rem;
+  }
+  .sidebar-nav-item {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
 }
 
-/* Visually hidden but focusable: the label below is its visible face */
+/* Visually hidden but focusable; the label is its visible face */
 .sidebar-checkbox {
   position: fixed;
   top: 0;
@@ -304,6 +407,7 @@ a.sidebar-nav-item:is(:hover, :focus-visible) {
   outline-offset: 2px;
 }
 
+/* Sidebar toggle button */
 .sidebar-toggle {
   position: fixed;
   top: .8rem;
@@ -311,11 +415,11 @@ a.sidebar-nav-item:is(:hover, :focus-visible) {
   display: flex;
   align-items: center;
   padding: .25rem .75rem;
+  color: var(--heading-color);
   background-color: var(--body-bg);
   border-radius: .25rem;
   cursor: pointer;
   z-index: 30;
-  transition: transform .3s ease-in-out;
 }
 
 .sidebar-toggle::before {
@@ -326,7 +430,7 @@ a.sidebar-nav-item:is(:hover, :focus-visible) {
   background: var(--hamburger-icon) no-repeat;
 }
 
-/* Open (or pressed): the toggle sits on the dark sidebar, so the icon is white */
+/* When sidebar is open/active/focused, always use white icon (background is dark) */
 .sidebar-toggle:active::before,
 #sidebar-checkbox:checked ~ .sidebar-toggle::before {
   background: var(--hamburger-icon-active) no-repeat;
@@ -334,44 +438,240 @@ a.sidebar-nav-item:is(:hover, :focus-visible) {
 
 .sidebar-toggle:active,
 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  color: var(--heading-color);
   background-color: var(--sidebar-bg);
 }
 
+@media (min-width: 30.1em) {
+  .sidebar-toggle {
+    position: fixed;
+  }
+}
+
+@media print {
+  .sidebar-toggle {
+    display: none;
+  }
+}
+
+
+/* ==========================================================================
+   Slide Effect
+   ========================================================================== */
+
+.wrap,
 .sidebar,
 .sidebar-toggle {
-  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+      -ms-backface-visibility: hidden;
+          backface-visibility: hidden;
+}
+
+.wrap,
+.sidebar-toggle {
+  -webkit-transition: -webkit-transform .3s ease-in-out;
+          transition: transform .3s ease-in-out;
 }
 
 #sidebar-checkbox:checked + .sidebar {
   z-index: 10;
   visibility: visible;
-  box-shadow: .25rem 0 .5rem var(--sidebar-shadow);
 }
 
-#sidebar-checkbox:checked ~ :is(.sidebar, .sidebar-toggle) {
-  transform: translateX(14rem);
-}
-
+#sidebar-checkbox:checked ~ .sidebar,
+#sidebar-checkbox:checked ~ .wrap,
 #sidebar-checkbox:checked ~ .sidebar-toggle {
+  -webkit-transform: translateX(14rem);
+      -ms-transform: translateX(14rem);
+          transform: translateX(14rem);
+}
+
+
+/* ==========================================================================
+   Posts and Pages
+   ========================================================================== */
+
+.page,
+.post {
+  margin-bottom: 4em;
+}
+
+/* Blog post or page title */
+.page-title,
+.post-title,
+.post-title a {
+  color: var(--heading-color);
+}
+
+.page-title,
+.post-title {
+  margin-top: 0;
+}
+
+/* Meta data line below post title */
+.post-date {
+  display: block;
+  margin-top: -.5rem;
+  margin-bottom: 1rem;
+  color: var(--body-color);
+}
+
+/* Related posts */
+.related {
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  border-top: 1px solid var(--heading-color);
+}
+
+.related-posts {
+  padding-left: 0;
+  list-style: none;
+}
+
+.related-posts h3 {
+  color: var(--body-color);
+  margin-top: 0;
+}
+
+.related-posts li small {
+  font-size: 75%;
+  color: var(--body-color);
+  opacity: 0.7;
+}
+
+.related-posts li a:hover {
+  color: var(--heading-color);
+  text-decoration: none;
+}
+
+.related-posts li a:hover small {
+  color: inherit;
+}
+
+
+/* ==========================================================================
+   Pagination
+   ========================================================================== */
+
+.pagination {
+  overflow: hidden;
+  margin-left: -1rem;
+  margin-right: -1rem;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
+  color: var(--pagination-color);
+  text-align: center;
+}
+
+.pagination-item {
+  display: block;
+  padding: 1rem;
+  border: 1px solid var(--pagination-border);
+}
+
+.pagination-item:first-child {
+  margin-bottom: -1px;
+}
+
+a.pagination-item:hover {
+  background-color: var(--pagination-hover-bg);
+}
+
+@media (min-width: 30em) {
+  .pagination {
+    margin: 3rem 0;
+  }
+  .pagination-item {
+    float: left;
+    width: 50%;
+  }
+  .pagination-item:first-child {
+    margin-bottom: 0;
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+  }
+  .pagination-item:last-child {
+    margin-left: -1px;
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+}
+
+
+/* ==========================================================================
+   Reverse Layout
+   ========================================================================== */
+
+.layout-reverse .sidebar {
+  left: auto;
+  right: -14rem;
+}
+
+.layout-reverse .sidebar-toggle {
+  left: auto;
+  right: 1rem;
+}
+
+.layout-reverse #sidebar-checkbox:checked ~ .sidebar,
+.layout-reverse #sidebar-checkbox:checked ~ .wrap,
+.layout-reverse #sidebar-checkbox:checked ~ .sidebar-toggle {
+  -webkit-transform: translateX(-14rem);
+      -ms-transform: translateX(-14rem);
+          transform: translateX(-14rem);
+}
+
+
+/* ==========================================================================
+   Overlay Sidebar
+   ========================================================================== */
+
+.sidebar-overlay #sidebar-checkbox:checked ~ .wrap {
+  -webkit-transform: translateX(0);
+      -ms-transform: translateX(0);
+          transform: translateX(0);
+}
+
+.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar-toggle {
   box-shadow: 0 0 0 1px var(--toggle-shadow);
 }
 
-@media print {
-  .sidebar-toggle { display: none; }
+.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
+  box-shadow: .25rem 0 .5rem var(--sidebar-shadow);
 }
 
-/* Theme switch */
+.layout-reverse.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
+  box-shadow: -.25rem 0 .5rem var(--sidebar-shadow);
+}
+
+
+/* ==========================================================================
+   Theme Toggle
+   ========================================================================== */
 
 .theme-toggle {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  background: transparent;
+  color: var(--sidebar-heading);
+  cursor: pointer;
+  font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: .875rem;
+  text-align: left;
   user-select: none;
 }
 
 @media (min-width: 48em) {
-  .theme-toggle { font-size: .75rem; }
+  .theme-toggle {
+    padding: 1rem 1.5rem;
+    font-size: .75rem;
+  }
+}
+
+.theme-toggle:hover {
+  background-color: transparent;
 }
 
 .toggle-switch {
@@ -379,6 +679,7 @@ a.sidebar-nav-item:is(:hover, :focus-visible) {
   display: inline-block;
   width: 40px;
   height: 20px;
+  margin-left: auto;
 }
 
 .toggle-switch input {
@@ -389,8 +690,11 @@ a.sidebar-nav-item:is(:hover, :focus-visible) {
 
 .toggle-slider {
   position: absolute;
-  inset: 0;
   cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background-color: var(--toggle-dark);
   box-shadow: inset 0 0 0 1px var(--sidebar-color);
   transition: .4s;
@@ -403,8 +707,7 @@ a.sidebar-nav-item:is(:hover, :focus-visible) {
   outline-offset: 2px;
 }
 
-/* The glyphs are decorative: `/ ""` gives them empty alt text */
-.toggle-slider::before {
+.toggle-slider:before {
   position: absolute;
   content: "🌙";
   content: "🌙" / "";
@@ -419,24 +722,16 @@ a.sidebar-nav-item:is(:hover, :focus-visible) {
   transition: .4s;
   border-radius: 50%;
   font-size: 10px;
+  z-index: 2;
 }
 
 input:checked + .toggle-slider {
   background-color: var(--toggle-light);
 }
 
-input:checked + .toggle-slider::before {
+input:checked + .toggle-slider:before {
   transform: translateX(20px);
   content: "☀️";
   content: "☀️" / "";
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    transition-duration: 0.01ms !important;
-    animation-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+  background-color: var(--toggle-button);
 }

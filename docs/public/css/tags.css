@@ -1,4 +1,12 @@
-/* Tags: the chips on posts, and the /tags/ page's filter cloud and post list. */
+/*
+ * Tag Styles
+ *
+ * Styles for tag display on posts and tag pages.
+ */
+
+/* ==========================================================================
+   Base Tag Styles (shared)
+   ========================================================================== */
 
 .post-tag,
 .tag-cloud-item {
@@ -9,54 +17,74 @@
   background-color: var(--code-bg);
   border: 1px solid var(--control-border);
   border-radius: 4px;
-  text-decoration: none;
+  text-decoration: none !important;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-:is(.post-tag, .tag-cloud-item):is(:hover, :focus-visible),
+.post-tag:hover,
+.post-tag:focus-visible,
+.tag-cloud-item:hover,
+.tag-cloud-item:focus-visible,
 .tag-cloud-item.selected {
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
-  color: var(--sidebar-heading);
-  text-decoration: none;
+  color: var(--sidebar-heading) !important;
+  text-decoration: none !important;
 }
 
-.post-tags,
-.tag-cloud {
+/* ==========================================================================
+   Post Tags (on individual posts)
+   ========================================================================== */
+
+.post-tags {
+  margin: 0.5rem 0 1.5rem 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
 
-.post-tags {
-  margin: 0.5rem 0 1.5rem;
+.post-tags-label {
+  font-size: 0.85rem;
+  color: var(--muted-color);
 }
 
+/* ==========================================================================
+   Tag Cloud (on tags page)
+   ========================================================================== */
+
 .tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin: 1.5rem 0;
 }
 
 .tag-cloud-item {
   cursor: pointer;
+  font-family: inherit;
 }
+
+/* ==========================================================================
+   Tags Page - Posts List
+   ========================================================================== */
 
 .tag-posts-container {
   margin: 2rem 0;
   padding-top: 1rem;
-  border-top: 1px solid var(--rule-color);
+  border-top: 1px solid var(--border-color);
 }
 
 .tag-post-list {
-  margin: 0;
-  padding: 0;
   list-style: none;
+  padding-left: 0;
+  margin: 0;
 }
 
 .tag-post-item {
   display: none;
   padding: 0.5rem 0;
-  border-bottom: 1px solid var(--rule-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .tag-post-item:last-child {
@@ -68,7 +96,8 @@
   text-decoration: none;
 }
 
-.tag-post-item a:is(:hover, :focus-visible) {
+.tag-post-item a:hover,
+.tag-post-item a:focus-visible {
   text-decoration: underline;
 }
 
