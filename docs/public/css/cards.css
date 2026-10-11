@@ -84,7 +84,11 @@
   text-decoration: none;
 }
 
-.card-link:hover .card-title {
+.card-link {
+  border-radius: 8px;
+}
+
+.card-link:is(:hover, :focus-visible) .card-title {
   text-decoration: underline;
 }
 
@@ -94,7 +98,7 @@
 
 .card {
   background-color: var(--code-bg);
-  border: 1px solid var(--header-border-color);
+  border: 1px solid var(--control-border);
   border-radius: 8px;
   padding: 1rem;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
@@ -104,16 +108,13 @@
   min-height: 250px;
 }
 
-.card:hover {
+.card-link:is(:hover, :focus-visible) .card:not(.card-no-hover) {
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
 }
 
-.card:hover .card-title,
-.card:hover .card-meta,
-.card:hover .card-body,
-.card:hover .card-subtitle {
-  color: var(--sidebar-heading) !important;
+.card-link:is(:hover, :focus-visible) .card:not(.card-no-hover) :is(.card-title, .card-meta, .card-body, .card-subtitle) {
+  color: var(--sidebar-heading);
 }
 
 /* ==========================================================================
@@ -125,17 +126,6 @@
   border-width: 2px;
 }
 
-.card.card-no-hover:hover {
-  background-color: var(--code-bg);
-  border-color: var(--header-border-color);
-}
-
-.card.card-no-hover:hover .card-title,
-.card.card-no-hover:hover .card-meta,
-.card.card-no-hover:hover .card-body,
-.card.card-no-hover:hover .card-subtitle {
-  color: inherit;
-}
 
 .card.card-flat {
   background-color: transparent;
@@ -151,12 +141,12 @@
 
 .card.card-warning {
   background-color: var(--code-bg);
-  border-left: 4px solid #f39c12;
+  border-left: 4px solid var(--warning-color);
 }
 
 .card.card-success {
   background-color: var(--code-bg);
-  border-left: 4px solid #27ae60;
+  border-left: 4px solid var(--success-color);
 }
 
 /* ==========================================================================
@@ -173,7 +163,7 @@
 .card-header {
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--rule-color);
 }
 
 .card-title {
@@ -187,16 +177,14 @@
 .card-subtitle {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--body-color);
-  opacity: 0.8;
+  color: var(--muted-color);
 }
 
 /* Card metadata (date, tags, etc.) */
 .card-meta {
   display: block;
   margin-bottom: 0.75rem;
-  color: var(--body-color);
-  opacity: 0.7;
+  color: var(--muted-color);
   font-size: 0.75rem;
 }
 
@@ -231,7 +219,7 @@
 .card-footer {
   margin-top: 1rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--rule-color);
   font-size: 0.85rem;
 }
 
@@ -259,16 +247,16 @@
   display: inline-block;
   padding: 0.25rem 0.5rem;
   background-color: var(--body-bg);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--rule-color);
   border-radius: 4px;
   font-size: 0.75rem;
   color: var(--body-color);
   text-decoration: none;
 }
 
-.card-tag:hover {
+.card-tag:is(:hover, :focus-visible) {
   background-color: var(--link-color);
-  color: var(--body-bg);
+  color: var(--on-link-color);
   border-color: var(--link-color);
 }
 
@@ -276,7 +264,7 @@
    Responsive Adjustments
    ========================================================================== */
 
-@media (max-width: 30em) {
+@media (width < 30em) {
   .card {
     padding: 0.875rem;
     min-height: 200px;
@@ -299,7 +287,7 @@
 .home-intro {
   margin-bottom: 3rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--rule-color);
 }
 
 /* View all link - styled like sidebar nav items */
@@ -314,17 +302,16 @@
   padding: 0.5rem 1rem;
   color: var(--heading-color);
   text-decoration: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--control-border);
   border-radius: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.view-all-link a:hover,
-.view-all-link a:focus {
+.view-all-link a:is(:hover, :focus-visible) {
   text-decoration: none;
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
-  color: var(--sidebar-heading) !important;
+  color: var(--sidebar-heading);
 }
 
 /* ==========================================================================
@@ -334,7 +321,7 @@
 .related-posts-section {
   margin-top: 3rem;
   padding-top: 2rem;
-  border-top: 2px solid var(--border-color);
+  border-top: 2px solid var(--rule-color);
 }
 
 .related-posts-section h2,
@@ -350,7 +337,7 @@
 .pagination {
   margin: 2rem 0;
   padding: 1.5rem 0;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--rule-color);
   text-align: center;
 }
 
@@ -378,19 +365,16 @@
   padding: 0.5rem 1rem;
   color: var(--heading-color);
   text-decoration: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--control-border);
   border-radius: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.pagination-prev a:hover,
-.pagination-prev a:focus,
-.pagination-next a:hover,
-.pagination-next a:focus {
+:is(.pagination-prev, .pagination-next) a:is(:hover, :focus-visible) {
   text-decoration: none;
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
-  color: var(--sidebar-heading) !important;
+  color: var(--sidebar-heading);
 }
 
 .pagination-disabled {
@@ -398,12 +382,12 @@
   padding: 0.5rem 1rem;
   color: var(--body-color);
   opacity: 0.4;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--rule-color);
   border-radius: 4px;
   cursor: not-allowed;
 }
 
-@media (max-width: 30em) {
+@media (width < 30em) {
   .pagination-links {
     flex-direction: column;
     gap: 1rem;

@@ -1,6 +1,8 @@
 # CSS Audit: Accessibility and Consistency
 
-An audit of the seven stylesheets under `docs/public/css/`. It lists the problems found and the CSS to replace each one with. This is a proposal, and none of it is applied yet. Theming background is in `styling.md`.
+An audit of the seven stylesheets under `docs/public/css/`. It lists the problems found and the CSS that replaced each one. Theming background is in `styling.md`.
+
+**Status:** A1–A9 and B1–B8 are applied. The regression tests that guard them are `_tests/test_a11y_*.py` and `_tests/test_stylesheets.py`; see `testing.md`. B9 (heading levels, landmarks, `aria-pressed`/`aria-current`, closing the menu with Escape) changes HTML and JS and is still open.
 
 ## Method
 

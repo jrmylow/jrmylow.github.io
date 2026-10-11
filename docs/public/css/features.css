@@ -8,7 +8,7 @@
  *
  * Sections:
  *   1. Post navs (related, backlinks, series)
- *   2. Sidenotes
+ *   2. Sidenotes (parked; see _tests/test_sidenotes.py)
  *   3. Command palette
  *   4. Webmentions
  */
@@ -22,7 +22,7 @@
 .series {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--sidebar-border-color);
+  border-top: 1px solid var(--rule-color);
 }
 
 .related h2,
@@ -48,8 +48,7 @@
 .related-date {
   margin-left: 0.5rem;
   font-size: 0.8rem;
-  color: var(--body-color);
-  opacity: 0.6;
+  color: var(--muted-color);
 }
 
 .series-current {
@@ -80,8 +79,8 @@
   width: 100%;
   max-width: 34rem;
   background: var(--body-bg);
-  border: 1px solid var(--sidebar-border-color);
-  border-radius: 6px;
+  border: 1px solid var(--control-border);
+  border-radius: 8px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
@@ -90,13 +89,15 @@
   width: 100%;
   box-sizing: border-box;
   padding: 0.9rem 1rem;
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: 1rem;
   color: var(--body-color);
   background: var(--body-bg);
   border: 0;
-  border-bottom: 1px solid var(--sidebar-border-color);
-  outline: none;
+  border-bottom: 1px solid var(--rule-color);
+}
+
+.command-palette-input:focus-visible {
+  outline-offset: -2px;
 }
 
 .command-palette-results {
@@ -123,7 +124,7 @@
 }
 
 .command-palette-results li[aria-selected="true"] .command-palette-result {
-  color: #fff;
+  color: var(--on-link-color);
 }
 
 .command-palette-open {
@@ -141,7 +142,7 @@
 .webmentions {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--sidebar-border-color);
+  border-top: 1px solid var(--rule-color);
 }
 
 .webmentions h2 {

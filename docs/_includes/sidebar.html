@@ -1,6 +1,6 @@
 <!-- Target for toggling the sidebar `.sidebar-checkbox` is for regular
      styles, `#sidebar-checkbox` for behavior. -->
-<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox">
+<input type="checkbox" class="sidebar-checkbox" id="sidebar-checkbox" aria-label="Menu" aria-controls="sidebar">
 
 <!-- Toggleable sidebar -->
 <div class="sidebar" id="sidebar">
@@ -8,7 +8,7 @@
     <div class="theme-toggle">
       <span>Toggle dark mode</span>
       <label class="toggle-switch">
-        <input type="checkbox" onchange="toggleTheme()">
+        <input type="checkbox" role="switch" aria-label="Light theme" onchange="toggleTheme()">
         <div class="toggle-slider"></div>
       </label>
     </div>

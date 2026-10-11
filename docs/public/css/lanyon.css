@@ -43,17 +43,26 @@
   box-sizing: border-box;
 }
 
+:root {
+  --font-sans: "PT Sans", Helvetica, Arial, sans-serif;
+  --font-mono: Menlo, Monaco, "Courier New", monospace;
+}
+
 html,
 body {
-  overflow-x: hidden;
-  height: 100%;
   margin: 0;
   padding: 0;
 }
 
-body {
+html {
   -webkit-text-size-adjust: 100%;
-  -ms-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+  /* In-page jumps and focus scrolling land below the sticky masthead */
+  scroll-padding-top: 4.5rem;
+}
+
+@media (max-height: 30em) {
+  html { scroll-padding-top: 0; }
 }
 
 
@@ -62,19 +71,24 @@ body {
    ========================================================================== */
 
 html {
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
-  font-size: 16px;
+  font-family: var(--font-sans);
+  font-size: 100%;
   line-height: 1.5;
 }
 
 @media (min-width: 38em) {
   html {
-    font-size: 20px;
+    font-size: 125%;
   }
 }
 
+/* Form controls don't inherit font by default */
+button,
+input {
+  font: inherit;
+}
+
 h1, h2, h3, h4, h5, h6 {
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-weight: bold;
   letter-spacing: -.025rem;
   font-size: 1.1em;
@@ -96,14 +110,17 @@ a strong {
 }
 
 a:hover,
-a:focus {
+a:focus-visible {
   text-decoration: underline;
 }
 
-.post a,
-.page a,
-p a,
-li a {
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* :where() keeps this at (0,0,1) so component classes (.post-tag, .card-link ...) opt out without !important */
+:where(.post, .page, p, li) a {
   text-decoration: underline;
 }
 
@@ -137,14 +154,13 @@ hr {
   position: relative;
   margin: 1.5rem 0;
   border: 0;
-  border-top: 1px solid var(--border-color);
-  border-bottom: 1px solid var(--body-bg);
+  border-top: 1px solid var(--rule-color);
 }
 
 /* Code */
 code,
 pre {
-  font-family: Menlo, Monaco, "Courier New", monospace;
+  font-family: var(--font-mono);
 }
 
 code {
@@ -160,10 +176,8 @@ pre {
   padding: 1rem;
   font-size: .8rem;
   line-height: 1.4;
-  white-space: pre;
   white-space: pre-wrap;
-  word-break: break-all;
-  word-wrap: break-word;
+  overflow-wrap: anywhere;
 }
 
 pre code {
@@ -186,6 +200,13 @@ blockquote p:last-child {
   margin-bottom: 0;
 }
 
+/* Display maths (MathJax SVG) scrolls within its own box on narrow screens */
+mjx-container[display="true"] {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 /* Images */
 img {
   display: block;
@@ -198,14 +219,14 @@ img {
 table {
   margin-bottom: 1rem;
   width: 100%;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--rule-color);
   border-collapse: collapse;
 }
 
 td,
 th {
   padding: .25rem .5rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--rule-color);
 }
 
 tbody tr:nth-child(odd) td,
@@ -270,6 +291,12 @@ tbody tr:nth-child(odd) th {
   flex-shrink: 0;
 }
 
+@media (max-height: 30em) {
+  .masthead {
+    position: static;
+  }
+}
+
 .masthead-title {
   margin-top: 0;
   margin-bottom: 0;
@@ -287,7 +314,7 @@ tbody tr:nth-child(odd) th {
   letter-spacing: 0;
 }
 
-@media (max-width: 48em) {
+@media (width < 48em) {
   .masthead-title {
     text-align: center;
   }
@@ -309,16 +336,13 @@ tbody tr:nth-child(odd) th {
   width: 14rem;
   visibility: hidden;
   overflow-y: auto;
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: .875rem;
-  color: var(--body-color);
-  background-color: var(--body-bg);
-  -webkit-transition: all .3s ease-in-out;
-          transition: all .3s ease-in-out;
+  transition: transform .3s ease-in-out, visibility .3s, box-shadow .3s;
   z-index: 5;
 }
 
-@media (min-width: 30em) {
+/* F12: same breakpoint as the theme toggle, search input and item padding */
+@media (min-width: 48em) {
   .sidebar {
     font-size: .75rem;
   }
@@ -327,7 +351,6 @@ tbody tr:nth-child(odd) th {
 /* Sidebar content */
 .sidebar a {
   font-weight: normal;
-  color: var(--heading-color);
 }
 
 .sidebar-item {
@@ -362,14 +385,24 @@ a.sidebar-nav-item:focus {
   }
 }
 
-/* Hide the sidebar checkbox */
+/* Visually hide the sidebar checkbox but keep it focusable; the label is its visible face */
 .sidebar-checkbox {
-  display: none;
-  position: absolute;
-  opacity: 0;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+#sidebar-checkbox:focus-visible ~ .sidebar-toggle {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* Sidebar toggle button */
@@ -397,22 +430,14 @@ a.sidebar-nav-item:focus {
 
 /* When sidebar is open/active/focused, always use white icon (background is dark) */
 .sidebar-toggle:active::before,
-#sidebar-checkbox:focus ~ .sidebar-toggle::before,
 #sidebar-checkbox:checked ~ .sidebar-toggle::before {
   background: var(--hamburger-icon-active) no-repeat;
 }
 
 .sidebar-toggle:active,
-#sidebar-checkbox:focus ~ .sidebar-toggle,
 #sidebar-checkbox:checked ~ .sidebar-toggle {
   color: var(--heading-color);
   background-color: var(--sidebar-bg);
-}
-
-@media (min-width: 30.1em) {
-  .sidebar-toggle {
-    position: fixed;
-  }
 }
 
 @media print {
@@ -429,15 +454,12 @@ a.sidebar-nav-item:focus {
 .wrap,
 .sidebar,
 .sidebar-toggle {
-  -webkit-backface-visibility: hidden;
-      -ms-backface-visibility: hidden;
-          backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 .wrap,
 .sidebar-toggle {
-  -webkit-transition: -webkit-transform .3s ease-in-out;
-          transition: transform .3s ease-in-out;
+  transition: transform .3s ease-in-out;
 }
 
 #sidebar-checkbox:checked + .sidebar {
@@ -448,9 +470,7 @@ a.sidebar-nav-item:focus {
 #sidebar-checkbox:checked ~ .sidebar,
 #sidebar-checkbox:checked ~ .wrap,
 #sidebar-checkbox:checked ~ .sidebar-toggle {
-  -webkit-transform: translateX(14rem);
-      -ms-transform: translateX(14rem);
-          transform: translateX(14rem);
+  transform: translateX(14rem);
 }
 
 
@@ -483,108 +503,6 @@ a.sidebar-nav-item:focus {
   color: var(--body-color);
 }
 
-/* Related posts */
-.related {
-  padding-top: 2rem;
-  padding-bottom: 2rem;
-  border-top: 1px solid var(--heading-color);
-}
-
-.related-posts {
-  padding-left: 0;
-  list-style: none;
-}
-
-.related-posts h3 {
-  color: var(--body-color);
-  margin-top: 0;
-}
-
-.related-posts li small {
-  font-size: 75%;
-  color: var(--body-color);
-  opacity: 0.7;
-}
-
-.related-posts li a:hover {
-  color: var(--heading-color);
-  text-decoration: none;
-}
-
-.related-posts li a:hover small {
-  color: inherit;
-}
-
-
-/* ==========================================================================
-   Pagination
-   ========================================================================== */
-
-.pagination {
-  overflow: hidden;
-  margin-left: -1rem;
-  margin-right: -1rem;
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
-  color: var(--pagination-color);
-  text-align: center;
-}
-
-.pagination-item {
-  display: block;
-  padding: 1rem;
-  border: 1px solid var(--pagination-border);
-}
-
-.pagination-item:first-child {
-  margin-bottom: -1px;
-}
-
-a.pagination-item:hover {
-  background-color: var(--pagination-hover-bg);
-}
-
-@media (min-width: 30em) {
-  .pagination {
-    margin: 3rem 0;
-  }
-  .pagination-item {
-    float: left;
-    width: 50%;
-  }
-  .pagination-item:first-child {
-    margin-bottom: 0;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-  }
-  .pagination-item:last-child {
-    margin-left: -1px;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-  }
-}
-
-
-/* ==========================================================================
-   Reverse Layout
-   ========================================================================== */
-
-.layout-reverse .sidebar {
-  left: auto;
-  right: -14rem;
-}
-
-.layout-reverse .sidebar-toggle {
-  left: auto;
-  right: 1rem;
-}
-
-.layout-reverse #sidebar-checkbox:checked ~ .sidebar,
-.layout-reverse #sidebar-checkbox:checked ~ .wrap,
-.layout-reverse #sidebar-checkbox:checked ~ .sidebar-toggle {
-  -webkit-transform: translateX(-14rem);
-      -ms-transform: translateX(-14rem);
-          transform: translateX(-14rem);
-}
 
 
 /* ==========================================================================
@@ -592,9 +510,7 @@ a.pagination-item:hover {
    ========================================================================== */
 
 .sidebar-overlay #sidebar-checkbox:checked ~ .wrap {
-  -webkit-transform: translateX(0);
-      -ms-transform: translateX(0);
-          transform: translateX(0);
+  transform: translateX(0);
 }
 
 .sidebar-overlay #sidebar-checkbox:checked ~ .sidebar-toggle {
@@ -603,10 +519,6 @@ a.pagination-item:hover {
 
 .sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
   box-shadow: .25rem 0 .5rem var(--sidebar-shadow);
-}
-
-.layout-reverse.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar {
-  box-shadow: -.25rem 0 .5rem var(--sidebar-shadow);
 }
 
 
@@ -624,7 +536,6 @@ a.pagination-item:hover {
   background: transparent;
   color: var(--sidebar-heading);
   cursor: pointer;
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
   font-size: .875rem;
   text-align: left;
   user-select: none;
@@ -635,10 +546,6 @@ a.pagination-item:hover {
     padding: 1rem 1.5rem;
     font-size: .75rem;
   }
-}
-
-.theme-toggle:hover {
-  background-color: transparent;
 }
 
 .toggle-switch {
@@ -663,14 +570,21 @@ a.pagination-item:hover {
   right: 0;
   bottom: 0;
   background-color: var(--toggle-dark);
+  box-shadow: inset 0 0 0 1px var(--sidebar-color);
   transition: .4s;
   border-radius: 20px;
   overflow: hidden;
 }
 
+.toggle-switch input:focus-visible + .toggle-slider {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .toggle-slider:before {
   position: absolute;
   content: "🌙";
+  content: "🌙" / "";
   display: flex;
   align-items: center;
   justify-content: center;
@@ -692,5 +606,21 @@ input:checked + .toggle-slider {
 input:checked + .toggle-slider:before {
   transform: translateX(20px);
   content: "☀️";
+  content: "☀️" / "";
   background-color: var(--toggle-button);
+}
+
+
+/* ==========================================================================
+   Reduced motion
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
