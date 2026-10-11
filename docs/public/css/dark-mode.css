@@ -1,77 +1,48 @@
 /*
- * Dark Mode Theme
- *
- * CSS custom properties for theming. Dark mode is the default.
- * This file contains:
- * - CSS variables for both themes
- * - Theme color applications (colors, backgrounds, borders)
- *
- * Layout and structure, including structural heading typography (weight and
- * size scale), live in lanyon.css. This file carries only color/theme concerns.
+ * Theme colours. Dark is the default; [data-theme="light"] overrides it.
+ * Colours only: layout and type live in lanyon.css. Each token's job and
+ * contrast floor are tabled in _documentation/styling.md.
  */
-
-
-/* ==========================================================================
-   CSS Variables - Dark Mode (Default)
-   ========================================================================== */
 
 :root {
   color-scheme: dark;
-
-  /* Base Theme Colors */
   --body-bg: #1a1a1a;
   --body-color: #d9d9d9;
   --heading-color: #f0f0f0;
   --link-color: #5aa5e6;
   --on-link-color: #1a1a1a;
   --muted-color: #a8a8a8;
-  --rule-color: #444444;
+  --rule-color: #444;
   --control-border: #767676;
   --focus-ring: #5aa5e6;
   --code-bg: #2d2d2d;
+  --warning-color: #f39c12;
+  --success-color: #27ae60;
 
-  /* Sidebar */
+  /* The sidebar is dark in both themes */
   --sidebar-bg: hsl(214, 60%, 20%);
   --sidebar-color: rgba(255, 255, 255, 0.75);
   --sidebar-heading: rgba(255, 255, 255, 0.9);
   --sidebar-border-color: #f2ede7;
   --sidebar-hover-bg: hsl(214, 60%, 15%);
   --sidebar-shadow: rgba(0, 0, 0, 0.1);
-
-  /* Shadows */
   --toggle-shadow: #fff;
-
-  /* Theme Toggle */
   --toggle-dark: #1a1a1a;
   --toggle-light: #f2ede7;
-  --toggle-button: #888888;
+  --toggle-button: #888;
 
-  /* Status accents (card-warning / card-success left rules) */
-  --warning-color: #f39c12;
-  --success-color: #27ae60;
-
-  /* Hamburger Menu Icon - default state, white for dark mode */
-  --hamburger-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23ffffff' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
-
-  /* Hamburger Menu Icon - active state (sidebar open over the dark sidebar bg,
-     so always white in both themes) */
+  /* White menu icon: the dark theme's, and the open sidebar's in both themes */
   --hamburger-icon-active: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23ffffff' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
+  --hamburger-icon: var(--hamburger-icon-active);
 }
-
-
-/* ==========================================================================
-   CSS Variables - Light Mode
-   ========================================================================== */
 
 [data-theme="light"] {
   color-scheme: light;
-
-  /* Base Theme Colors */
   --body-bg: #f2ede7;
   --body-color: #515151;
   --heading-color: #313131;
   --link-color: #1b6497;
-  --on-link-color: #ffffff;
+  --on-link-color: #fff;
   --muted-color: #5f5b57;
   --rule-color: #cfc7bd;
   --control-border: #857e76;
@@ -79,57 +50,42 @@
   --code-bg: #eae5df;
   --warning-color: #9a5b00;
   --success-color: #1e7a45;
-
-  /* Hamburger Menu Icon - dark blue for light mode */
   --hamburger-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' fill='%23214B8A' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
-  /* --hamburger-icon-active inherits white from :root (open sidebar is dark in both themes) */
 }
 
-
-/* ==========================================================================
-   Theme Color Applications
-   ========================================================================== */
-
-/* HTML and Body - both need background to prevent flash */
+/* html and body both carry the background so nothing flashes */
 html,
 body {
   background-color: var(--body-bg);
   color: var(--body-color);
 }
 
-/* Headings - color only; weight, size scale and margins live in lanyon.css */
 h1, h2, h3, h4, h5, h6 {
   color: var(--heading-color);
 }
 
-/* Sidebar theme colors */
-.sidebar {
-  color-scheme: dark;
-  --focus-ring: #ffffff;
-  background-color: var(--sidebar-bg);
-  color: var(--sidebar-color);
-}
-
-.sidebar h1, .sidebar h2, .sidebar h3,
-.sidebar-item, .sidebar-nav-item,
-.sidebar a {
-  color: var(--sidebar-heading);
-}
-
-/* Code and syntax highlighting */
-pre, code {
+pre,
+code {
   background-color: var(--code-bg);
 }
 
-/* In-content links render in the heading color (carried over from the removed
-   .theme-custom-01 rule). :where() keeps this at (0,0,1), so any component
-   class (.card-link, .post-tag, .view-all-link a ...) overrides it without
-   !important. Change the value to var(--link-color) to make prose links blue. */
+/* Prose links take the heading colour. :where() keeps this at (0,0,1) so any
+   component class overrides it; use var(--link-color) for blue prose links. */
 :where(.content) a {
   color: var(--heading-color);
 }
 
-/* Sidebar nav theme borders */
+.sidebar {
+  color-scheme: dark;
+  --focus-ring: #fff;
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-heading);
+}
+
+.sidebar a {
+  color: inherit;
+}
+
 .sidebar-nav {
   border-bottom: 1px solid var(--sidebar-border-color);
 }
@@ -138,7 +94,6 @@ pre, code {
   border-top: 1px solid var(--sidebar-border-color);
 }
 
-/* Masthead theme border */
 .masthead {
   border-bottom: 1px solid var(--control-border);
 }

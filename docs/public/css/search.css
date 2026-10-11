@@ -1,145 +1,56 @@
-/*
- * Search Styles
- *
- * Decoupled search UI styles. The search implementation (Fuse.js, Lunr, etc.)
- * can be swapped without changing these styles.
- */
-
-/* ==========================================================================
-   Search Container
-   ========================================================================== */
+/* Search: the sidebar box (Enter goes to /search/) and the /search/ page's results. */
 
 .search-container {
   padding: 1rem;
 }
 
 @media (min-width: 48em) {
-  .search-container {
-    padding: 1rem 1.5rem;
-  }
+  .search-container { padding: 1rem 1.5rem; }
 }
 
-/* ==========================================================================
-   Search Input
-   ========================================================================== */
+/* Inputs: >= 16px so iOS Safari doesn't zoom the page on focus */
 
-.search-input {
+.search-input,
+.search-page-input {
   width: 100%;
-  padding: 0.5rem 1rem;
-  /* >= 16px so iOS Safari doesn't zoom the page on focus */
   font-size: 1rem;
   color: var(--body-color);
-  background-color: var(--body-bg);
-  border: 1px solid var(--sidebar-border-color);
   border-radius: 4px;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.search-input::placeholder {
-  color: var(--muted-color);
-  opacity: 1;
-}
-
-.search-input:focus {
-  border-color: var(--link-color);
+.search-input {
+  padding: 0.5rem 1rem;
+  background-color: var(--body-bg);
+  border: 1px solid var(--sidebar-border-color);
 }
 
 @media (min-width: 48em) {
-  .search-input {
-    font-size: max(16px, 0.75rem);
-  }
-}
-
-/* ==========================================================================
-   Search Results
-   ========================================================================== */
-
-.search-results {
-  margin-top: 0.5rem;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.search-results:empty {
-  display: none;
-}
-
-.search-result-item {
-  display: block;
-  padding: 0.5rem;
-  color: var(--sidebar-heading);
-  text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.2s ease;
-}
-
-.search-result-item:hover,
-.search-result-item:focus {
-  background-color: var(--sidebar-hover-bg);
-  text-decoration: none;
-}
-
-.search-result-title {
-  display: block;
-  font-weight: bold;
-  font-size: 0.875rem;
-  margin-bottom: 0.25rem;
-}
-
-.search-result-excerpt {
-  display: block;
-  font-size: 0.75rem;
-  line-height: 1.4;
-}
-
-.search-no-results {
-  padding: 0.5rem;
-  font-size: 0.75rem;
-}
-
-/* ==========================================================================
-   Search Page
-   ========================================================================== */
-
-.search-page-container {
-  display: block;
-  width: 100%;
-  margin-bottom: 2rem;
+  .search-input { font-size: max(16px, 0.75rem); }
 }
 
 .search-page-input {
   display: block;
-  width: 100%;
-  box-sizing: border-box;
   padding: 0.75rem 1rem;
-  font-size: 1rem;
-  color: var(--body-color);
   background-color: var(--code-bg);
   border: 1px solid var(--control-border);
-  border-radius: 4px;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-.search-page-input::placeholder {
-  color: var(--muted-color);
-  opacity: 1;
-}
-
-.search-page-input:focus {
+:is(.search-input, .search-page-input):focus {
   border-color: var(--link-color);
 }
 
+.search-page-container {
+  margin-bottom: 2rem;
+}
+
 .search-page-results {
-  display: block;
-  width: 100%;
   margin-top: 1rem;
 }
 
-/* ==========================================================================
-   Search Page Results
-   ========================================================================== */
+/* Results */
 
-.search-page-results .search-result-item {
+.search-result-item {
   display: block;
   padding: 1rem;
   margin-bottom: 1rem;
@@ -151,42 +62,37 @@
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.search-page-results .search-result-item:is(:hover, :focus-visible) {
+.search-result-item:is(:hover, :focus-visible) {
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
   text-decoration: none;
 }
 
-.search-page-results .search-result-item:is(:hover, :focus-visible) :is(.search-result-title, .search-result-date, .search-result-excerpt, .search-result-tag) {
+.search-result-item:is(:hover, :focus-visible) :is(.search-result-title, .search-result-date, .search-result-excerpt, .search-result-tag) {
   color: var(--sidebar-heading);
 }
 
-.search-page-results .search-result-title {
+.search-result-title,
+.search-result-date,
+.search-result-tags,
+.search-result-excerpt {
   display: block;
+}
+
+.search-result-title {
   font-weight: bold;
-  font-size: 1rem;
   margin-bottom: 0.25rem;
   color: var(--heading-color);
 }
 
-.search-page-results .search-result-date {
-  display: block;
+.search-result-date {
   font-size: 0.75rem;
   color: var(--muted-color);
   margin-bottom: 0.5rem;
 }
 
-.search-page-results .search-result-excerpt {
-  display: block;
+.search-result-excerpt {
   font-size: 0.9rem;
-  line-height: 1.5;
-  color: var(--body-color);
-}
-
-.search-page-results .search-no-results {
-  padding: 2rem;
-  text-align: center;
-  color: var(--muted-color);
 }
 
 .search-result-item mark {
@@ -197,7 +103,6 @@
 }
 
 .search-result-tags {
-  display: block;
   margin-top: 0.25rem;
 }
 
@@ -209,4 +114,11 @@
   color: var(--muted-color);
   border: 1px solid var(--rule-color);
   border-radius: 4px;
+}
+
+.search-no-results {
+  padding: 2rem;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted-color);
 }

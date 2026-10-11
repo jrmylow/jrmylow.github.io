@@ -1,100 +1,43 @@
-/*
- * Reusable Card Styles
- * Consolidated card system for use across all pages (index, posts, etc.)
- */
+/* Card system (usage: _documentation/card_guide.md), plus the index and pagination links. */
 
-/* ==========================================================================
-   Card Grid Container
-   ========================================================================== */
+/* Grids: one column, widening at the breakpoints for the -2/-3/-4 variants */
 
 .card-grid {
   display: grid;
+  grid-template-columns: 1fr;
   gap: 1rem;
   margin: 2rem 0;
 }
 
-/* Column configurations */
-.card-grid-1 {
-  grid-template-columns: 1fr;
-}
-
-.card-grid-2 {
-  grid-template-columns: 1fr;
-}
-
 @media (min-width: 48em) {
-  .card-grid-2 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.card-grid-3 {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 48em) {
-  .card-grid-3 {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  :is(.card-grid-2, .card-grid-3, .card-grid-4) { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 64em) {
-  .card-grid-3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.card-grid-4 {
-  grid-template-columns: 1fr;
-}
-
-@media (min-width: 48em) {
-  .card-grid-4 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 64em) {
-  .card-grid-4 {
-    grid-template-columns: repeat(3, 1fr);
-  }
+  :is(.card-grid-3, .card-grid-4) { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (min-width: 80em) {
-  .card-grid-4 {
-    grid-template-columns: repeat(4, 1fr);
-  }
+  .card-grid-4 { grid-template-columns: repeat(4, 1fr); }
 }
 
-/* ==========================================================================
-   Card Link Wrapper
-   ========================================================================== */
+/* The whole card is one link; only its title underlines on hover or focus */
 
 .card-link,
-.card-link:hover,
-.page .card-link,
-.page .card-link:hover {
-  text-decoration: none;
-  color: inherit;
+.card-link:is(:hover, :focus-visible) {
   display: block;
-}
-
-.card-link *,
-.page .card-link * {
+  color: inherit;
   text-decoration: none;
+  border-radius: 8px;
 }
 
-.card-link {
-  border-radius: 8px;
+.card-link * {
+  text-decoration: none;
 }
 
 .card-link:is(:hover, :focus-visible) .card-title {
   text-decoration: underline;
 }
-
-/* ==========================================================================
-   Base Card
-   ========================================================================== */
 
 .card {
   background-color: var(--code-bg);
@@ -117,41 +60,23 @@
   color: var(--sidebar-heading);
 }
 
-/* ==========================================================================
-   Card Variants
-   ========================================================================== */
+/* Variants */
 
 .card.card-highlight {
   border-color: var(--link-color);
   border-width: 2px;
 }
 
-
 .card.card-flat {
   background-color: transparent;
   border: none;
-  padding: 1rem;
 }
 
-/* Info/callout card variants */
-.card.card-info {
-  background-color: var(--code-bg);
-  border-left: 4px solid var(--link-color);
-}
+.card.card-info { border-left: 4px solid var(--link-color); }
+.card.card-warning { border-left: 4px solid var(--warning-color); }
+.card.card-success { border-left: 4px solid var(--success-color); }
 
-.card.card-warning {
-  background-color: var(--code-bg);
-  border-left: 4px solid var(--warning-color);
-}
-
-.card.card-success {
-  background-color: var(--code-bg);
-  border-left: 4px solid var(--success-color);
-}
-
-/* ==========================================================================
-   Card Content Structure
-   ========================================================================== */
+/* Content */
 
 .card-content {
   display: flex;
@@ -159,7 +84,6 @@
   height: 100%;
 }
 
-/* Card header */
 .card-header {
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
@@ -167,11 +91,9 @@
 }
 
 .card-title {
-  margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin: 0 0 0.5rem;
   font-size: 1rem;
   line-height: 1.3;
-  color: var(--heading-color);
 }
 
 .card-subtitle {
@@ -180,7 +102,6 @@
   color: var(--muted-color);
 }
 
-/* Card metadata (date, tags, etc.) */
 .card-meta {
   display: block;
   margin-bottom: 0.75rem;
@@ -188,16 +109,6 @@
   font-size: 0.75rem;
 }
 
-.card-meta-item {
-  display: inline-block;
-  margin-right: 1rem;
-}
-
-.card-meta-item:last-child {
-  margin-right: 0;
-}
-
-/* Card body */
 .card-body {
   color: var(--body-color);
   font-size: 0.9rem;
@@ -207,15 +118,13 @@
 }
 
 .card-body p {
-  margin-top: 0;
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.75rem;
 }
 
 .card-body p:last-child {
   margin-bottom: 0;
 }
 
-/* Card footer */
 .card-footer {
   margin-top: 1rem;
   padding-top: 0.75rem;
@@ -228,13 +137,9 @@
   text-decoration: none;
 }
 
-.card-footer a:hover {
+.card-footer a:is(:hover, :focus-visible) {
   text-decoration: underline;
 }
-
-/* ==========================================================================
-   Card Tags
-   ========================================================================== */
 
 .card-tags {
   display: flex;
@@ -260,44 +165,22 @@
   border-color: var(--link-color);
 }
 
-/* ==========================================================================
-   Responsive Adjustments
-   ========================================================================== */
+/* Index page */
 
-@media (width < 30em) {
-  .card {
-    padding: 0.875rem;
-    min-height: 200px;
-  }
-
-  .card-title {
-    font-size: 0.95rem;
-  }
-
-  .card-body {
-    font-size: 0.85rem;
-  }
-}
-
-/* ==========================================================================
-   Index Page Specific
-   ========================================================================== */
-
-/* Introduction section */
 .home-intro {
   margin-bottom: 3rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid var(--rule-color);
 }
 
-/* View all link - styled like sidebar nav items */
 .view-all-link {
   text-align: center;
-  margin-top: 2rem;
-  margin-bottom: 2rem;
+  margin: 2rem 0;
 }
 
-.view-all-link a {
+/* Button-style links: "View all essays" and the archive's previous/next */
+
+:is(.view-all-link, .pagination-prev, .pagination-next) a {
   display: inline-block;
   padding: 0.5rem 1rem;
   color: var(--heading-color);
@@ -307,32 +190,13 @@
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-.view-all-link a:is(:hover, :focus-visible) {
-  text-decoration: none;
+:is(.view-all-link, .pagination-prev, .pagination-next) a:is(:hover, :focus-visible) {
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
   color: var(--sidebar-heading);
 }
 
-/* ==========================================================================
-   Related Posts Section
-   ========================================================================== */
-
-.related-posts-section {
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 2px solid var(--rule-color);
-}
-
-.related-posts-section h2,
-.related-posts-section h3 {
-  margin-top: 0;
-  margin-bottom: 1.5rem;
-}
-
-/* ==========================================================================
-   Pagination
-   ========================================================================== */
+/* Pagination */
 
 .pagination {
   margin: 2rem 0;
@@ -342,9 +206,7 @@
 }
 
 .pagination-info {
-  display: block;
   margin-bottom: 1rem;
-  color: var(--body-color);
   font-size: 0.9rem;
 }
 
@@ -354,33 +216,9 @@
   gap: 2rem;
 }
 
-.pagination-prev,
-.pagination-next {
-  display: inline-block;
-}
-
-.pagination-prev a,
-.pagination-next a {
-  display: inline-block;
-  padding: 0.5rem 1rem;
-  color: var(--heading-color);
-  text-decoration: none;
-  border: 1px solid var(--control-border);
-  border-radius: 4px;
-  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-}
-
-:is(.pagination-prev, .pagination-next) a:is(:hover, :focus-visible) {
-  text-decoration: none;
-  background-color: var(--sidebar-hover-bg);
-  border-color: var(--sidebar-border-color);
-  color: var(--sidebar-heading);
-}
-
 .pagination-disabled {
   display: inline-block;
   padding: 0.5rem 1rem;
-  color: var(--body-color);
   opacity: 0.4;
   border: 1px solid var(--rule-color);
   border-radius: 4px;
@@ -388,13 +226,16 @@
 }
 
 @media (width < 30em) {
+  .card {
+    padding: 0.875rem;
+    min-height: 200px;
+  }
+
+  .card-title { font-size: 0.95rem; }
+  .card-body { font-size: 0.85rem; }
+
   .pagination-links {
     flex-direction: column;
     gap: 1rem;
-  }
-
-  .pagination-prev,
-  .pagination-next {
-    display: block;
   }
 }

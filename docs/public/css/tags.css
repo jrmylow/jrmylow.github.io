@@ -1,12 +1,4 @@
-/*
- * Tag Styles
- *
- * Styles for tag display on posts and tag pages.
- */
-
-/* ==========================================================================
-   Base Tag Styles (shared)
-   ========================================================================== */
+/* Tags: the chips on posts, and the /tags/ page's filter cloud and post list. */
 
 .post-tag,
 .tag-cloud-item {
@@ -22,7 +14,6 @@
 }
 
 :is(.post-tag, .tag-cloud-item):is(:hover, :focus-visible),
-.tag-cloud-item[aria-pressed="true"],
 .tag-cloud-item.selected {
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
@@ -30,42 +21,25 @@
   text-decoration: none;
 }
 
-/* ==========================================================================
-   Post Tags (on individual posts)
-   ========================================================================== */
-
-.post-tags {
-  margin: 0.5rem 0 1.5rem 0;
+.post-tags,
+.tag-cloud {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 0.5rem;
 }
 
-.post-tags-label {
-  font-size: 0.85rem;
-  color: var(--muted-color);
+.post-tags {
+  margin: 0.5rem 0 1.5rem;
 }
 
-/* ==========================================================================
-   Tag Cloud (on tags page)
-   ========================================================================== */
-
 .tag-cloud {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
   margin: 1.5rem 0;
 }
 
 .tag-cloud-item {
   cursor: pointer;
-  font-family: inherit;
 }
-
-/* ==========================================================================
-   Tags Page - Posts List
-   ========================================================================== */
 
 .tag-posts-container {
   margin: 2rem 0;
@@ -74,9 +48,9 @@
 }
 
 .tag-post-list {
-  list-style: none;
-  padding-left: 0;
   margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .tag-post-item {

@@ -99,6 +99,31 @@ Disables hover styling.
 ```
 Adds a colored left border for callouts.
 
+### Optional Parts
+
+No template uses these yet; they are kept for callout and listing cards:
+
+```html
+<article class="card">
+  <div class="card-content">
+    <div class="card-header">            <!-- groups title and subtitle, with a rule below -->
+      <h3 class="card-title">Title</h3>
+      <p class="card-subtitle">One-line subtitle</p>
+    </div>
+    <div class="card-body"><p>Body text...</p></div>
+    <div class="card-tags">              <!-- wrapping row of tag chips -->
+      <a class="card-tag" href="/tags/?t=notes">notes</a>
+    </div>
+    <div class="card-footer">            <!-- rule above; links in the accent colour -->
+      <a href="/essays/">Read more</a>
+    </div>
+  </div>
+</article>
+```
+
+A card with links inside it (`card-tags`, `card-footer`) must not also be wrapped in a
+`.card-link`: links can't nest.
+
 ## Customizing Number of Posts
 
 In `_layouts/index.html`, find:
@@ -145,19 +170,10 @@ All card styles are in `public/css/cards.css`.
 }
 ```
 
-## Using Related Posts
+## Related Posts
 
-Include related posts in any template:
-
-```liquid
-{% include related.html posts=site.related_posts limit=3 columns=3 %}
-```
-
-Parameters:
-- `posts`: Array of posts (required)
-- `limit`: Number to show (default: 3)
-- `columns`: Grid columns 1-4 (default: 3)
-- `title`: Section heading (default: "Related Posts")
+`_includes/related.html` is not a card grid: it renders a short `.related` list of posts
+that share a tag with the current one, ranked by recency (see the comment in the include).
 
 ## Breakpoint Reference
 

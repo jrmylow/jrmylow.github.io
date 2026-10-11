@@ -2,7 +2,16 @@
 
 An audit of the seven stylesheets under `docs/public/css/`. It lists the problems found and the CSS that replaced each one. Theming background is in `styling.md`.
 
-**Status:** A1–A9 and B1–B8 are applied. The regression tests that guard them are `_tests/test_a11y_*.py` and `_tests/test_stylesheets.py`; see `testing.md`. B9 (heading levels, landmarks, `aria-pressed`/`aria-current`, closing the menu with Escape) changes HTML and JS and is still open.
+**Status:** A1–A9 and B1–B8 are applied. The regression tests that guard them are `_tests/test_a11y_*.py` and `_tests/test_stylesheets.py`; see `testing.md`. B9 (heading levels, landmarks, `aria-pressed`/`aria-current`, closing the menu with Escape, and a focus trap for the command palette) changes HTML and JS and is still open.
+
+**Found while writing the tests, and fixed:**
+- **A5:** Monokai's pink `#f92672` (operators, imports, tags) was 3.93:1; it is now `#fb4f8b` (4.67:1).
+- **A3:** the command palette's placeholder kept Chromium's default grey (3.78:1 dark, 3.96:1 light). One global `::placeholder` rule now covers every input.
+- **A8:** the palette's result links kept the outset ring, which the panel clipped. On the selected row it was also the same colour as the fill. Their ring is now inset, and drawn in `--on-link-color` on the selected row.
+- **A2:** the switch was named "Light theme" while its visible label said "Toggle dark mode" (WCAG 2.5.3 Label in Name). The visible label is now "Light theme".
+- **B7:** four more dead classes were deleted: `.card-meta-item`, `.related-posts-section`, `.search-results` and `.post-tags-label`.
+
+**Size:** after the fixes, a pass for size merged duplicate rules and media queries, grouped Monokai by colour, deleted declarations that restated defaults, and cut comments to their reasons. The seven sheets went from 41,193 to 22,980 bytes (−44%), and from 9,515 to 7,580 bytes gzipped (−20%). A computed-style diff of every element (10 pages, both themes, 1280px and 375px, sidebar open and closed) found no visible change beyond the fixes listed here.
 
 ## Method
 
