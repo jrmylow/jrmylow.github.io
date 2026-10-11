@@ -29,6 +29,10 @@ or to specific markup.
   theme colours (`DARK_BG_COLOR`, `LIGHT_BG_COLOR`), and the
   `PERF_` budget. Import from here rather than hardcoding, so a UI change is a
   one-line edit.
+- **`a11y.py`** holds the WCAG 2.2 contrast maths for the accessibility tests.
+  It composites a text, border or outline colour through its alpha, every
+  background behind it and every ancestor's `opacity`, as the browser paints
+  it, and reports the same ratios axe-core does.
 
 ## Test server
 
@@ -147,6 +151,30 @@ By area (`_tests/<file>` -> what it guards):
 - `test_previews` — preview fixtures (designed build) are reachable, carry
   `noindex`, and are absent from the listing, archive, search index, and feed;
   published posts (real build) are not noindexed.
+- `test_a11y_keyboard` — the sidebar and theme switch from the keyboard: the
+  menu is the first Tab stop and opens with Space; both controls have names
+  (the switch's contains its visible label); focus rings appear only on focus;
+  the moon/sun glyphs are hidden from assistive tech; the switch track is 3:1.
+- `test_a11y_contrast` — text contrast (4.5:1, 3:1 large) on every page type in
+  both themes, sidebar open and closed, in hover and focus states, for
+  placeholders, the command palette's selected row and every Monokai token.
+- `test_a11y_layout` — anchor jumps and focused elements land below the sticky
+  masthead; the viewport is the scroller; the masthead goes static on short
+  viewports; nothing is clipped or scrolls sideways at 320px (display maths
+  scrolls in its own box); the root font size follows the reader's browser
+  default; text inputs are at least 16px.
+- `test_a11y_focus` — every Tab stop shows a whole 2px ring at 3:1 (pages, open
+  sidebar, command palette); whatever hover changes, keyboard focus changes too;
+  control boundaries are 3:1 and decorative rules are visible.
+- `test_stylesheets` — stylesheet hygiene: no `!important` outside the
+  reduced-motion block; every custom property declared and used; colour
+  literals only in the theme files; the Google Fonts request matches the fonts
+  and weights used; no overlapping breakpoints; no class styled but never
+  emitted; no property owned by two sheets; reduced motion stops transitions.
+
+  The five `test_a11y_*`/`test_stylesheets` modules map to findings in
+  `css_audit.md`, and each test fails on the pre-fix CSS for its finding's
+  reason. They roughly double the suite's run time (about 3m45s in total).
 - `test_harness`, `test_discovery`, `test_corpus` — the suite itself: HTTP
   errors fail tests, each server is this session's build, each manifest lists
   exactly its build's sources, the pre-commit gates fail when they should,
