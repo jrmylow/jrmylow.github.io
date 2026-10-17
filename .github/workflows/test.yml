@@ -2,8 +2,19 @@
 name: test
 
 on:
+  # Branch pushes are covered by their pull request; only master runs on push.
   push:
+    branches: [master]
   pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new push to a PR cancels its stale run; master runs always finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
@@ -12,6 +23,8 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Build the dev image
         run: make build
       - name: Sync the venv volume (networked)
