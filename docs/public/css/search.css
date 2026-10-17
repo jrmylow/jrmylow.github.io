@@ -32,13 +32,7 @@
   background-color: var(--body-bg);
   border: 1px solid var(--sidebar-border-color);
   border-radius: 4px;
-  outline: none;
   transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.search-input::placeholder {
-  color: var(--body-color);
-  opacity: 0.6;
 }
 
 .search-input:focus {
@@ -90,7 +84,6 @@
 .search-result-excerpt {
   display: block;
   font-size: 0.75rem;
-  opacity: 0.8;
   line-height: 1.4;
 }
 
@@ -98,7 +91,6 @@
   padding: 0.5rem;
   font-size: 0.75rem;
   color: var(--sidebar-heading);
-  opacity: 0.7;
 }
 
 /* ==========================================================================
@@ -133,13 +125,7 @@
   background-color: var(--code-bg);
   border: 1px solid var(--header-border-color);
   border-radius: 4px;
-  outline: none;
   transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-
-.search-page-input::placeholder {
-  color: var(--body-color);
-  opacity: 0.6;
 }
 
 .search-page-input:focus {
@@ -168,15 +154,14 @@
   transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.search-page-results .search-result-item:hover {
+.search-page-results .search-result-item:hover,
+.search-page-results .search-result-item:focus-visible {
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
   text-decoration: none;
 }
 
-.search-page-results .search-result-item:hover .search-result-title,
-.search-page-results .search-result-item:hover .search-result-date,
-.search-page-results .search-result-item:hover .search-result-excerpt {
+.search-page-results .search-result-item:is(:hover, :focus-visible) :is(.search-result-title, .search-result-date, .search-result-excerpt, .search-result-tag) {
   color: var(--sidebar-heading);
 }
 
@@ -191,8 +176,7 @@
 .search-page-results .search-result-date {
   display: block;
   font-size: 0.75rem;
-  color: var(--body-color);
-  opacity: 0.7;
+  color: var(--muted-color);
   margin-bottom: 0.5rem;
 }
 
@@ -206,13 +190,12 @@
 .search-page-results .search-no-results {
   padding: 2rem;
   text-align: center;
-  color: var(--body-color);
-  opacity: 0.7;
+  color: var(--muted-color);
 }
 
 .search-result-item mark {
   background: var(--link-color);
-  color: #fff;
+  color: var(--on-link-color);
   padding: 0 0.1em;
   border-radius: 2px;
 }
@@ -227,8 +210,7 @@
   margin-right: 0.35rem;
   padding: 0.05rem 0.4rem;
   font-size: 0.7rem;
-  color: var(--body-color);
-  border: 1px solid var(--sidebar-border-color);
+  color: var(--muted-color);
+  border: 1px solid var(--border-color);
   border-radius: 3px;
-  opacity: 0.8;
 }

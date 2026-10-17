@@ -22,7 +22,7 @@
 .series {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--sidebar-border-color);
+  border-top: 1px solid var(--border-color);
 }
 
 .related h2,
@@ -48,8 +48,7 @@
 .related-date {
   margin-left: 0.5rem;
   font-size: 0.8rem;
-  color: var(--body-color);
-  opacity: 0.6;
+  color: var(--muted-color);
 }
 
 .series-current {
@@ -80,7 +79,7 @@
   width: 100%;
   max-width: 34rem;
   background: var(--body-bg);
-  border: 1px solid var(--sidebar-border-color);
+  border: 1px solid var(--control-border);
   border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   overflow: hidden;
@@ -95,8 +94,13 @@
   color: var(--body-color);
   background: var(--body-bg);
   border: 0;
-  border-bottom: 1px solid var(--sidebar-border-color);
-  outline: none;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* The panel clips its contents, so its focus rings are drawn inside */
+.command-palette-input:focus-visible,
+.command-palette-result:focus-visible {
+  outline-offset: -2px;
 }
 
 .command-palette-results {
@@ -123,7 +127,8 @@
 }
 
 .command-palette-results li[aria-selected="true"] .command-palette-result {
-  color: #fff;
+  color: var(--on-link-color);
+  outline-color: var(--on-link-color);
 }
 
 .command-palette-open {
@@ -141,7 +146,7 @@
 .webmentions {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--sidebar-border-color);
+  border-top: 1px solid var(--border-color);
 }
 
 .webmentions h2 {

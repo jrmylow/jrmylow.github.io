@@ -21,7 +21,7 @@ class TestThemeColors:
         page.goto(f"{jekyll_server}/")
         sidebar_bg = _style(page, ".sidebar", "backgroundColor")
 
-        # The checkbox is display:none, so set its checked state directly;
+        # Set the checked state directly (no click, so no transition to wait for);
         # CSS `:checked ~ .sidebar-toggle` reflects the DOM property immediately.
         page.evaluate("document.getElementById('sidebar-checkbox').checked = true")
         toggle_bg = _style(page, ".sidebar-toggle", "backgroundColor")

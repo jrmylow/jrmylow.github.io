@@ -18,6 +18,16 @@ Loaded in this order from `head.html`. Order matters — later files win on equa
 
 Division of labour: structural typography (heading weight, size scale, margins) lives in `lanyon.css`; `dark-mode.css` sets heading **colour only**. This resolves an earlier conflict where both files set heading weight and fought by load order.
 
+Some tokens exist to meet WCAG 2.2 AA contrast; their values per theme are measured in `css_audit.md`, and `_tests/test_a11y.py` guards them:
+
+| Token | Job | Floor |
+|---|---|---|
+| `--muted-color` | secondary text (dates, meta, placeholders); use it instead of lowering `opacity` | 4.5:1 on `--body-bg` and `--code-bg` |
+| `--link-color` / `--on-link-color` | the accent fill and the text on it (search `mark`, the palette's selected row) | 4.5:1 as a pair |
+| `--control-border` | boundaries that identify a control: buttons, chips, the palette panel | 3:1 on `--body-bg` |
+| `--border-color` | decorative rules: `hr`, tables, section dividers | visible (it used to equal the dark background) |
+| `--focus-ring` | the global `:focus-visible` outline; `.sidebar` sets it to white | 3:1 on what it sits on |
+
 ## The no-flash fix (FOUC)
 
 **Problem.** CSS defaulted to the dark theme and the theme JS ran deferred on `DOMContentLoaded`, so navigating in light mode briefly flashed dark before the script corrected it.
@@ -48,6 +58,9 @@ In `cards.css`, `.card-grid` is a CSS grid (gap `1rem`, vertical margin `2rem`);
 
 - **Hamburger icon:** a `--hamburger-icon` variable (with an active variant that inherits white, since the open sidebar is dark in both themes). It was previously hardcoded in three places.
 - **In-content links:** `.container.content a` uses the heading colour, carried over from a removed `.theme-custom-01` body class that was folded into variables. As a result `--link-color` is unused for prose; delete that block to switch prose links to blue.
+- **Focus:** one global `:focus-visible` outline (`2px solid var(--focus-ring)`, offset `2px`), and no `outline: none`. Inside the command palette, whose panel clips its contents, rings are inset. Hover styles have `:focus-visible` twins.
+- **Menu checkbox:** visually hidden but focusable (not `display: none`), so the menu opens from the keyboard; its focus ring is drawn on `.sidebar-toggle`.
+- **Scrolling:** the viewport scrolls, not `<body>` (no `overflow-x: hidden; height: 100%` on `html, body`). That lets `html { scroll-padding-top: 4.5rem }` keep anchor jumps and focus clear of the sticky masthead, which goes static on viewports under 30em tall. Display maths scrolls inside its own box.
 - **Dead weight slated for removal:** stale vendor prefixes (`-webkit-`/`-ms-` on `transform`/`transition`) and a duplicate `white-space` declaration in `pre`.
 - **Sass caveat:** `jekyll-sass-converter` is pinned at 1.5.2. The stylesheets are plain `.css` today, so it never runs; if any file becomes `.scss`, avoid Dart-only syntax (`@use`, `math.div`).
 

@@ -45,10 +45,13 @@
 
 html,
 body {
-  overflow-x: hidden;
-  height: 100%;
   margin: 0;
   padding: 0;
+}
+
+/* The viewport scrolls (not body), so jumps and focus land below the sticky masthead */
+html {
+  scroll-padding-top: 4.5rem;
 }
 
 body {
@@ -98,6 +101,16 @@ a strong {
 a:hover,
 a:focus {
   text-decoration: underline;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+::placeholder {
+  color: var(--muted-color);
+  opacity: 1;
 }
 
 .post a,
@@ -186,6 +199,13 @@ blockquote p:last-child {
   margin-bottom: 0;
 }
 
+/* Display maths scrolls in its own box on narrow screens */
+mjx-container[display="true"] {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 /* Images */
 img {
   display: block;
@@ -268,6 +288,11 @@ tbody tr:nth-child(odd) th {
   background-color: var(--body-bg);
   width: 100%;
   flex-shrink: 0;
+}
+
+@media (max-height: 30em) {
+  html { scroll-padding-top: 0; }
+  .masthead { position: static; }
 }
 
 .masthead-title {
@@ -362,14 +387,24 @@ a.sidebar-nav-item:focus {
   }
 }
 
-/* Hide the sidebar checkbox */
+/* Visually hidden but focusable; the label is its visible face */
 .sidebar-checkbox {
-  display: none;
-  position: absolute;
-  opacity: 0;
-  -webkit-user-select: none;
-     -moz-user-select: none;
-          user-select: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+#sidebar-checkbox:focus-visible ~ .sidebar-toggle {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
 }
 
 /* Sidebar toggle button */
@@ -397,13 +432,11 @@ a.sidebar-nav-item:focus {
 
 /* When sidebar is open/active/focused, always use white icon (background is dark) */
 .sidebar-toggle:active::before,
-#sidebar-checkbox:focus ~ .sidebar-toggle::before,
 #sidebar-checkbox:checked ~ .sidebar-toggle::before {
   background: var(--hamburger-icon-active) no-repeat;
 }
 
 .sidebar-toggle:active,
-#sidebar-checkbox:focus ~ .sidebar-toggle,
 #sidebar-checkbox:checked ~ .sidebar-toggle {
   color: var(--heading-color);
   background-color: var(--sidebar-bg);
@@ -663,14 +696,21 @@ a.pagination-item:hover {
   right: 0;
   bottom: 0;
   background-color: var(--toggle-dark);
+  box-shadow: inset 0 0 0 1px var(--sidebar-color);
   transition: .4s;
   border-radius: 20px;
   overflow: hidden;
 }
 
+.toggle-switch input:focus-visible + .toggle-slider {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 .toggle-slider:before {
   position: absolute;
   content: "🌙";
+  content: "🌙" / "";
   display: flex;
   align-items: center;
   justify-content: center;
@@ -692,5 +732,6 @@ input:checked + .toggle-slider {
 input:checked + .toggle-slider:before {
   transform: translateX(20px);
   content: "☀️";
+  content: "☀️" / "";
   background-color: var(--toggle-button);
 }

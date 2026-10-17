@@ -84,7 +84,8 @@
   text-decoration: none;
 }
 
-.card-link:hover .card-title {
+.card-link:hover .card-title,
+.card-link:focus-visible .card-title {
   text-decoration: underline;
 }
 
@@ -104,7 +105,8 @@
   min-height: 250px;
 }
 
-.card:hover {
+.card:hover,
+.card-link:focus-visible .card {
   background-color: var(--sidebar-hover-bg);
   border-color: var(--sidebar-border-color);
 }
@@ -112,7 +114,8 @@
 .card:hover .card-title,
 .card:hover .card-meta,
 .card:hover .card-body,
-.card:hover .card-subtitle {
+.card:hover .card-subtitle,
+.card-link:focus-visible .card :is(.card-title, .card-meta, .card-body, .card-subtitle) {
   color: var(--sidebar-heading) !important;
 }
 
@@ -125,7 +128,8 @@
   border-width: 2px;
 }
 
-.card.card-no-hover:hover {
+.card.card-no-hover:hover,
+.card-link:focus-visible .card.card-no-hover {
   background-color: var(--code-bg);
   border-color: var(--header-border-color);
 }
@@ -187,16 +191,14 @@
 .card-subtitle {
   margin: 0;
   font-size: 0.85rem;
-  color: var(--body-color);
-  opacity: 0.8;
+  color: var(--muted-color);
 }
 
 /* Card metadata (date, tags, etc.) */
 .card-meta {
   display: block;
   margin-bottom: 0.75rem;
-  color: var(--body-color);
-  opacity: 0.7;
+  color: var(--muted-color);
   font-size: 0.75rem;
 }
 
@@ -266,9 +268,10 @@
   text-decoration: none;
 }
 
-.card-tag:hover {
+.card-tag:hover,
+.card-tag:focus-visible {
   background-color: var(--link-color);
-  color: var(--body-bg);
+  color: var(--on-link-color);
   border-color: var(--link-color);
 }
 
@@ -314,7 +317,7 @@
   padding: 0.5rem 1rem;
   color: var(--heading-color);
   text-decoration: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--control-border);
   border-radius: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
@@ -378,7 +381,7 @@
   padding: 0.5rem 1rem;
   color: var(--heading-color);
   text-decoration: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--control-border);
   border-radius: 4px;
   transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
