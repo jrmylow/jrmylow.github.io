@@ -26,7 +26,7 @@
       {% assign nav_pages = site.pages | where_exp: "p", "p.nav_order" | sort: "nav_order" %}
       {% for node in nav_pages %}
       {% assign label = node.nav_title | default: node.title %}
-      <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}" href="{{ node.url | relative_url }}">{{ label }}</a>
+      <a class="sidebar-nav-item{% if page.url == node.url %} active{% endif %}"{% if page.url == node.url %} aria-current="page"{% endif %} href="{{ node.url | relative_url }}">{{ label }}</a>
       {% endfor %}
     </nav>
   </div>

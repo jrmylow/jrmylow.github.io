@@ -11,10 +11,11 @@
     <div class="wrap">
       <div class="masthead">
         <div class="container">
-          <h3 class="masthead-title">
+          {% if page.url == "/" %}{% assign title_tag = "h1" %}{% else %}{% assign title_tag = "p" %}{% endif %}
+          <{{ title_tag }} class="masthead-title">
             <a href="{{ site.baseurl }}/" title="Home">{{ site.title }}</a>
             <small>{{ site.tagline }}</small>
-          </h3>
+          </{{ title_tag }}>
         </div>
       </div>
 

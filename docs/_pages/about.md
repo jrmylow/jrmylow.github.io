@@ -9,7 +9,7 @@ My name is Jeremy, and you can find me here at [jrmylow.com]({{site.url}}). I he
 
 I've been privileged to work across ambitious projects and programmes across government, healthcare, financial services, engineering, and infrastructure. If you would like to talk about this, please drop me an [email](mailto:{{site.author.email}}) or get in touch [here](/contact).
 
-### Purpose
+## Purpose
 The [most important problems](https://www.cs.virginia.edu/~robins/YouAndYourResearch.html) that I think and write about are:
 * Systems of how people solve (knowledge) problems - including getting better at problem-solving.
 * Systems of how people set up feedback loops to help them understand the world (or at least their business). I'm particularly interested in:
