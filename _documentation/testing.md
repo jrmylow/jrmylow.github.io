@@ -239,9 +239,21 @@ the designed build only; nothing test-only is published.
 
 ## CI
 
-`.github/workflows/test.yml` runs on every push and pull request. It builds the
-image, syncs the venv volume, and runs `make test IT=`, so CI and local runs
-use the same sealed container.
+Two workflows run on every pull request and every push to `master`, and can be
+started by hand from the Actions tab:
+
+- `.github/workflows/test.yml` builds the image, syncs the venv volume, and runs
+  `make test IT=`, so CI and local runs use the same sealed container.
+- `.github/workflows/lint.yml` checks `uv.lock` matches `pyproject.toml` and runs
+  the pre-commit hooks over every file. It skips the Jekyll build hook, since
+  the test workflow already builds the site.
+
+A new push to a pull request cancels its stale runs. `.github/dependabot.yml`
+opens one grouped version-update PR a month each for Actions, Python and Ruby.
+
+GitHub Pages builds and deploys `docs/` from `master` itself; neither workflow
+deploys. Making `test` and `pre-commit` required checks in the branch rules for
+`master` stops a red PR from merging.
 
 To test a server that is already running instead, set `JEKYLL_URL`. It must
 serve a static build (`jekyll build` plus any static file server), not
