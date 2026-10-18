@@ -28,6 +28,17 @@ class TestThemeColors:
 
         assert toggle_bg == sidebar_bg, f"Open toggle bg {toggle_bg} should match sidebar bg {sidebar_bg}"
 
+    def test_native_controls_follow_the_theme(self, page: Page, jekyll_server: str):
+        """`color-scheme` matches the theme, so scrollbars and form controls aren't light in dark
+        mode, and the sidebar, dark in both themes, is always `dark`. Old: `normal` everywhere.
+        """
+        for theme in ("dark", "light"):
+            page.goto(f"{jekyll_server}/")
+            page.evaluate(f"localStorage.setItem('theme', '{theme}')")
+            page.reload()
+            assert _style(page, "html", "colorScheme") == theme, f"html color-scheme in the {theme} theme"
+            assert _style(page, ".sidebar", "colorScheme") == "dark", f"sidebar color-scheme in the {theme} theme"
+
     def test_content_links_use_heading_color(self, page: Page, jekyll_server: str):
         """In-content links render in the heading color, not the link color."""
         page.goto(f"{jekyll_server}/essays/")

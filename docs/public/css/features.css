@@ -11,6 +11,7 @@
  *   2. Sidenotes
  *   3. Command palette
  *   4. Webmentions
+ *   5. Collapsible box
  */
 
 /* ==========================================================================
@@ -179,4 +180,70 @@
 .webmention-content {
   margin: 0.25rem 0 0;
   font-size: 0.9rem;
+}
+
+/* ==========================================================================
+   5. Collapsible box (_includes/details_open.html, details_close.html)
+   ========================================================================== */
+
+/* Card colours (cards.css), so a box in an essay matches the post cards */
+.collapsible {
+  margin: 1.5rem 0;
+  padding: 0 1rem;
+  background-color: var(--code-bg);
+  border: 1px solid var(--header-border-color);
+  border-radius: 8px;
+}
+
+.collapsible > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0;
+  color: var(--heading-color);
+  cursor: pointer;
+  list-style: none;
+}
+
+.collapsible > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron drawn from two borders: points right when closed, down when open */
+.collapsible > summary::before {
+  content: "";
+  flex: none;
+  width: 0.45em;
+  height: 0.45em;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 0.2s ease;
+}
+
+.collapsible[open] > summary::before {
+  transform: rotate(45deg);
+}
+
+.collapsible > summary:hover {
+  text-decoration: underline;
+}
+
+.collapsible[open] > summary {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.collapsible > summary + * {
+  margin-top: 0;
+}
+
+.collapsible[open] > :last-child {
+  margin-bottom: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .collapsible > summary::before {
+    transition: none;
+  }
 }

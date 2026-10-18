@@ -27,6 +27,19 @@ class TestSearchBar:
         search_input = page.locator(SELECTORS["search_input"])
         assert search_input.count() == 1, "Should have one search input"
 
+    def test_sidebar_search_text_is_at_least_16px(self, page: Page, jekyll_server: str):
+        """The sidebar search box's text is at least 16px, on phones and desktops.
+
+        iOS Safari zooms the whole page when an input under 16px takes focus. Old: 14px on
+        phones, 15px from 48em.
+        """
+        for width in (375, 1280):
+            page.set_viewport_size({"width": width, "height": 800})
+            page.goto(jekyll_server)
+            page.locator(SELECTORS["sidebar_toggle"]).click()
+            size = page.locator(SELECTORS["search_input"]).evaluate("el => parseFloat(getComputedStyle(el).fontSize)")
+            assert size >= 16, f"sidebar search text is {size}px at {width}px wide; iOS zooms below 16px"
+
     def test_search_bar_position_after_theme_toggle(self, page: Page, jekyll_server: str):
         """Search bar should appear after theme toggle in DOM order."""
         page.goto(jekyll_server)

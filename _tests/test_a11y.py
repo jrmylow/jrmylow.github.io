@@ -26,6 +26,7 @@ from playwright.sync_api import Page, expect
 THEMES = ["dark", "light"]
 WCAG_A_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 A11Y_DEMO = "2024-02-01-a11y-demo.md"
+DETAILS_DEMO = "2024-03-01-details-demo.md"
 QUERY = "designed"  # in every designed post's title, so search and the palette return results
 AXE = Axe()
 
@@ -39,6 +40,17 @@ def _open(page: Page, url: str, theme: str) -> None:
 
 def _demo_url(site) -> str:
     return f"{site.url}{site.document(A11Y_DEMO)['url']}"
+
+
+def _details_url(site) -> str:
+    return f"{site.url}{site.document(DETAILS_DEMO)['url']}"
+
+
+def _open_details(page: Page) -> None:
+    """Open every collapsible box, so the scan sees their contents too."""
+    for summary in page.locator("details.collapsible:not([open]) > summary").all():
+        summary.click()
+    expect(page.locator("details.collapsible:not([open])")).to_have_count(0)
 
 
 def _wait_for_maths(page: Page) -> None:
@@ -69,6 +81,7 @@ DESIGNED_POST = corpus.DESIGNED[0].filename
 KNOWN_MARKUP_ISSUES = {
     # kramdown writes role="doc-endnote" on footnotes, a role DPUB-ARIA 1.1 deprecated.
     "demo": ["aria-deprecated-role"],
+    "collapsible": ["aria-deprecated-role"],
     # command-palette.js: its role="listbox" has no name, and each role="option" holds a link.
     "command palette": ["aria-input-field-name", "nested-interactive"],
 }
@@ -84,6 +97,7 @@ SCANS = [
     ("search", f"/search/?q={QUERY}", lambda page: expect(page.locator(".search-result-item").first).to_be_visible()),
     ("post", lambda site: f"{site.url}{site.document(DESIGNED_POST)['url']}", None),
     ("demo", _demo_url, _wait_for_maths),
+    ("collapsible", _details_url, _open_details),
     ("sidebar open", "/", _open_sidebar),
     ("command palette", "/", _open_palette),
 ]
@@ -138,6 +152,63 @@ def test_menu_and_theme_switch_work_from_the_keyboard(page: Page, jekyll_server:
 
     page.keyboard.press("Space")
     expect(page.locator("html")).to_have_attribute("data-theme", "light")
+
+
+def test_escape_closes_the_menu_and_returns_focus(page: Page, jekyll_server: str):
+    """2.1.1 (A): Escape closes the open menu; 2.4.3 (A): focus goes back to the menu control
+    instead of being left on a control the menu just hid.
+
+    Old: the menu closed only on a click outside it, so a keyboard user had to Shift+Tab
+    back through every control in the sidebar to reach the hamburger.
+    """
+    _open(page, f"{jekyll_server}/", "dark")
+    menu = page.locator("#sidebar-checkbox")
+    sidebar = page.locator("#sidebar")
+    page.keyboard.press("Tab")
+    expect(menu).to_be_focused()
+    page.keyboard.press("Space")
+    expect(sidebar).to_be_visible()
+    page.keyboard.press("Tab")  # into the menu, onto a control that closing it will hide
+    expect(page.locator(".theme-toggle").get_by_role("switch")).to_be_focused()
+
+    page.keyboard.press("Escape")
+    expect(menu).not_to_be_checked()
+    expect(sidebar).to_be_hidden()
+    expect(menu, "focus should return to the menu control").to_be_focused()
+
+
+# =============================================================================
+# 1.3.1 Info and Relationships, 2.4.6 Headings and Labels
+# =============================================================================
+
+HEADINGS_JS = """() => [...document.querySelectorAll('h1, h2, h3, h4, h5, h6')]
+  .filter((h) => h.checkVisibility())
+  .map((h) => [Number(h.tagName[1]), h.textContent.trim().slice(0, 40)])"""
+
+
+def test_each_page_has_one_h1_and_no_skipped_heading_levels(page: Page, designed_site):
+    """1.3.1 (A), 2.4.6 (AA): every page type has exactly one h1, and headings never skip a
+    level going down (h1 then h3), so heading navigation gives a true outline of the page.
+
+    Old: the site title was an h3 on every page, page titles were h3, and the home and
+    other non-post pages had no h1 at all.
+    """
+    page.add_init_script("localStorage.setItem('theme', 'dark')")
+    problems = []
+    for name, where, ready in SCANS:
+        if name in ("sidebar open", "command palette"):
+            continue  # states of a page, not page types
+        page.goto(where(designed_site) if callable(where) else f"{designed_site.url}{where}")
+        if ready:
+            ready(page)
+        headings = page.evaluate(HEADINGS_JS)
+        h1s = [text for level, text in headings if level == 1]
+        if len(h1s) != 1:
+            problems.append(f"{name}: {len(h1s)} h1 elements {h1s}")
+        for (above, _), (level, text) in zip(headings, headings[1:]):
+            if level > above + 1:
+                problems.append(f"{name}: h{level} {text!r} follows an h{above}")
+    assert not problems, "\n  ".join(problems)
 
 
 # =============================================================================

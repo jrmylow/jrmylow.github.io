@@ -152,6 +152,10 @@ By area (`_tests/<file>` -> what it guards):
   post appears exactly once, and each page's nav matches its position.
 - `test_search` — sidebar search, the `/search/` page, and `search-index.json`
   shape/contents.
+- `test_details` — the collapsible box includes: Markdown in the summary and
+  body is converted in the post's own pass (footnotes, reference links, heading
+  ids), boxes start closed unless `open` is passed, and toggle by mouse and
+  keyboard (see `collapsible.md`).
 - `test_analytics` — the GoatCounter script and dynamic noscript fallback (see
   `analytics.md`).
 - `test_performance` — the budget below.
@@ -163,7 +167,9 @@ By area (`_tests/<file>` -> what it guards):
   rules, covers contrast, names, labels and ARIA. Interaction tests cover what
   a scanner can't see, each tied to a success criterion and to a failure the
   audit found (`css_audit.md`):
-  - reaching and operating the menu by keyboard (2.1.1);
+  - reaching and operating the menu by keyboard, and closing it with Escape
+    with focus returned to its control (2.1.1, 2.4.3);
+  - one `<h1>` per page and no skipped heading levels (1.3.1, 2.4.6);
   - a visible focus ring on every Tab stop (2.4.7);
   - focus and jump targets not hidden by the sticky masthead (2.4.11);
   - nothing clipped at 320px (1.4.10);
@@ -239,9 +245,21 @@ the designed build only; nothing test-only is published.
 
 ## CI
 
-`.github/workflows/test.yml` runs on every push and pull request. It builds the
-image, syncs the venv volume, and runs `make test IT=`, so CI and local runs
-use the same sealed container.
+Two workflows run on every pull request and every push to `master`, and can be
+started by hand from the Actions tab:
+
+- `.github/workflows/test.yml` builds the image, syncs the venv volume, and runs
+  `make test IT=`, so CI and local runs use the same sealed container.
+- `.github/workflows/lint.yml` checks `uv.lock` matches `pyproject.toml` and runs
+  the pre-commit hooks over every file. It skips the Jekyll build hook, since
+  the test workflow already builds the site.
+
+A new push to a pull request cancels its stale runs. `.github/dependabot.yml`
+opens one grouped version-update PR a month each for Actions, Python and Ruby.
+
+GitHub Pages builds and deploys `docs/` from `master` itself; neither workflow
+deploys. Making `test` and `pre-commit` required checks in the branch rules for
+`master` stops a red PR from merging.
 
 To test a server that is already running instead, set `JEKYLL_URL`. It must
 serve a static build (`jekyll build` plus any static file server), not

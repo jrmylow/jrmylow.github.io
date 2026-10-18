@@ -5,9 +5,14 @@ An audit of the seven stylesheets under `docs/public/css/`. It lists the problem
 **Status.** This audit is landing in stages:
 
 - **Accessibility (this change):** the WCAG 2.2 A/AA fixes, A1–A9, are applied, along with the gaps the first round of regression tests found (listed below). `_tests/test_a11y.py` guards them; see `testing.md`. To keep the change focused, it gives `--border-color` new values rather than renaming it to `--rule-color`. It also keeps the `!important` overrides (B1).
-- **Follow-up (size and hygiene):** B1–B8, plus a pass that makes the stylesheets smaller. These are consistency and size changes, not WCAG fixes.
-- **Open, outside CSS (B9):** the heading levels and landmarks, `aria-pressed`/`aria-current`, closing the menu with Escape, and two markup issues the axe scan reports. These are switched off in the scan only on the views where they occur:
-  - kramdown writes `role="doc-endnote"` on footnotes, a role DPUB-ARIA 1.1 deprecated (axe `aria-deprecated-role`, WCAG 4.1.2).
+- **Second change (markup and small fixes):**
+  - Each page has one `<h1>`: the site title on the home page, the page or post title elsewhere. Headings no longer skip levels, and page titles take the `<h1>` size that post titles use.
+  - Escape closes the menu and returns focus to its control.
+  - The nav marks the current page with `aria-current`, and tag buttons show their state with `aria-pressed`.
+  - kramdown's deprecated footnote role is stripped in `post.html`.
+  - From B2–B5: `color-scheme` per theme, a font request for PT Sans 400/700/italic only, and 16px sidebar search text.
+- **Follow-up (size and hygiene):** the rest of B1–B8, plus a pass that makes the stylesheets smaller. These are consistency and size changes, not WCAG fixes.
+- **Open, outside CSS (B9):** landmarks (`<main>`, a skip link), and one markup issue the axe scan reports, switched off in the scan only on the command palette view:
   - The command palette's `role="listbox"` has no name, and each `role="option"` row contains a link (axe `aria-input-field-name`, `nested-interactive`). Fixing them means choosing an ARIA pattern for the palette: a combobox with `aria-activedescendant`, or a plain list of links.
 
 **Found by the regression tests, and fixed:**
