@@ -18,6 +18,7 @@ FIXTURE = "2024-03-01-details-demo.md"
 BOX = ".collapsible"
 SUMMARY = ".collapsible-summary"
 TOGGLE = "details > summary"
+TITLE = ".collapsible-title"
 
 
 @pytest.fixture
@@ -28,7 +29,7 @@ def fixture_url(designed_site) -> str:
 @pytest.fixture
 def boxes(page: Page, fixture_url: str):
     page.goto(fixture_url)
-    expect(page.locator(BOX)).to_have_count(3)
+    expect(page.locator(BOX)).to_have_count(4)
     return page.locator(BOX)
 
 
@@ -203,3 +204,51 @@ class TestSummaryLayout:
         where = boxes.nth(2).locator(SUMMARY).evaluate(LINK_IN_FLOW_JS)
         assert abs(where["top"] - where["beforeTop"]) < 2, where
         assert 0 <= where["left"] - where["beforeRight"] < 2, where
+
+
+# Where a run-in title's last line ends, and where the summary text after it starts.
+RUN_IN_JS = """el => {
+    const title = el.querySelector(".collapsible-title");
+    const text = title.nextElementSibling;
+    const end = [...title.getClientRects()].pop();
+    const start = text.getClientRects()[0];
+    return { titleTop: end.top, titleRight: end.right, textTop: start.top, textLeft: start.left };
+}"""
+
+
+class TestTitle:
+    """An optional title: a heading run in at the start of the summary, outside the toggle."""
+
+    def test_title_is_a_heading_at_the_given_level(self, boxes):
+        title = boxes.nth(3).locator(TITLE)
+        expect(title).to_have_text("A titled box")
+        assert title.evaluate("el => el.tagName") == "H2"
+
+    def test_title_gets_an_id_from_its_text(self, boxes):
+        """So a project can be linked to, as /page/#its-title."""
+        expect(boxes.nth(3).locator(TITLE)).to_have_id("a-titled-box")
+
+    def test_title_sits_outside_the_toggle(self, boxes):
+        box = boxes.nth(3)
+        expect(box.locator(f"{SUMMARY} {TITLE}")).to_have_count(1)
+        expect(box.locator(f"{TOGGLE} {TITLE}")).to_have_count(0)
+
+    def test_untitled_boxes_have_no_title(self, boxes):
+        expect(boxes.first.locator(TITLE)).to_have_count(0)
+
+    def test_chevron_is_described_by_the_title(self, boxes):
+        """The title's CSS full stop may be read too; it only adds a pause."""
+        expect(boxes.nth(3).locator(TOGGLE)).to_have_accessible_description(re.compile(r"^A titled box\.?$"))
+
+    def test_summary_runs_on_after_the_title(self, boxes):
+        """The title and summary share a line, as bold run-in text would."""
+        where = boxes.nth(3).locator(SUMMARY).evaluate(RUN_IN_JS)
+        assert abs(where["textTop"] - where["titleTop"]) < 2, where
+        assert 0 <= where["textLeft"] - where["titleRight"] < 12, where
+
+    def test_title_is_bold_at_the_summary_size(self, boxes):
+        summary = boxes.nth(3).locator(SUMMARY)
+        title = summary.locator(TITLE)
+        size = "el => getComputedStyle(el).fontSize"
+        assert title.evaluate(size) == summary.evaluate(size)
+        assert int(title.evaluate("el => getComputedStyle(el).fontWeight")) >= 700

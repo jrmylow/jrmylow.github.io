@@ -205,6 +205,18 @@
   color: var(--heading-color);
 }
 
+/* The optional title: a real heading, run in at the start of the summary so it
+   reads as bold text. Headings are already bold (lanyon.css); this only puts it
+   in the line, at the summary's size. The full stop is visual punctuation. */
+.collapsible-title {
+  display: inline;
+  font-size: inherit;
+}
+
+.collapsible-title::after {
+  content: ".";
+}
+
 /* The toggle is the chevron alone, so links in the summary text are never
    inside it. Out of flow and pinned to the first line of the text (a 1.5 line
    height centres at 0.75em), so it stays put when the box opens. */

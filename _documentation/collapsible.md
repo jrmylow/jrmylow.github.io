@@ -21,6 +21,16 @@ That renders a closed box showing "A short **summary**" with a chevron on the
 right. Only the chevron opens and closes the box (click it, or Tab to it and
 press Enter or Space); the summary text is ordinary text and can hold links.
 
+To give the box a title, a heading run in at the start of the summary:
+
+```liquid
+{% include details_open.html title="FunnelSort Implementation" summary="Implementation of a cache-oblivious sort." %}
+```
+
+That reads as "**FunnelSort Implementation.** Implementation of a cache-oblivious
+sort." but the title is a real `h3`, so screen reader users can jump between
+boxes by heading, and `/page/#funnelsort-implementation` links to it.
+
 To start the box expanded:
 
 ```liquid
@@ -32,13 +42,17 @@ To start the box expanded:
 | Parameter | Required | Default | Notes |
 |---|---|---|---|
 | `summary` | yes | | The always-visible line. Inline Markdown (bold, italics, code, links), on one line. |
+| `title` | no | none | A heading run in, bold, at the start of the summary. Inline Markdown. Its id is the slugified title. A full stop is added after it. |
+| `heading` | no | `h3` | The title's tag. Pick the level below the heading the box sits under. |
 | `open` | no | closed | `true` to start expanded. |
 
 ### Rules
 
 - **Headings inside follow the page outline.** A box is part of the page, so its
   headings must not skip a level: in a post (title `h1`) a box at the top level
-  starts at `##`. `test_a11y.py` checks this on every page it scans.
+  starts at `##`. The same goes for `title`: set `heading` to one level below
+  the heading the box sits under (the default `h3` suits a box under an `##`).
+  `test_a11y.py` checks this on every page it scans.
 - **Don't indent the body.** It is ordinary Markdown, so four leading spaces make
   it a code block, as anywhere else. Blank lines around the includes are
   optional; they just read better.
@@ -57,26 +71,29 @@ To start the box expanded:
 
 ```html
 <div class="collapsible" markdown="1">
-<div class="collapsible-summary" id="details-summary-N" markdown="span">…summary…</div>
+<div class="collapsible-summary" id="details-summary-N"><h3 class="collapsible-title" id="title-slug" markdown="span">…title…</h3> <span markdown="span">…summary…</span></div>
 <details markdown="1">
 <summary aria-describedby="details-summary-N"><span class="collapsible-label">Details</span></summary>
 ```
 
 and `details_close.html` emits `</details></div>`. `N` comes from Liquid's
-`{% increment %}`, so every box on a page gets its own id. Jekyll renders Liquid first, then
+`{% increment %}`, so every box on a page gets its own id. The `<h3>` appears only
+when `title` is given. It and the summary text are separate elements because
+kramdown escapes a heading inside `markdown="span"` content. Jekyll renders Liquid first, then
 converts the result with kramdown, so by the time kramdown runs the post is
 Markdown with a raw HTML block in it. kramdown leaves the contents of raw HTML
 alone unless the element carries a `markdown` attribute: `markdown="1"` on the
 box and on `<details>` converts the body as block Markdown, and `markdown="span"`
-on the summary text converts it as inline Markdown. kramdown strips the
+on the title and summary text converts them as inline Markdown. kramdown strips the
 attribute from the output.
 
 The summary text sits outside `<details>`, so it is always shown and is never
 part of the toggle. The `<summary>` holds only the chevron. The open/close
 behaviour, keyboard support and the expanded state exposed to screen readers all
 come from that native element; there is no JavaScript. A screen reader hears it
-as a button named "Details" (the visually hidden label), described by the
-summary text (`aria-describedby`), with its expanded or collapsed state.
+as a button named "Details" (the visually hidden label), described by the title
+or, without one, the summary text (`aria-describedby`), with its expanded or
+collapsed state.
 
 ## Styling
 
@@ -90,6 +107,13 @@ right, and lined up with the text's first line rather than its middle so it
 stays put when the box opens. The chevron points down when closed and up when
 open, and the turn is not animated under `prefers-reduced-motion`. An open box
 draws a rule between the summary text and the body.
+
+A title is styled by one rule: `display: inline` and `font-size: inherit` on
+`.collapsible-title`, plus a full stop in `::after`. Headings are already bold
+(`lanyon.css`), and vertical margins don't apply to inline elements, so nothing
+else needs overriding. Pick the heading level by the page's structure, never to
+borrow a size: `h4`-`h6` look the same here but tell screen readers the box is
+nested deeper than it is.
 
 The summary text must stay a plain block. An earlier version made it a flex
 container to line the chevron up with the text; flex turns every text run and
@@ -139,7 +163,9 @@ that footnotes, reference links and heading ids inside a box behave as they do
 outside one, that a box is closed unless `open` is passed, that only the
 chevron toggles it (by mouse and keyboard), that the chevron is named, described
 and big enough to hit, that a link in the summary stays in its sentence and
-outside the toggle, and that the box and its marker are styled. `test_a11y.py` runs
+outside the toggle, that a title is a heading at the given level with a slug id,
+runs in on the summary's line at its size, and describes the chevron, and that
+the box and its marker are styled. `test_a11y.py` runs
 the axe scan over the fixture, with every box opened, in both themes.
 
 ## Files
@@ -152,6 +178,8 @@ the axe scan over the fixture, with every box opened, in both themes.
 
 ## References
 
+- W3C WAI, headings and their levels: <https://www.w3.org/WAI/tutorials/page-structure/headings/>
+- WebAIM screen reader survey (navigating by headings): <https://webaim.org/projects/screenreadersurvey10/>
 - `<details>` element: <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/details>
 - kramdown, Markdown inside HTML blocks (`markdown="1"`, `"span"`): <https://kramdown.gettalong.org/syntax.html#html-blocks>
 - Jekyll includes and their parameters: <https://jekyllrb.com/docs/includes/>
