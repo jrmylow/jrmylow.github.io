@@ -107,7 +107,7 @@ Key design decisions:
 
 * **Context**: personal site and sandbox to develop skill in AI-augmented development
 * **Verification**: automated regression suite, integrated with GitHub CI, with manual verification of major changes
-* **Availability**: at $REPO_SITE
+* **Availability**: at [github](https://github.com/jrmylow/jrmylow.github.io)
 
 Key design decisions:
 
