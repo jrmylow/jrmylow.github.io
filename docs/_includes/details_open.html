@@ -11,11 +11,17 @@
   Parameters:
     - summary (required) : the always-visible line; inline Markdown, links too.
                            Use single quotes around it if it contains a ".
+    - title   (optional) : a heading run in, bold, at the start of the summary,
+                           so screen readers can jump between boxes. Its id is
+                           the slugified title, for /page/#title links.
+    - heading (optional) : the title's tag, "h3" by default. Set it one level
+                           below the heading the box sits under.
     - open    (optional) : true to start expanded. Closed by default.
 
   Only the chevron toggles the box. The summary text sits outside it, so it
   can hold links without nesting them inside a button (WCAG 4.1.2); the
-  chevron is a native <summary>, named "Details" and described by the text.
+  chevron is a native <summary>, named "Details" and described by the title,
+  or by the summary text when there is no title.
 
   This emits raw HTML into the Markdown before kramdown runs. markdown="1"
   tells kramdown to convert the body in the same pass as the rest of the
@@ -23,7 +29,10 @@
   Guide: _documentation/collapsible.md.
 {% endcomment %}
 {% capture details_id %}details-summary-{% increment details_count %}{% endcapture %}
+{% assign details_heading = include.heading | default: "h3" %}
+{% assign details_described_by = details_id %}
+{% if include.title %}{% assign details_described_by = include.title | slugify %}{% endif %}
 <div class="collapsible" markdown="1">
-<div class="collapsible-summary" id="{{ details_id }}" markdown="span">{{ include.summary }}</div>
+<div class="collapsible-summary" id="{{ details_id }}">{% if include.title %}<{{ details_heading }} class="collapsible-title" id="{{ details_described_by }}" markdown="span">{{ include.title }}</{{ details_heading }}> {% endif %}<span markdown="span">{{ include.summary }}</span></div>
 <details{% if include.open %} open{% endif %} markdown="1">
-<summary aria-describedby="{{ details_id }}"><span class="collapsible-label">Details</span></summary>
+<summary aria-describedby="{{ details_described_by }}"><span class="collapsible-label">Details</span></summary>

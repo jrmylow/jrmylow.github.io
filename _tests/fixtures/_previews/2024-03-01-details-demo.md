@@ -6,8 +6,9 @@ date: 2024-03-01
 A fixture preview for test_details.py, injected into the designed build only (see
 _tests/corpus.py). It uses the collapsible box includes the way an essay would:
 one box closed by default, holding a heading, a list, a footnote and a reference
-link defined outside the box, one box that starts open, and one whose summary
-wraps and holds a link. Like every preview it is unlisted and carries `noindex`.
+link defined outside the box, one box that starts open, one whose summary wraps
+and holds a link, and one with a title. Like every preview it is unlisted and
+carries `noindex`.
 
 Before the boxes: a footnote[^outer] and a [reference link][ref].
 
@@ -31,6 +32,12 @@ This box starts open.
 {% include details_open.html summary="A summary long enough to wrap onto more than one line at the default viewport width, as a project summary does, with a [link](https://example.com/) in it and a few more words after the link." %}
 
 The link in the summary above stays in the flow of its sentence, outside the toggle.
+
+{% include details_close.html %}
+
+{% include details_open.html title="A titled box" heading="h2" summary="Its summary runs on after the title, on the same line." %}
+
+The title is a heading at the start of the summary, outside the toggle.
 
 {% include details_close.html %}
 
