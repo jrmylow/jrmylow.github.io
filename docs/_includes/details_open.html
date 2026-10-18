@@ -9,14 +9,21 @@
     {% include details_close.html %}
 
   Parameters:
-    - summary (required) : the always-visible line; inline Markdown only.
+    - summary (required) : the always-visible line; inline Markdown, links too.
                            Use single quotes around it if it contains a ".
     - open    (optional) : true to start expanded. Closed by default.
+
+  Only the chevron toggles the box. The summary text sits outside it, so it
+  can hold links without nesting them inside a button (WCAG 4.1.2); the
+  chevron is a native <summary>, named "Details" and described by the text.
 
   This emits raw HTML into the Markdown before kramdown runs. markdown="1"
   tells kramdown to convert the body in the same pass as the rest of the
   post, so footnotes, reference links and heading ids work inside the box.
   Guide: _documentation/collapsible.md.
 {% endcomment %}
-<details class="collapsible"{% if include.open %} open{% endif %} markdown="1">
-<summary markdown="span">{{ include.summary }}</summary>
+{% capture details_id %}details-summary-{% increment details_count %}{% endcapture %}
+<div class="collapsible" markdown="1">
+<div class="collapsible-summary" id="{{ details_id }}" markdown="span">{{ include.summary }}</div>
+<details{% if include.open %} open{% endif %} markdown="1">
+<summary aria-describedby="{{ details_id }}"><span class="collapsible-label">Details</span></summary>

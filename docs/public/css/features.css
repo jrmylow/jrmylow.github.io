@@ -186,8 +186,10 @@
    5. Collapsible box (_includes/details_open.html, details_close.html)
    ========================================================================== */
 
-/* Card colours (cards.css), so a box in an essay matches the post cards */
+/* Card colours (cards.css), so a box in an essay matches the post cards.
+   Positioned so the chevron can be pinned against it. */
 .collapsible {
+  position: relative;
   margin: 1.5rem 0;
   padding: 0 1rem;
   background-color: var(--code-bg);
@@ -195,55 +197,79 @@
   border-radius: 8px;
 }
 
-.collapsible > summary {
+/* The always-visible text, with room kept on the right for the chevron. A plain
+   block, not flex: flex makes every text run and link its own item, so a link
+   drifts out of its sentence. */
+.collapsible-summary {
+  padding: 0.75rem 2.5rem 0.75rem 0;
+  color: var(--heading-color);
+}
+
+/* The toggle is the chevron alone, so links in the summary text are never
+   inside it. Out of flow and pinned to the first line of the text (a 1.5 line
+   height centres at 0.75em), so it stays put when the box opens. */
+.collapsible > details > summary {
+  position: absolute;
+  top: calc(0.75rem + 0.75em - 1rem);
+  right: 0.5rem;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
-  padding: 0.75rem 0;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 4px;
   color: var(--heading-color);
   cursor: pointer;
   list-style: none;
 }
 
-.collapsible > summary::-webkit-details-marker {
+.collapsible > details > summary::-webkit-details-marker {
   display: none;
 }
 
-/* Chevron drawn from two borders: points right when closed, down when open */
-.collapsible > summary::before {
+/* The toggle's accessible name: read out, not shown */
+.collapsible-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Chevron drawn from two borders: points down when closed, up when open */
+.collapsible > details > summary::after {
   content: "";
-  flex: none;
   width: 0.45em;
   height: 0.45em;
   border-right: 2px solid currentColor;
   border-bottom: 2px solid currentColor;
-  transform: rotate(-45deg);
+  transform: translateY(-25%) rotate(45deg);
   transition: transform 0.2s ease;
 }
 
-.collapsible[open] > summary::before {
-  transform: rotate(45deg);
+.collapsible > details[open] > summary::after {
+  transform: translateY(25%) rotate(-135deg);
 }
 
-.collapsible > summary:hover {
-  text-decoration: underline;
+.collapsible > details[open] {
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-color);
 }
 
-.collapsible[open] > summary {
-  margin-bottom: 1rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.collapsible > summary + * {
+.collapsible > details > summary + * {
   margin-top: 0;
 }
 
-.collapsible[open] > :last-child {
-  margin-bottom: 1rem;
+.collapsible > details[open] > :last-child {
+  margin-bottom: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .collapsible > summary::before {
+  .collapsible > details > summary::after {
     transition: none;
   }
 }
