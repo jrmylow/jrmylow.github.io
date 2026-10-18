@@ -152,6 +152,10 @@ By area (`_tests/<file>` -> what it guards):
   post appears exactly once, and each page's nav matches its position.
 - `test_search` — sidebar search, the `/search/` page, and `search-index.json`
   shape/contents.
+- `test_details` — the collapsible box includes: Markdown in the summary and
+  body is converted in the post's own pass (footnotes, reference links, heading
+  ids), boxes start closed unless `open` is passed, and toggle by mouse and
+  keyboard (see `collapsible.md`).
 - `test_analytics` — the GoatCounter script and dynamic noscript fallback (see
   `analytics.md`).
 - `test_performance` — the budget below.

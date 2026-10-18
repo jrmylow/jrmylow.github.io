@@ -26,6 +26,7 @@ from playwright.sync_api import Page, expect
 THEMES = ["dark", "light"]
 WCAG_A_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 A11Y_DEMO = "2024-02-01-a11y-demo.md"
+DETAILS_DEMO = "2024-03-01-details-demo.md"
 QUERY = "designed"  # in every designed post's title, so search and the palette return results
 AXE = Axe()
 
@@ -39,6 +40,17 @@ def _open(page: Page, url: str, theme: str) -> None:
 
 def _demo_url(site) -> str:
     return f"{site.url}{site.document(A11Y_DEMO)['url']}"
+
+
+def _details_url(site) -> str:
+    return f"{site.url}{site.document(DETAILS_DEMO)['url']}"
+
+
+def _open_details(page: Page) -> None:
+    """Open every collapsible box, so the scan sees their contents too."""
+    for summary in page.locator("details.collapsible:not([open]) > summary").all():
+        summary.click()
+    expect(page.locator("details.collapsible:not([open])")).to_have_count(0)
 
 
 def _wait_for_maths(page: Page) -> None:
@@ -67,6 +79,9 @@ DESIGNED_POST = corpus.DESIGNED[0].filename
 # fire, so the scan keeps checking everything else there (contrast included). Open items in
 # css_audit.md (B9); delete an entry when its fix lands.
 KNOWN_MARKUP_ISSUES = {
+    # kramdown writes role="doc-endnote" on footnotes, a role DPUB-ARIA 1.1 deprecated.
+    "demo": ["aria-deprecated-role"],
+    "collapsible": ["aria-deprecated-role"],
     # command-palette.js: its role="listbox" has no name, and each role="option" holds a link.
     "command palette": ["aria-input-field-name", "nested-interactive"],
 }
@@ -82,6 +97,7 @@ SCANS = [
     ("search", f"/search/?q={QUERY}", lambda page: expect(page.locator(".search-result-item").first).to_be_visible()),
     ("post", lambda site: f"{site.url}{site.document(DESIGNED_POST)['url']}", None),
     ("demo", _demo_url, _wait_for_maths),
+    ("collapsible", _details_url, _open_details),
     ("sidebar open", "/", _open_sidebar),
     ("command palette", "/", _open_palette),
 ]

@@ -1,0 +1,22 @@
+{% comment %}
+  Collapsible box, opening half -- pair with details_close.html.
+
+  Usage (in a post or page's Markdown):
+    {% include details_open.html summary="A short **summary**" %}
+
+    Markdown for the body: headings, lists, code, footnotes.
+
+    {% include details_close.html %}
+
+  Parameters:
+    - summary (required) : the always-visible line; inline Markdown only.
+                           Use single quotes around it if it contains a ".
+    - open    (optional) : true to start expanded. Closed by default.
+
+  This emits raw HTML into the Markdown before kramdown runs. markdown="1"
+  tells kramdown to convert the body in the same pass as the rest of the
+  post, so footnotes, reference links and heading ids work inside the box.
+  Guide: _documentation/collapsible.md.
+{% endcomment %}
+<details class="collapsible"{% if include.open %} open{% endif %} markdown="1">
+<summary markdown="span">{{ include.summary }}</summary>

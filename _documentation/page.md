@@ -18,7 +18,8 @@ the masthead, and the content container. Other layouts wrap it:
   merge with it.
 
 Shared partials live in `_includes`: `head.html`, `sidebar.html`,
-`post_card.html`, `toc.html`.
+`post_card.html`, `toc.html`, and `details_open.html`/`details_close.html`, the
+collapsible box used inside Markdown (`collapsible.md`).
 
 ## The post card is a single source of truth
 
