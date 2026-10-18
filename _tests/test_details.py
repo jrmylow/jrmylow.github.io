@@ -39,12 +39,12 @@ class TestMarkup:
 
     def test_body_renders_block_markdown(self, boxes):
         box = boxes.first
-        expect(box.locator("h3")).to_have_text("Inside the box")
+        expect(box.locator("h2")).to_have_text("Inside the box")
         expect(box.locator("p em")).to_have_text("emphasis")
         expect(box.locator("ul > li")).to_have_count(2)
 
     def test_heading_inside_gets_an_id(self, boxes):
-        expect(boxes.first.locator("h3")).to_have_id("inside-the-box")
+        expect(boxes.first.locator("h2")).to_have_id("inside-the-box")
 
     def test_reference_link_defined_outside_resolves(self, boxes):
         link = boxes.first.locator("a", has_text="reference link")
@@ -67,7 +67,7 @@ class TestBehaviour:
     def test_closed_by_default(self, boxes):
         box = boxes.first
         expect(box).not_to_have_attribute("open", "")
-        expect(box.locator("h3")).to_be_hidden()
+        expect(box.locator("h2")).to_be_hidden()
 
     def test_open_param_starts_open(self, boxes):
         box = boxes.nth(1)
@@ -77,9 +77,9 @@ class TestBehaviour:
     def test_click_toggles(self, boxes):
         box = boxes.first
         box.locator("summary").click()
-        expect(box.locator("h3")).to_be_visible()
+        expect(box.locator("h2")).to_be_visible()
         box.locator("summary").click()
-        expect(box.locator("h3")).to_be_hidden()
+        expect(box.locator("h2")).to_be_hidden()
 
     def test_keyboard_toggles(self, page: Page, boxes):
         """2.1.1 (A): the summary is a Tab stop and Enter opens the box."""
@@ -87,7 +87,7 @@ class TestBehaviour:
         box.locator("summary").focus()
         expect(box.locator("summary")).to_be_focused()
         page.keyboard.press("Enter")
-        expect(box.locator("h3")).to_be_visible()
+        expect(box.locator("h2")).to_be_visible()
 
 
 class TestStyle:
@@ -109,6 +109,6 @@ class TestStyle:
         summary = boxes.first.locator("summary")
         closed = summary.evaluate("el => getComputedStyle(el, '::before').transform")
         summary.click()
-        expect(boxes.first.locator("h3")).to_be_visible()
+        expect(boxes.first.locator("h2")).to_be_visible()
         opened = summary.evaluate("el => getComputedStyle(el, '::before').transform")
         assert closed != opened

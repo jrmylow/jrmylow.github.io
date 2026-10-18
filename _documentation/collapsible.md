@@ -9,7 +9,7 @@ write-ups and asides that would otherwise make a page long.
 ```liquid
 {% include details_open.html summary="A short **summary**" %}
 
-### Any heading
+## Any heading
 
 The body is ordinary Markdown: *emphasis*, lists, code blocks, footnotes[^1],
 [reference links][ref], tables, images.
@@ -35,6 +35,9 @@ To start the box expanded:
 
 ### Rules
 
+- **Headings inside follow the page outline.** A box is part of the page, so its
+  headings must not skip a level: in a post (title `h1`) a box at the top level
+  starts at `##`. `test_a11y.py` checks this on every page it scans.
 - **Don't indent the body.** It is ordinary Markdown, so four leading spaces make
   it a code block, as anywhere else. Blank lines around the includes are
   optional; they just read better.

@@ -13,7 +13,7 @@ Before the boxes: a footnote[^outer] and a [reference link][ref].
 
 {% include details_open.html summary="A **closed** box" %}
 
-### Inside the box
+## Inside the box
 
 Detail with *emphasis*, a footnote[^inner] and the same [reference link][ref].
 
