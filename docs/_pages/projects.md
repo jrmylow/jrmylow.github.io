@@ -5,7 +5,7 @@ permalink: /projects/
 nav_order: 40
 ---
 
-A collection of projects.
+A small collection of projects. Learning systems through building and breaking them. Click through for more detail behind each project.
 
 ## Distributed Systems and Fault Tolerance
 
