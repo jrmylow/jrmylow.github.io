@@ -48,9 +48,10 @@ def _details_url(site) -> str:
 
 def _open_details(page: Page) -> None:
     """Open every collapsible box, so the scan sees their contents too."""
-    for summary in page.locator("details.collapsible:not([open]) > summary").all():
-        summary.click()
-    expect(page.locator("details.collapsible:not([open])")).to_have_count(0)
+    closed = page.locator(".collapsible > details:not([open])")
+    for _ in range(closed.count()):
+        closed.first.locator("summary").click()
+    expect(closed).to_have_count(0)
 
 
 def _wait_for_maths(page: Page) -> None:

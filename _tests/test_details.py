@@ -1,9 +1,12 @@
 """Tests for the collapsible box: _includes/details_open.html and details_close.html.
 
 Uses the fixture preview _tests/fixtures/_previews/2024-03-01-details-demo.md, served
-by the designed build. The includes open and close a <details> around Markdown that
-kramdown converts in the same pass as the rest of the post, so footnotes, reference
-links and heading ids inside a box must behave as they do outside one.
+by the designed build. The includes open and close a box around Markdown that kramdown
+converts in the same pass as the rest of the post, so footnotes, reference links and
+heading ids inside a box must behave as they do outside one.
+
+The summary text sits outside the toggle, so it can hold links; only the chevron, a
+native <details>/<summary>, opens and closes the box.
 """
 
 import re
@@ -12,7 +15,9 @@ import pytest
 from playwright.sync_api import Page, expect
 
 FIXTURE = "2024-03-01-details-demo.md"
-BOX = "details.collapsible"
+BOX = ".collapsible"
+SUMMARY = ".collapsible-summary"
+TOGGLE = "details > summary"
 
 
 @pytest.fixture
@@ -23,7 +28,7 @@ def fixture_url(designed_site) -> str:
 @pytest.fixture
 def boxes(page: Page, fixture_url: str):
     page.goto(fixture_url)
-    expect(page.locator(BOX)).to_have_count(2)
+    expect(page.locator(BOX)).to_have_count(3)
     return page.locator(BOX)
 
 
@@ -31,11 +36,17 @@ class TestMarkup:
     """The summary and body are Markdown, converted with the rest of the post."""
 
     def test_summary_renders_inline_markdown(self, boxes):
-        expect(boxes.first.locator("summary strong")).to_have_text("closed")
+        expect(boxes.first.locator(f"{SUMMARY} strong")).to_have_text("closed")
 
     def test_summary_keeps_quotes(self, boxes):
         """A single-quoted summary can hold double quotes (kramdown curls them)."""
-        expect(boxes.nth(1).locator("summary")).to_have_text(re.compile(r'An ["“]open["”] box'))
+        expect(boxes.nth(1).locator(SUMMARY)).to_have_text(re.compile(r'An ["“]open["”] box'))
+
+    def test_summary_link_sits_outside_the_toggle(self, boxes):
+        """A link in the summary is never nested inside the toggle (WCAG 4.1.2)."""
+        box = boxes.nth(2)
+        expect(box.locator(f"{SUMMARY} a")).to_have_attribute("href", "https://example.com/")
+        expect(box.locator(f"{TOGGLE} a")).to_have_count(0)
 
     def test_body_renders_block_markdown(self, boxes):
         box = boxes.first
@@ -47,7 +58,7 @@ class TestMarkup:
         expect(boxes.first.locator("h2")).to_have_id("inside-the-box")
 
     def test_reference_link_defined_outside_resolves(self, boxes):
-        link = boxes.first.locator("a", has_text="reference link")
+        link = boxes.first.locator("details a", has_text="reference link")
         expect(link).to_have_attribute("href", "https://example.com/")
 
     def test_footnotes_join_the_posts_one_list(self, page: Page, boxes):
@@ -62,32 +73,50 @@ class TestMarkup:
 
 
 class TestBehaviour:
-    """Closed unless `open` is passed; the summary toggles it by mouse and keyboard."""
+    """Closed unless `open` is passed; only the chevron toggles it, by mouse or keyboard."""
 
     def test_closed_by_default(self, boxes):
         box = boxes.first
-        expect(box).not_to_have_attribute("open", "")
+        expect(box.locator("details")).not_to_have_attribute("open", "")
+        expect(box.locator(SUMMARY)).to_be_visible()
         expect(box.locator("h2")).to_be_hidden()
 
     def test_open_param_starts_open(self, boxes):
         box = boxes.nth(1)
-        expect(box).to_have_attribute("open", "")
-        expect(box.locator("p")).to_be_visible()
+        expect(box.locator("details")).to_have_attribute("open", "")
+        expect(box.locator("details p")).to_be_visible()
 
-    def test_click_toggles(self, boxes):
+    def test_chevron_toggles(self, boxes):
         box = boxes.first
-        box.locator("summary").click()
+        box.locator(TOGGLE).click()
         expect(box.locator("h2")).to_be_visible()
-        box.locator("summary").click()
+        box.locator(TOGGLE).click()
+        expect(box.locator("h2")).to_be_hidden()
+
+    def test_summary_text_does_not_toggle(self, boxes):
+        box = boxes.first
+        box.locator(SUMMARY).click()
+        expect(box.locator("details")).not_to_have_attribute("open", "")
         expect(box.locator("h2")).to_be_hidden()
 
     def test_keyboard_toggles(self, page: Page, boxes):
-        """2.1.1 (A): the summary is a Tab stop and Enter opens the box."""
-        box = boxes.first
-        box.locator("summary").focus()
-        expect(box.locator("summary")).to_be_focused()
+        """2.1.1 (A): the chevron is a Tab stop and Enter opens the box."""
+        toggle = boxes.first.locator(TOGGLE)
+        toggle.focus()
+        expect(toggle).to_be_focused()
         page.keyboard.press("Enter")
-        expect(box.locator("h2")).to_be_visible()
+        expect(boxes.first.locator("h2")).to_be_visible()
+
+    def test_chevron_is_named_and_described(self, boxes):
+        """4.1.2 (A): the icon-only toggle has a name, and the summary describes it."""
+        toggle = boxes.first.locator(TOGGLE)
+        expect(toggle).to_have_accessible_name("Details")
+        expect(toggle).to_have_accessible_description(re.compile("closed box"))
+
+    def test_chevron_is_a_big_enough_target(self, boxes):
+        """2.5.8 (AA): the toggle is at least 24 by 24 CSS pixels."""
+        size = boxes.first.locator(TOGGLE).bounding_box()
+        assert size["width"] >= 24 and size["height"] >= 24, size
 
 
 class TestStyle:
@@ -99,16 +128,78 @@ class TestStyle:
         assert box_bg != page_bg
 
     def test_default_marker_replaced(self, boxes):
-        summary = boxes.first.locator("summary")
-        assert summary.evaluate("el => getComputedStyle(el).listStyleType") == "none"
-        marker = summary.evaluate("el => getComputedStyle(el, '::before').content")
+        toggle = boxes.first.locator(TOGGLE)
+        assert toggle.evaluate("el => getComputedStyle(el).listStyleType") == "none"
+        marker = toggle.evaluate("el => getComputedStyle(el, '::after').content")
         assert marker not in ("none", "normal")
 
     def test_marker_turns_when_opened(self, page: Page, boxes):
         page.emulate_media(reduced_motion="reduce")
-        summary = boxes.first.locator("summary")
-        closed = summary.evaluate("el => getComputedStyle(el, '::before').transform")
-        summary.click()
+        toggle = boxes.first.locator(TOGGLE)
+        closed = toggle.evaluate("el => getComputedStyle(el, '::after').transform")
+        toggle.click()
         expect(boxes.first.locator("h2")).to_be_visible()
-        opened = summary.evaluate("el => getComputedStyle(el, '::before').transform")
+        opened = toggle.evaluate("el => getComputedStyle(el, '::after').transform")
         assert closed != opened
+
+
+# Line boxes of a summary's text, and where its content box starts.
+SUMMARY_GEOMETRY_JS = """el => {
+    const box = el.getBoundingClientRect();
+    const style = getComputedStyle(el);
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const lines = [...range.getClientRects()].filter(r => r.width > 0);
+    return {
+        contentLeft: box.left + parseFloat(style.borderLeftWidth) + parseFloat(style.paddingLeft),
+        textLeft: Math.min(...lines.map(r => r.left)),
+        textRight: Math.max(...lines.map(r => r.right)),
+        firstTop: lines[0].top,
+        firstBottom: lines[0].bottom,
+    };
+}"""
+
+# Where the text just before a summary's link ends, and where the link starts.
+LINK_IN_FLOW_JS = """el => {
+    const link = el.querySelector("a");
+    const range = document.createRange();
+    range.selectNodeContents(link.previousSibling);
+    const before = [...range.getClientRects()].pop();
+    const start = link.getClientRects()[0];
+    return { beforeTop: before.top, beforeRight: before.right, top: start.top, left: start.left };
+}"""
+
+
+class TestSummaryLayout:
+    """The summary is one flow of text, with the chevron beside it on the right."""
+
+    def test_text_starts_at_the_left_edge(self, boxes):
+        geometry = boxes.first.locator(SUMMARY).evaluate(SUMMARY_GEOMETRY_JS)
+        assert abs(geometry["textLeft"] - geometry["contentLeft"]) < 1, geometry
+
+    def test_chevron_sits_right_of_wrapped_text_on_its_first_line(self, boxes):
+        box = boxes.nth(2)
+        geometry = box.locator(SUMMARY).evaluate(SUMMARY_GEOMETRY_JS)
+        toggle = box.locator(TOGGLE).bounding_box()
+        outer = box.bounding_box()
+        assert geometry["textRight"] <= toggle["x"], (geometry, toggle)
+        assert toggle["x"] + toggle["width"] <= outer["x"] + outer["width"], (toggle, outer)
+        middle = toggle["y"] + toggle["height"] / 2
+        assert geometry["firstTop"] <= middle <= geometry["firstBottom"], (geometry, toggle)
+
+    def test_chevron_stays_put_when_opened(self, boxes):
+        box = boxes.first
+        closed = box.locator(TOGGLE).bounding_box()
+        box.locator(TOGGLE).click()
+        expect(box.locator("h2")).to_be_visible()
+        assert box.locator(TOGGLE).bounding_box() == closed
+
+    def test_link_stays_in_its_sentence(self, boxes):
+        """A link in a wrapping summary continues the line its sentence is on.
+
+        Old: the summary was a flex container, so each text run and the link became
+        separate flex items and the link floated off beside the paragraph.
+        """
+        where = boxes.nth(2).locator(SUMMARY).evaluate(LINK_IN_FLOW_JS)
+        assert abs(where["top"] - where["beforeTop"]) < 2, where
+        assert 0 <= where["left"] - where["beforeRight"] < 2, where
