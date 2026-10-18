@@ -102,7 +102,7 @@ Key design decisions:
 ## Personal Projects
 
 ### Website Testing Infrastructure
-{% include details_open.html summary="Containerised test environment for this site, incorporating Playwright and other tests to support an AI-assisted site development workflow. Public write-up available [here](/2026/06/10/building)." %}
+{% include details_open.html summary="Containerised test environment for this site, incorporating Playwright and other tests to support an AI-assisted site development workflow. Public write-up available [here](/2026/06/20/building)." %}
 
 
 * **Context**: personal site and sandbox to develop skill in AI-augmented development
