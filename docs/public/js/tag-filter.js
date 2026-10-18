@@ -45,9 +45,11 @@
       if (this.selectedTags.has(tag)) {
         this.selectedTags.delete(tag);
         btn.classList.remove('selected');
+        btn.setAttribute('aria-pressed', 'false');
       } else {
         this.selectedTags.add(tag);
         btn.classList.add('selected');
+        btn.setAttribute('aria-pressed', 'true');
       }
 
       this.applyFilter();
@@ -95,6 +97,7 @@
           if (btn) {
             this.selectedTags.add(tag);
             btn.classList.add('selected');
+            btn.setAttribute('aria-pressed', 'true');
           }
         });
       }

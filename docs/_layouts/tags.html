@@ -17,7 +17,7 @@ layout: page
 <div class="tag-cloud">
 {% for tag in unique_tags %}
   {% assign count = all_tags | where_exp: "t", "t == tag" | size %}
-  <button type="button" class="tag-cloud-item" data-tag="{{ tag }}">{{ tag }} ({{ count }})</button>
+  <button type="button" class="tag-cloud-item" aria-pressed="false" data-tag="{{ tag }}">{{ tag }} ({{ count }})</button>
 {% endfor %}
 </div>
 

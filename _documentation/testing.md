@@ -167,7 +167,9 @@ By area (`_tests/<file>` -> what it guards):
   rules, covers contrast, names, labels and ARIA. Interaction tests cover what
   a scanner can't see, each tied to a success criterion and to a failure the
   audit found (`css_audit.md`):
-  - reaching and operating the menu by keyboard (2.1.1);
+  - reaching and operating the menu by keyboard, and closing it with Escape
+    with focus returned to its control (2.1.1, 2.4.3);
+  - one `<h1>` per page and no skipped heading levels (1.3.1, 2.4.6);
   - a visible focus ring on every Tab stop (2.4.7);
   - focus and jump targets not hidden by the sticky masthead (2.4.11);
   - nothing clipped at 320px (1.4.10);

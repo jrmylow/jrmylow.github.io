@@ -27,7 +27,8 @@
   width: 100%;
   padding: 0.5rem 1rem;
   font-family: "PT Sans", Helvetica, Arial, sans-serif;
-  font-size: 0.875rem;
+  /* >= 16px: iOS Safari zooms the page when a smaller input takes focus */
+  font-size: 1rem;
   color: var(--body-color);
   background-color: var(--body-bg);
   border: 1px solid var(--sidebar-border-color);
@@ -41,7 +42,7 @@
 
 @media (min-width: 48em) {
   .search-input {
-    font-size: 0.75rem;
+    font-size: max(16px, 0.75rem);
   }
 }
 

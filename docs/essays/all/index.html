@@ -3,12 +3,12 @@ layout: default
 title: All Essays
 ---
 
-<h3 class="page-title">All Essays</h3>
+<h1 class="page-title">All Essays</h1>
 <p><a href="/essays/">&larr; Back to Essays</a></p>
 
 <div class="card-grid card-grid-1">
   {% for post in paginator.posts %}
-  {% include post_card.html post=post heading="h3" %}
+  {% include post_card.html post=post heading="h2" %}
   {% endfor %}
 </div>
 

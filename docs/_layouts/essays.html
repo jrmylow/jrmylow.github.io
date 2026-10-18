@@ -4,12 +4,12 @@ layout: page
 
 {{ content }}
 
-<h3>Recent Essays</h3>
+<h2>Recent Essays</h2>
 
 <div class="card-grid card-grid-1">
   {% assign sorted_posts = site.posts | sort: 'date' | reverse %}
   {% for post in sorted_posts limit:5 %}
-  {% include post_card.html post=post heading="h4" %}
+  {% include post_card.html post=post heading="h3" %}
   {% endfor %}
 </div>
 

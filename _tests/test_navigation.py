@@ -132,6 +132,17 @@ class TestNavDiscovery:
 class TestNavRendering:
     """The rendered nav must match the front-matter-derived order exactly."""
 
+    def test_current_page_is_marked_for_assistive_tech(self, page: Page, jekyll_server: str):
+        """The nav link for the page you're on, and only it, has aria-current="page", so screen
+        readers announce it. Old: only the visual `.active` class marked it.
+        """
+        _open_sidebar(page, jekyll_server)
+        target = page.locator(".sidebar-nav-item").first.get_attribute("href")
+        page.goto(f"{jekyll_server}{target}")
+        current = page.locator('.sidebar-nav-item[aria-current="page"]')
+        assert current.count() == 1, f"one nav link should be current on {target}, found {current.count()}"
+        assert current.get_attribute("href") == target
+
     def test_nav_matches_front_matter(self, page: Page, jekyll_server: str):
         """Rendered sidebar nav equals nav_order-sorted labels from sources."""
         expected = expected_nav_labels()
