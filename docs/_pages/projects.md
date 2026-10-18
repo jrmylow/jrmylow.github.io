@@ -10,7 +10,7 @@ A collection of projects.
 ## Distributed Systems and Fault Tolerance
 
 ### MapReduce Implementation with Master-Fault Tolerance
-MapReduce implementation in Go for distributed data processing, incorporating replication and failover for Master nodes. I owned the design of the Master and Worker fault tolerance.
+{% include details_open.html summary="MapReduce implementation in Go for distributed data processing, incorporating replication and failover for Master nodes. I owned the design of the Master and Worker fault tolerance." %}
 
 * **Context**: coursework project (pair programming), in Go, deployed on Azure Kubernetes Service, using Azure Blob Storage as the distributed file system
 * **Verification**: reconciliation vs. reference implementation, randomised fault injection (crashes) for Master and Worker nodes
@@ -26,10 +26,12 @@ Key design decisions:
 
 Job state is broadcast from Leader to backup, with version numbers per-job to ensure forward progress is maintained. Upon Leader failure, a backup can step up by acquiring a lease on the shared key. Because backups only receive coherent state updates, they can call the handler to advance the computation directly. The net impact is clean failover and minimal reliance on etcd for coordination, minimising the risk that service becomes a performance bottleneck.
 
+{% include details_close.html %}
+
 ## Networking and Cloud
 
 ### Software-Defined Networking and Network Virtualisation
-Network routing, provisioning, and connection management for virtualised network services over a software-defined network. I designed the test suite, controller handling of network faults, and connection affinity for virtual network functions.
+{% include details_open.html summary="Network routing, provisioning, and connection management for virtualised network services over a software-defined network. I designed the test suite, controller handling of network faults, and connection affinity for virtual network functions." %}
 
 * **Context**: coursework project (pair programming), in Python, using OpenFlow and k8s-deployed network functions in kind
 * **Verification**: live connectivity and load generation using `iperf3` and a custom testing framework, network rebalancing and connection affinity demonstrated through logs
@@ -44,8 +46,10 @@ Key design decisions:
 * **Adaptive algorithms**: extended widest-path controller to include network telemetry when redistributing network flows
 * **Connection affinity**: implemented connection affinity management for stateful services e.g. NAT, ensuring both outbound and inbound connections are correctly routed between nodes
 
+{% include details_close.html %}
+
 ### Cloud Application Infrastructure
-Infrastructure provisioning and configuration for a cloud-native microservices app project. I owned the infrastructure design.
+{% include details_open.html summary="Infrastructure provisioning and configuration for a cloud-native microservices app project. I owned the infrastructure design." %}
 
 * **Context**: coursework project (pair programming), using Terraform
 * **Verification**: local testing environment (kind, azurite), then deployed to Azure managed services, with infrastructure changes verified through integration tests
@@ -57,10 +61,12 @@ Key design decisions:
 * **Security**: moved application to isolated network connections using virtual network, to minimise exposure to public internet
 * **Deployment**: moved from manual provisioning to full provisioning and teardown of infrastructure using Terraform, ensuring reproducible environments and configuration
 
+{% include details_close.html %}
+
 ## Systems Programming
 
 ### File Cache Server via IPC
-File cache service that provides a backing store for a proxy server, using shared memory IPC to provide file data to multiple concurrent processes.
+{% include details_open.html summary="File cache service that provides a backing store for a proxy server, using shared memory IPC to provide file data to multiple concurrent processes." %}
 
 * **Context**: coursework project, in C, using POSIX shared memory and message queue primitives, and cache invalidation out of scope
 * **Verification**: integration test suite, checks with valgrind/helgrind
@@ -73,24 +79,31 @@ Key design decisions:
 * **Inter-process coordination**: clear separation between command and data layers, with POSIX message queues used as a lightweight coordination primitive to coordinate the setup and teardown of shared memory segments
 * **Safety**: direct communication of data bounds and use of coordination primitives to ensure safe reads/writes to shared memory.
 
+{% include details_close.html %}
+
 ### FunnelSort Implementation
-Implementation of cache-oblivious sorting algorithm, including a simplified memory layout for the recursive van Emde Boas tree structure. Includes public write-up of efficiency analysis and asymptotic bounds on efficiency loss at the link [here]().
+{% include details_open.html summary="Implementation of cache-oblivious sorting algorithm, including a simplified memory layout for the recursive van Emde Boas tree structure. Includes public write-up of efficiency analysis and asymptotic bounds on efficiency loss at the link [here](/2026/10/05/funnelsort)." %}
 
 * **Context**: coursework project, in C
 * **Verification**: data reconciliation tests, checks with valgrind, cache-miss performance measured with cachegrind (66% cache miss reduction compared to naive mergesort)
 * **Availability**: private repository, code available on request
 
+{% include details_close.html %}
+
 ### SampleSort Implementation
-Implementation of parallel sorting with regular sampling (PSRS) algorithm, for distributed sorting of large data sets.
+{% include details_open.html summary="Implementation of parallel sorting with regular sampling (PSRS) algorithm, for distributed sorting of large data sets." %}
 
 * **Context**: coursework project, in C using MPI, with highly skewed keys de-scoped
 * **Verification**: data reconciliation tests, checks with valgrind, sort performance measured by wall-clock on cluster (0.23s for 1.6GB data, distributed over 4 nodes and 64 processes)
 * **Availability**: private repository, code available on request
 
+{% include details_close.html %}
+
 ## Personal Projects
 
 ### Website Testing Infrastructure
-Containerised test environment for this site, incorporating Playwright and other tests to support an AI-assisted site development workflow. Public write-up available [here]()
+{% include details_open.html summary="Containerised test environment for this site, incorporating Playwright and other tests to support an AI-assisted site development workflow. Public write-up available [here](/2026/06/10/building)." %}
+
 
 * **Context**: personal site and sandbox to develop skill in AI-augmented development
 * **Verification**: automated regression suite, integrated with GitHub CI, with manual verification of major changes
@@ -100,3 +113,5 @@ Key design decisions:
 
 * **Threat model**: data exfiltration is bounded through keeping secrets and sensitive information away from the test environment. The container serves to provide reasonable protection from agent-generated test code to the host and filesystem through rootless containers.
 * **Reproducibility**: dependencies are pinned to match GitHub Pages workflow and ensure Playwright testing matches the end-user experience
+
+{% include details_close.html %}
