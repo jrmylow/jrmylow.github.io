@@ -9,8 +9,7 @@ A small collection of projects. Learning systems through building and breaking t
 
 ## Distributed Systems and Fault Tolerance
 
-### MapReduce Implementation with Master-Fault Tolerance
-{% include details_open.html summary="MapReduce implementation in Go for distributed data processing, incorporating replication and failover for Master nodes. I owned the design of the Master and Worker fault tolerance." %}
+{% include details_open.html summary="**MapReduce Implementation with Master-Fault Tolerance.** MapReduce implementation in Go for distributed data processing, incorporating replication and failover for Master nodes. I owned the design of the Master and Worker fault tolerance." %}
 
 * **Context**: coursework project (pair programming), in Go, deployed on Azure Kubernetes Service, using Azure Blob Storage as the distributed file system
 * **Verification**: reconciliation vs. reference implementation, randomised fault injection (crashes) for Master and Worker nodes
@@ -30,8 +29,7 @@ Job state is broadcast from Leader to backup, with version numbers per-job to en
 
 ## Networking and Cloud
 
-### Software-Defined Networking and Network Virtualisation
-{% include details_open.html summary="Network routing, provisioning, and connection management for virtualised network services over a software-defined network. I designed the test suite, controller handling of network faults, and connection affinity for virtual network functions." %}
+{% include details_open.html summary="**Software-Defined Networking and Network Virtualisation.** Network routing, provisioning, and connection management for virtualised network services over a software-defined network. I designed the test suite, controller handling of network faults, and connection affinity for virtual network functions." %}
 
 * **Context**: coursework project (pair programming), in Python, using OpenFlow and k8s-deployed network functions in kind
 * **Verification**: live connectivity and load generation using `iperf3` and a custom testing framework, network rebalancing and connection affinity demonstrated through logs
@@ -48,8 +46,7 @@ Key design decisions:
 
 {% include details_close.html %}
 
-### Cloud Application Infrastructure
-{% include details_open.html summary="Infrastructure provisioning and configuration for a cloud-native microservices app project. I owned the infrastructure design." %}
+{% include details_open.html summary="**Cloud Application Infrastructure.** Infrastructure provisioning and configuration for a cloud-native microservices app project. I owned the infrastructure design." %}
 
 * **Context**: coursework project (pair programming), using Terraform
 * **Verification**: local testing environment (kind, azurite), then deployed to Azure managed services, with infrastructure changes verified through integration tests
@@ -65,8 +62,7 @@ Key design decisions:
 
 ## Systems Programming
 
-### File Cache Server via IPC
-{% include details_open.html summary="File cache service that provides a backing store for a proxy server, using shared memory IPC to provide file data to multiple concurrent processes." %}
+{% include details_open.html summary="**File Cache Server via IPC.** File cache service that provides a backing store for a proxy server, using shared memory IPC to provide file data to multiple concurrent processes." %}
 
 * **Context**: coursework project, in C, using POSIX shared memory and message queue primitives, and cache invalidation out of scope
 * **Verification**: integration test suite, checks with valgrind/helgrind
@@ -81,8 +77,7 @@ Key design decisions:
 
 {% include details_close.html %}
 
-### FunnelSort Implementation
-{% include details_open.html summary="Implementation of cache-oblivious sorting algorithm, including a simplified memory layout for the recursive van Emde Boas tree structure. Includes public write-up of efficiency analysis and asymptotic bounds on efficiency loss at the link [here](/2026/10/05/funnelsort)." %}
+{% include details_open.html summary="**FunnelSort Implementation.** Implementation of cache-oblivious sorting algorithm, including a simplified memory layout for the recursive van Emde Boas tree structure. Includes public write-up of efficiency analysis and asymptotic bounds on efficiency loss at the link [here](/2026/10/05/funnelsort)." %}
 
 * **Context**: coursework project, in C
 * **Verification**: data reconciliation tests, checks with valgrind, cache-miss performance measured with cachegrind (66% cache miss reduction compared to naive mergesort)
@@ -90,8 +85,7 @@ Key design decisions:
 
 {% include details_close.html %}
 
-### SampleSort Implementation
-{% include details_open.html summary="Implementation of parallel sorting with regular sampling (PSRS) algorithm, for distributed sorting of large data sets." %}
+{% include details_open.html summary="**SampleSort Implementation.** Implementation of parallel sorting with regular sampling (PSRS) algorithm, for distributed sorting of large data sets." %}
 
 * **Context**: coursework project, in C using MPI, with highly skewed keys de-scoped
 * **Verification**: data reconciliation tests, checks with valgrind, sort performance measured by wall-clock on cluster (0.23s for 1.6GB data, distributed over 4 nodes and 64 processes)
@@ -101,8 +95,7 @@ Key design decisions:
 
 ## Personal Projects
 
-### Website Testing Infrastructure
-{% include details_open.html summary="Containerised test environment for this site, incorporating Playwright and other tests to support an AI-assisted site development workflow. Public write-up available [here](/2026/06/20/building)." %}
+{% include details_open.html summary="**Website Testing Infrastructure.** Containerised test environment for this site, incorporating Playwright and other tests to support an AI-assisted site development workflow. Public write-up available [here](/2026/06/20/building)." %}
 
 
 * **Context**: personal site and sandbox to develop skill in AI-augmented development
