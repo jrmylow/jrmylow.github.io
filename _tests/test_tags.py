@@ -2,7 +2,7 @@
 
 import discovery
 import pytest
-from playwright.sync_api import Page
+from playwright.sync_api import Page, expect
 
 
 @pytest.mark.parametrize("post_url", discovery.params(discovery.tagged_post_urls(), "tagged posts"))
@@ -203,6 +203,20 @@ class TestTagFiltering:
         # Click to deselect
         tag.click()
         assert "selected" not in tag.get_attribute("class"), "Tag should not have selected class"
+
+    def test_selected_state_is_announced(self, page: Page, jekyll_server: str, any_post_tag: str):
+        """Tag buttons expose their state as aria-pressed, so screen readers say whether a tag is
+        selected. Old: only the visual `.selected` class carried it.
+        """
+        page.goto(f"{jekyll_server}/tags/")
+        tag = page.locator(f".tag-cloud-item[data-tag='{any_post_tag}']")
+        expect(tag).to_have_attribute("aria-pressed", "false")
+        tag.click()
+        expect(tag).to_have_attribute("aria-pressed", "true")
+        tag.click()
+        expect(tag).to_have_attribute("aria-pressed", "false")
+        page.goto(f"{jekyll_server}/tags/?t={any_post_tag}")
+        expect(tag).to_have_attribute("aria-pressed", "true")
 
     def test_deselecting_tag_hides_posts(self, page: Page, jekyll_server: str):
         """Deselecting all tags should hide all posts."""

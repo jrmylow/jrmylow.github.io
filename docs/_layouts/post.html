@@ -8,7 +8,8 @@ layout: default
   {% include tags.html tags=page.tags %}
   {% include series.html %}
   {% if page.toc %}{% include toc.html html=content %}{% endif %}
-  {{ content }}
+  {% comment %} kramdown writes role="doc-endnote" on footnotes, which DPUB-ARIA 1.1 deprecated. {% endcomment %}
+  {{ content | replace: ' role="doc-endnote"', '' }}
   {% include backlinks.html %}
   {% unless page.collection == "previews" %}{% include webmentions.html %}{% endunless %}
 </div>

@@ -16,6 +16,8 @@
    ========================================================================== */
 
 :root {
+  color-scheme: dark;
+
   /* Base Theme Colors */
   --body-bg: #1a1a1a;
   --body-color: #d9d9d9;
@@ -67,6 +69,8 @@
    ========================================================================== */
 
 [data-theme="light"] {
+  color-scheme: light;
+
   /* Base Theme Colors */
   --body-bg: #f2ede7;
   --body-color: #515151;
@@ -106,6 +110,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Sidebar theme colors (dark in both themes, so a white focus ring) */
 .sidebar {
+  color-scheme: dark;
   --focus-ring: #ffffff;
   background-color: var(--sidebar-bg);
   color: var(--sidebar-color);

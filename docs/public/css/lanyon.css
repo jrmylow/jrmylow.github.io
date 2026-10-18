@@ -295,7 +295,11 @@ tbody tr:nth-child(odd) th {
   .masthead { position: static; }
 }
 
+/* The site title is an h1 on the home page and a <p> elsewhere; it looks the same on both */
 .masthead-title {
+  font-size: 1.1em;
+  font-weight: bold;
+  letter-spacing: -.025rem;
   margin-top: 0;
   margin-bottom: 0;
   color: var(--heading-color);
