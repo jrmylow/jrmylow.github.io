@@ -43,9 +43,9 @@ Key design decisions:
 
 ## Systems Programming
 
-{% include details_open.html title="Cache-Oblivious Sort Implementation" summary="Implementation and theoretical analysis (write-up [here](/2026/10/05/funnelsort)) of Funnelsort algorithm and impact of simplified memory layout for the recursive van Emde Boas tree structure on asymptotic efficiency." %}
+{% include details_open.html title="Cache-Oblivious Sort Implementation" summary="Implementation and theoretical analysis (write-up [here](/2026/10/05/funnelsort)) of Funnelsort algorithm and impact of memory layout on cache-transfer efficiency" %}
 
-* **Context**: written in C, with memory safety by construction due to the exact layout of the data buffer layouts
+* **Context**: written in C, with memory safety by construction due to the exact layout of the data buffers for the recursive van Emde Boas tree
 * **Verification**: data reconciliation tests, checks with valgrind, cache-miss performance measured with cachegrind (66% cache miss reduction compared to naive mergesort)
 
 {% include details_close.html %}
