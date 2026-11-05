@@ -10,10 +10,12 @@ A collection of personal projects and highlights from my time at Georgia Tech's 
 
 ## Distributed Systems and Fault Tolerance
 
-{% include details_open.html title="Raft Implementation" summary="Raft implementation for fault-tolerant state machine replication." %}
+{% include details_open.html title="Raft Implementation" summary="Raft implementation for a linearisable, fault-tolerant key-value store." %}
+
+Implementation of raft consensus algorithm under a crash-stop failure model and network partition for key-value store. The algorithm guarantees linearisability of client commands.
 
 * **Context**: originally written in go against the MIT 6.824/6.5840 lab tests, then ported to Java for testing against the dslabs model checker and tests
-* **Verification**: dslabs model checker and state-space search tests
+* **Verification**: dslabs model checker and state-space search tests, including node failure and arbitrary network partition
 
 {% include details_close.html %}
 
