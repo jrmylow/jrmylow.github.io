@@ -3,11 +3,20 @@ layout: page
 title: Projects
 permalink: /projects/
 nav_order: 40
+description: Distributed systems, systems programming, networking, and personal projects.
 ---
 
 A collection of personal projects and highlights from my time at Georgia Tech's OMSCS program (systems track).
 
 ## Distributed Systems and Fault Tolerance
+
+{% include details_open.html title="Raft Implementation" summary="Raft implementation for fault-tolerant state machine replication." %}
+
+* **Context**: originally written in go against the MIT 6.824/6.5840 lab tests, then ported to Java for testing against the dslabs model checker and tests
+* **Verification**: dslabs model checker and state-space search tests
+
+{% include details_close.html %}
+
 
 {% include details_open.html title="MapReduce Implementation with Master Failover" summary="MapReduce implementation in Go for distributed data processing, incorporating replication and failover for Master nodes" %}
 
