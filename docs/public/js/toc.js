@@ -1,14 +1,18 @@
 /**
  * Table of contents (_includes/post_toc.html)
  *
- * A panel that slides out from the right, toggled by .toc-toggle. The state is
- * data-toc="open|closed" on <html>; an inline script sets it before first paint.
+ * A panel that drops down from the header bar, toggled by .toc-toggle. The
+ * state is data-toc="open|closed" on <html>; an inline script sets it before
+ * first paint.
  *
- * - From 80em the panel sits in the right margin and covers nothing, so it stays
- *   open while the reader scrolls and clicks the page. Opening or closing it
- *   there is remembered (localStorage key `toc`) and applied on the next post.
- * - Below 80em it slides over the page, like the menu: it starts closed, and a
+ * - From 80em the panel hangs in the right margin and covers nothing, so it
+ *   stays open while the reader scrolls and clicks the page. Opening or closing
+ *   it there is remembered (localStorage key `toc`) and applied on the next post.
+ * - Below 80em it covers the screen under the header: it starts closed, and a
  *   click outside it, Escape, or following one of its links closes it.
+ *
+ * Its height runs to the bottom of the window, so this keeps
+ * --masthead-height on <html> set to the header's height (CSS has a fallback).
  *
  * It also marks the section being read with aria-current="location": the last
  * heading whose top has scrolled past the masthead, or the last heading once
@@ -44,6 +48,13 @@
     if (!toc || !button) return;
 
     var wide = window.matchMedia(WIDE);
+    var masthead = toc.closest('.masthead');
+
+    function measure() {
+      if (masthead) root.style.setProperty('--masthead-height', masthead.getBoundingClientRect().height + 'px');
+    }
+    measure();
+    window.addEventListener('resize', measure);
 
     function isOpen() { return root.getAttribute('data-toc') === 'open'; }
 

@@ -1,11 +1,11 @@
 """Tests for the table of contents: _includes/post_toc.html and public/js/toc.js.
 
 Uses the fixture previews _tests/fixtures/_previews/2024-04-0*-toc-*.md, served by the
-designed build. The TOC is a panel that slides out from the right, toggled by a button
-that mirrors the menu button. From 80em it fills the right margin, covering nothing,
-and starts open unless the reader closed it before; below that it slides over the page,
-starts closed, and closes like the menu. It marks the section being read with
-aria-current="location".
+designed build. The TOC is a panel that hangs from the header line and unrolls downward,
+toggled by a button at the header bar's right end. From 80em it hangs in the right
+margin, covering nothing, and starts open unless the reader closed it before; below
+that it covers the screen under the header, starts closed, and closes like the menu.
+It marks the section being read with aria-current="location".
 """
 
 import corpus
@@ -63,8 +63,8 @@ def _expect_open(page: Page) -> None:
 
 def _expect_closed(page: Page) -> None:
     expect(page.locator(TOGGLE)).to_have_attribute("aria-expanded", "false")
+    expect(page.locator(PANEL)).to_be_hidden()
     expect(page.locator(LINKS).first).to_be_hidden()
-    expect(page.locator(PANEL)).not_to_be_in_viewport()
 
 
 def _scroll_heading_to_top(page: Page, heading_id: str) -> None:
@@ -74,6 +74,12 @@ def _scroll_heading_to_top(page: Page, heading_id: str) -> None:
 
 def _rect(page: Page, selector: str) -> dict:
     return page.locator(selector).first.evaluate("el => el.getBoundingClientRect().toJSON()")
+
+
+def _assert_hangs_from_the_header(page: Page) -> None:
+    """The panel's top is the header's bottom edge: the header line stays in view above it."""
+    top, line = _rect(page, PANEL)["top"], _rect(page, ".masthead")["bottom"]
+    assert abs(top - line) < 0.5, f"panel top {top} is not at the header line {line}"
 
 
 class TestContents:
@@ -105,6 +111,11 @@ class TestWide:
     def test_open_on_load_without_sliding(self, wide: Page):
         _expect_open(wide)
         assert wide.locator(PANEL).evaluate("el => el.getAnimations().length") == 0
+
+    def test_hangs_from_the_header_line(self, wide: Page):
+        _assert_hangs_from_the_header(wide)
+        _scroll_heading_to_top(wide, "second-section")
+        _assert_hangs_from_the_header(wide)
 
     def test_fills_the_right_margin_clear_of_the_column(self, wide: Page):
         panel, column = _rect(wide, PANEL), _rect(wide, ".container.content")
@@ -156,15 +167,20 @@ class TestNarrow:
     def test_closed_on_load(self, narrow: Page):
         _expect_closed(narrow)
 
-    def test_toggle_opens_it_at_the_right_edge(self, narrow: Page):
+    def test_covers_the_screen_below_the_header(self, narrow: Page):
+        _scroll_heading_to_top(narrow, "second-section")
         narrow.locator(TOGGLE).click()
         _expect_open(narrow)
-        assert _rect(narrow, PANEL)["right"] == NARROW["width"]
+        _assert_hangs_from_the_header(narrow)
+        panel = _rect(narrow, PANEL)
+        assert (panel["left"], panel["right"]) == (0, NARROW["width"]), f"panel spans {panel['left']}-{panel['right']}"
+        assert abs(panel["bottom"] - NARROW["height"]) < 1, f"panel ends at {panel['bottom']}, not the window's bottom"
 
     def test_click_outside_closes_it(self, narrow: Page):
         narrow.locator(TOGGLE).click()
         _expect_open(narrow)
-        narrow.locator(".post-title").click()
+        # The panel covers the page, so outside is the header bar: its empty top padding.
+        narrow.locator(".masthead").click(position={"x": NARROW["width"] / 2, "y": 4})
         _expect_closed(narrow)
 
     def test_escape_closes_it(self, narrow: Page):

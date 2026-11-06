@@ -6,9 +6,6 @@
     <!-- Site analytics -->
     {% include sidebar.html %}
 
-    {% comment %} Outside .wrap, which the open menu transforms; see post_toc.html. {% endcomment %}
-    {% if page.layout == "post" and page.toc != false %}{% include post_toc.html html=page.content %}{% endif %}
-
     <!-- Wrap is the content to shift when toggling the sidebar. We wrap the
          content to avoid any CSS collisions with our real content. -->
     <div class="wrap">
@@ -20,6 +17,7 @@
             <small>{{ site.tagline }}</small>
           </{{ title_tag }}>
         </div>
+        {% if page.layout == "post" and page.toc != false %}{% include post_toc.html html=page.content %}{% endif %}
       </div>
 
       <div class="container content">

@@ -1,20 +1,21 @@
 {% comment %}
-  Table of contents for a post: a panel that slides out from the right, opened
-  and closed by a button that mirrors the menu button on the left.
+  Table of contents for a post: a panel that drops down from the header bar,
+  opened and closed by a button at the bar's right end.
 
-  Included from default.html, outside .wrap: .wrap takes a transform while the
-  menu is open, and a transformed ancestor would carry these fixed elements
-  with it. Pass the post's converted HTML (page.content) as `html`.
+  Included from default.html inside .masthead, which is sticky: the panel is
+  positioned against the masthead's bottom edge, so it hangs from the header
+  line wherever the page is scrolled, and unrolls down from it. Pass the
+  post's converted HTML (page.content) as `html`.
 
   Built from the post's h2 and h3 headings. On by default for the post layout;
   `toc: false` in front matter turns it off, and a post with fewer than two
   headings gets none.
 
-  From 80em the panel sits in the right margin, beside the column, and starts
-  open unless the reader closed it before; below that it slides over the page
-  and starts closed. The inline script sets the state on <html> before the
-  panel is parsed, so it never animates open on load. toc.js does the rest.
-  Styles: features.css, section 6. Guide: _documentation/page.md.
+  From 80em the panel hangs in the right margin, beside the column, and starts
+  open unless the reader closed it before; below that it covers the screen
+  under the header and starts closed. The inline script sets the state on
+  <html> before the panel is parsed, so it never unrolls on load. toc.js does
+  the rest. Styles: features.css, section 6. Guide: _documentation/page.md.
 {% endcomment %}
 {% capture toc_list %}{% include toc.html html=include.html sanitize=true h_min=2 h_max=3 skip_no_ids=true class="toc-list" %}{% endcapture %}
 {% assign toc_entries = toc_list | split: '<li' | size | minus: 1 %}

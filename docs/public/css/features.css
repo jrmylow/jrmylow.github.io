@@ -291,10 +291,11 @@
    6. Table of contents (_includes/post_toc.html, public/js/toc.js)
    ========================================================================== */
 
-/* The button: the menu button's mirror image, top right. The icon is a mask
-   over currentColor, so it takes each theme's colour (the hamburger's). */
+/* The button: the menu button's mirror image, at the header bar's right end.
+   The icon is a mask over currentColor, so it takes each theme's colour (the
+   hamburger's). */
 .toc-toggle {
-  position: fixed;
+  position: absolute;
   top: .8rem;
   right: 1rem;
   z-index: 30;
@@ -330,33 +331,38 @@
   background-color: var(--sidebar-bg);
 }
 
-/* The panel: full height at the right edge, off-screen until opened. Hidden
-   when closed, so its links leave the tab order. */
+/* The panel hangs from the header line: positioned against the sticky
+   masthead's bottom edge (top: 100% is the padding edge, so +1px clears the
+   border), it moves with the header and covers none of it. Closed, it is
+   clipped to nothing at its top edge; opening unrolls it downward and closing
+   rolls it back up into the bar. Hidden when closed, so its links leave the
+   tab order. Narrow: it covers the screen below the header. */
 .toc {
-  position: fixed;
-  top: 0;
+  position: absolute;
+  top: calc(100% + 1px);
   right: 0;
-  bottom: 0;
-  z-index: 5;
-  width: min(16rem, 85vw);
-  padding: 4.5rem 1rem 1.5rem 1.25rem;
+  left: 0;
+  height: calc(100vh - var(--masthead-height, 3.7rem));
+  height: calc(100dvh - var(--masthead-height, 3.7rem));
+  padding: 1.5rem 1.5rem 2rem;
   overflow-y: auto;
-  font-size: .875rem;
+  overscroll-behavior: contain;
+  font-size: 1rem;
   background-color: var(--body-bg);
-  border-left: 1px solid var(--border-color);
   visibility: hidden;
-  transform: translateX(100%);
+  clip-path: inset(0 0 100% 0);
 }
 
-/* Over the page (narrow), it casts the menu's shadow */
+/* Open, the clip edge sits above the panel: an edge on the panel's own top,
+   at a fractional pixel, is antialiased and lets a sliver of the page show
+   through under the header line. */
 [data-toc="open"] .toc {
   visibility: visible;
-  transform: none;
-  box-shadow: -.25rem 0 .5rem var(--sidebar-shadow);
+  clip-path: inset(-1rem 0 0 0);
 }
 
 .toc-ready .toc {
-  transition: transform .3s ease-in-out, visibility .3s;
+  transition: clip-path .3s ease-in-out, visibility .3s;
 }
 
 .toc-title {
@@ -384,7 +390,7 @@
 .toc .toc-list a {
   display: block;
   margin-left: -1px;
-  padding: .25rem 0 .25rem .75rem;
+  padding: .5rem 0 .5rem .75rem;
   border-left: 2px solid transparent;
   line-height: 1.35;
   color: var(--muted-color);
@@ -413,17 +419,24 @@
   border-left-color: var(--link-color);
 }
 
-/* Wide: the panel fills the right margin, from the column's edge (half the
-   38rem column, plus a gutter, from the centre) to the window's, up to 16rem.
-   It covers nothing, so it needs no shadow. */
+/* Wide: the panel hangs in the right margin, from the column's edge (half the
+   38rem column, plus a gutter, from the centre) to the window's, up to 16rem,
+   and only as tall as its list. It covers nothing. */
 @media (min-width: 80em) {
   .toc {
+    left: auto;
     width: min(16rem, calc(50% - 19rem - .5rem));
+    height: auto;
+    max-height: calc(100vh - var(--masthead-height, 3.7rem) - 1.5rem);
+    padding: 1.25rem 1rem 1.25rem 1.25rem;
     font-size: .75rem;
+    border-bottom: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color);
   }
 
-  [data-toc="open"] .toc {
-    box-shadow: none;
+  .toc .toc-list a {
+    padding-top: .25rem;
+    padding-bottom: .25rem;
   }
 }
 
