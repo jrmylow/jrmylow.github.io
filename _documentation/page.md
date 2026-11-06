@@ -103,6 +103,9 @@ both share `.icon-toggle`, see `styling.md`).
   The stored choice doesn't apply here. Its height is the window less the
   header: `toc.js` keeps `--masthead-height` on `<html>` current (CSS falls
   back to 3.7rem, the header's computed height at both type sizes).
+- **Type.** The menu's scale at every width (0.875rem, then 0.75rem from
+  30em, as `.sidebar`): navigation reads smaller than the article, and the
+  size doesn't jump at 80em. Phones keep taller entries for touch.
 - **State.** `data-toc="open|closed"` on `<html>`, set by an inline script before
   the panel is parsed, so the first paint is already right and nothing unrolls
   on load; transitions switch on (`.toc-ready`) a frame later.

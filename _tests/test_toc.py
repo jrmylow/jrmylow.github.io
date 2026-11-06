@@ -239,6 +239,23 @@ class TestThemes:
         expect(wide.locator(PANEL)).to_have_css("background-color", LIGHT_BG_COLOR)
 
 
+class TestType:
+    """Entries are set on the menu's type scale at every width: smaller than the article,
+    and the same size either side of the 80em breakpoint (old: article-sized below it)."""
+
+    @pytest.mark.parametrize("width", [390, 480, 720, 960, 1279, 1280, 1600])
+    def test_entries_match_the_menu_and_sit_below_the_article(self, page: Page, designed_site, width: int):
+        page.set_viewport_size({"width": width, "height": 800})
+        page.goto(_url(designed_site, DEMO))
+        sizes = page.evaluate(
+            """() => Object.fromEntries([['entry', '.toc-list a'], ['title', '.toc-title'],
+              ['menu', '.sidebar-nav-item'], ['article', '.post > p']].map(([k, s]) =>
+              [k, parseFloat(getComputedStyle(document.querySelector(s)).fontSize)]))"""
+        )
+        assert sizes["entry"] == sizes["title"] == sizes["menu"], f"at {width}px: {sizes}"
+        assert sizes["entry"] < sizes["article"], f"at {width}px: {sizes}"
+
+
 class TestCurrentSection:
     """The entry for the section being read carries aria-current="location"."""
 

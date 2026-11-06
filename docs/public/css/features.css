@@ -317,7 +317,7 @@
   left: 0;
   height: calc(100vh - var(--masthead-height, 3.7rem));
   height: calc(100dvh - var(--masthead-height, 3.7rem));
-  padding: 1.5rem 1.5rem 2rem;
+  padding: 1.25rem 1rem 1.25rem 1.25rem;
   overflow-y: auto;
   overscroll-behavior: contain;
   background-color: var(--body-bg);
@@ -391,23 +391,33 @@
   border-left-color: var(--link-color);
 }
 
-/* Wide: the panel hangs in the right margin, from the column's edge (half the
-   38rem column, plus a gutter, from the centre) to the window's, up to 16rem,
-   and down to the window's bottom, like the menu: a column edged by one rule,
-   not a box that stops under its list. It covers nothing. Type and spacing as
-   the menu's at this width. */
-@media (min-width: 80em) {
+/* Type on the menu's scale at every width (.sidebar, lanyon.css): navigation,
+   so smaller than the article, and the same size either side of 80em. Phones
+   keep taller entries, for touch. */
+.toc {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 30em) {
   .toc {
-    left: auto;
-    width: min(16rem, calc(50% - 19rem - 0.5rem));
-    padding: 1.25rem 1rem 1.25rem 1.25rem;
     font-size: 0.75rem;
-    border-left: 1px solid var(--border-color);
   }
 
   .toc-list a {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
+  }
+}
+
+/* Wide: the panel hangs in the right margin, from the column's edge (half the
+   38rem column, plus a gutter, from the centre) to the window's, up to 16rem,
+   and down to the window's bottom, like the menu: a column edged by one rule,
+   not a box that stops under its list. It covers nothing. */
+@media (min-width: 80em) {
+  .toc {
+    left: auto;
+    width: min(16rem, calc(50% - 19rem - 0.5rem));
+    border-left: 1px solid var(--border-color);
   }
 }
 
