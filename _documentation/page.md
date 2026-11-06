@@ -76,7 +76,8 @@ matter.
 kramdown generates heading IDs (`auto_ids: true`, `toc_levels: 1..6` in
 `_config.yml`); `toc.html` (allejo/jekyll-toc) builds a list from them, and
 `post_toc.html` turns it into a panel that drops down from the header bar,
-toggled by a button at the bar's right end (the menu button's mirror image).
+toggled by a button at the bar's right end (the menu button's mirror image;
+both share `.icon-toggle`, see `styling.md`).
 
 - **When.** On by default for posts and previews; `toc: false` in front matter
   turns it off. It lists h2 and h3 only, and a post with fewer than two of them

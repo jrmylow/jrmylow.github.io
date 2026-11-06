@@ -414,6 +414,30 @@ def test_nothing_is_clipped_at_320px(page: Page, designed_site):
         assert not result["clipped"], f"{url}: content cut off at 320px: {result['clipped']}"
 
 
+def test_open_toc_reflows_at_320px(page: Page, designed_site):
+    """1.4.10 (AA): at 320 CSS px wide, the open table of contents fits the screen: no
+    sideways scroll in the panel or the page, and every entry, long ones wrapped, in view.
+    """
+    page.set_viewport_size({"width": 320, "height": 640})
+    _open(page, _toc_url(designed_site), "dark")
+    page.locator(".toc-toggle").click()
+    expect(page.locator(".toc-list a").first).to_be_in_viewport()
+    result = page.evaluate(TOC_REFLOW_JS)
+    assert result["pageScroll"] <= 0, f"the page scrolls sideways by {result['pageScroll']}px"
+    assert result["panelScroll"] <= 0, f"the panel scrolls sideways by {result['panelScroll']}px"
+    assert not result["cut"], f"entries cut off at 320px: {result['cut']}"
+
+
+TOC_REFLOW_JS = """
+() => {
+  const vw = document.documentElement.clientWidth, panel = document.querySelector('.toc');
+  const cut = [...panel.querySelectorAll('a')].filter((a) => a.getBoundingClientRect().right > vw + 1);
+  return {pageScroll: document.documentElement.scrollWidth - vw,
+          panelScroll: panel.scrollWidth - panel.clientWidth, cut: cut.map((a) => a.textContent)};
+}
+"""
+
+
 # =============================================================================
 # Contrast axe doesn't measure: 1.4.11 boundaries, 1.4.3 placeholders
 # =============================================================================
@@ -485,4 +509,44 @@ def test_control_edges_and_placeholders_have_contrast(page: Page, designed_site,
     expect(page.locator(".command-palette-input")).to_be_focused()
     placeholder("command palette", page.locator(".command-palette-input"))
 
+    assert not problems, f"{theme}:\n  " + "\n  ".join(problems)
+
+
+@pytest.mark.parametrize("theme", THEMES)
+def test_toggle_icons_and_the_toc_marker_have_contrast(page: Page, designed_site, theme: str):
+    """1.4.11 (AA): the header toggles are icon-only, so the icon is what identifies each
+    control: >= 3:1 against the toggle's fill, closed and open. The TOC's current-section
+    bar, which marks state alongside the text colour, is >= 3:1 against the panel.
+    """
+    problems = []
+
+    def icon(where: str, toggle) -> None:
+        colours = toggle.evaluate(
+            "el => [getComputedStyle(el, '::before').backgroundColor, getComputedStyle(el).backgroundColor]"
+        )
+        ratio = a11y.contrast(*(a11y.parse_rgb(c) for c in colours))
+        if ratio < a11y.NON_TEXT_MIN:
+            problems.append(f"{where} icon {ratio:.2f}:1 on its fill, needs {a11y.NON_TEXT_MIN}:1")
+
+    page.set_viewport_size({"width": 1024, "height": 768})  # below 80em the TOC starts closed
+    _open(page, _toc_url(designed_site), theme)
+    menu, contents = page.locator(".sidebar-toggle"), page.locator(".toc-toggle")
+    icon("menu (closed)", menu)
+    icon("contents (closed)", contents)
+    contents.click()
+    expect(contents).to_have_attribute("aria-expanded", "true")
+    icon("contents (open)", contents)
+    page.keyboard.press("Escape")
+    expect(contents).to_have_attribute("aria-expanded", "false")
+    _open_sidebar(page)
+    icon("menu (open)", menu)
+
+    page.set_viewport_size({"width": 1280, "height": 720})  # the TOC opens in the margin
+    page.keyboard.press("Escape")  # close the menu
+    page.evaluate("document.getElementById('second-section').scrollIntoView()")
+    marker = page.locator(".toc-list a[aria-current]")
+    expect(marker).to_have_count(1)
+    ratio = a11y.against_backdrop(marker, marker.evaluate("el => getComputedStyle(el).borderLeftColor"))
+    if ratio < a11y.NON_TEXT_MIN:
+        problems.append(f"TOC current-section bar {ratio:.2f}:1, needs {a11y.NON_TEXT_MIN}:1")
     assert not problems, f"{theme}:\n  " + "\n  ".join(problems)

@@ -20,7 +20,7 @@
 {% capture toc_list %}{% include toc.html html=include.html sanitize=true h_min=2 h_max=3 skip_no_ids=true class="toc-list" %}{% endcapture %}
 {% assign toc_entries = toc_list | split: '<li' | size | minus: 1 %}
 {% if toc_entries >= 2 %}
-<button type="button" class="toc-toggle" aria-label="Contents" aria-controls="toc" aria-expanded="false"></button>
+<button type="button" class="toc-toggle icon-toggle" aria-label="Contents" aria-controls="toc" aria-expanded="false"></button>
 <script>
   (function () {
     var stored = null;

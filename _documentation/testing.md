@@ -144,7 +144,9 @@ By area (`_tests/<file>` -> what it guards):
   stored.
 - `test_theme_flash` — `data-theme` is set on `<html>` before the first
   stylesheet is inserted and keeps that value for the rest of the load.
-- `test_hamburger` — the sidebar toggle icon renders per theme.
+- `test_header_toggles` — both header toggles (menu, contents), in both themes:
+  the icon renders in the theme's colour on the page background, and open, it
+  is white on the sidebar blue with a 1px ring.
 - `test_cards` — card grid presence, required card elements, clickable cards,
   hover styling.
 - `test_pagination` — the essays landing (max 5 posts + archive link) and the
@@ -182,7 +184,9 @@ By area (`_tests/<file>` -> what it guards):
   - one `<h1>` per page and no skipped heading levels (1.3.1, 2.4.6);
   - a visible focus ring on every Tab stop (2.4.7);
   - focus and jump targets not hidden by the sticky masthead (2.4.11);
-  - nothing clipped at 320px (1.4.10);
+  - nothing clipped at 320px, the open table of contents included (1.4.10);
+  - icon contrast of the header toggles, closed and open, and of the TOC's
+    current-section bar (1.4.11);
   - control-edge and placeholder contrast (1.4.11, 1.4.3).
 
   It adds about 30 seconds to a run.

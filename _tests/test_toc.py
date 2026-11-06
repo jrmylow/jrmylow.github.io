@@ -10,6 +10,7 @@ It marks the section being read with aria-current="location".
 
 import corpus
 import pytest
+from constants import DARK_BG_COLOR, LIGHT_BG_COLOR
 from playwright.sync_api import Page, expect
 
 DEMO = "2024-04-01-toc-demo.md"
@@ -201,6 +202,28 @@ class TestNarrow:
         _expect_open(narrow)
         narrow.set_viewport_size(NARROW)
         _expect_closed(narrow)
+
+
+class TestThemes:
+    """The panel is part of the page: the page's background and colours, in either theme."""
+
+    @pytest.mark.parametrize("theme, bg", [("dark", DARK_BG_COLOR), ("light", LIGHT_BG_COLOR)])
+    def test_takes_the_page_background(self, page: Page, designed_site, theme: str, bg: str):
+        page.add_init_script(f"localStorage.setItem('theme', '{theme}')")
+        _load(page, designed_site, WIDE)
+        expect(page.locator(PANEL)).to_have_css("background-color", bg)
+        heading = page.locator(".post-title").evaluate("el => getComputedStyle(el).color")
+        expect(page.locator(".toc-title")).to_have_css("color", heading)
+
+    def test_follows_a_theme_switch_while_open(self, wide: Page):
+        wide.evaluate("localStorage.setItem('theme', 'dark')")
+        wide.reload()
+        expect(wide.locator(PANEL)).to_have_css("background-color", DARK_BG_COLOR)
+        wide.locator(".sidebar-toggle").click()
+        wide.locator(".toggle-switch").click()
+        expect(wide.locator("html")).to_have_attribute("data-theme", "light")
+        _expect_open(wide)
+        expect(wide.locator(PANEL)).to_have_css("background-color", LIGHT_BG_COLOR)
 
 
 class TestCurrentSection:
