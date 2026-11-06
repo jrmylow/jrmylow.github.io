@@ -156,6 +156,12 @@ By area (`_tests/<file>` -> what it guards):
   body is converted in the post's own pass (footnotes, reference links, heading
   ids), boxes start closed unless `open` is passed, and toggle by mouse and
   keyboard (see `collapsible.md`).
+- `test_toc` — the post table of contents (`toc-demo` previews): entries follow
+  the h2/h3 outline; from 80em it is open and fixed right of the column, below
+  the masthead; below that a closed box above the post that follows the
+  breakpoint; the section being read is marked; jumps land below the masthead
+  and open a closed box around their target; `toc: false`, a single heading, no
+  headings and non-post pages get none.
 - `test_analytics` — the GoatCounter script and dynamic noscript fallback (see
   `analytics.md`).
 - `test_performance` — the budget below.

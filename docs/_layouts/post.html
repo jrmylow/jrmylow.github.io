@@ -7,7 +7,7 @@ layout: default
   <span class="post-date">{{ page.date | date_to_string }}</span>
   {% include tags.html tags=page.tags %}
   {% include series.html %}
-  {% if page.toc %}{% include toc.html html=content %}{% endif %}
+  {% unless page.toc == false %}{% include post_toc.html %}{% endunless %}
   {% comment %} kramdown writes role="doc-endnote" on footnotes, which DPUB-ARIA 1.1 deprecated. {% endcomment %}
   {{ content | replace: ' role="doc-endnote"', '' }}
   {% include backlinks.html %}

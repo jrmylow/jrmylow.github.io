@@ -18,7 +18,7 @@ the masthead, and the content container. Other layouts wrap it:
   merge with it.
 
 Shared partials live in `_includes`: `head.html`, `sidebar.html`,
-`post_card.html`, `toc.html`, and `details_open.html`/`details_close.html`, the
+`post_card.html`, `toc.html` and `post_toc.html`, and `details_open.html`/`details_close.html`, the
 collapsible box used inside Markdown (`collapsible.md`).
 
 ## The post card is a single source of truth
@@ -74,7 +74,29 @@ matter.
 ## Table of contents
 
 kramdown generates heading IDs (`auto_ids: true`, `toc_levels: 1..6` in
-`_config.yml`); `toc.html` builds the list from them.
+`_config.yml`); `toc.html` (allejo/jekyll-toc) builds a list from them, and
+`post_toc.html` wraps it for the `post` layout.
+
+- **When.** On by default for posts and previews; `toc: false` in front matter
+  turns it off. It lists h2 and h3 only, and a post with fewer than two of them
+  gets no TOC (and no `toc.js` request).
+- **Wide (>= 80em).** Fixed in the right margin, beside the 38rem column and
+  below the masthead, open. Its width is whatever the margin leaves, capped at
+  14rem; a long list scrolls inside its own box. The left sidebar is an overlay,
+  so it never competes for this space.
+- **Narrow (< 80em).** The same element is a closed box above the post, styled
+  like the collapsible box.
+- **Open state.** One `<details>` serves both. A one-line inline script after it
+  sets `open` from the breakpoint before first paint, so a wide screen never
+  sees it expand after load; `toc.js` keeps it in step when the window crosses
+  the breakpoint.
+- **Current section.** `toc.js` marks the entry being read with
+  `aria-current="location"`: the last heading scrolled past the masthead line
+  (`scroll-padding-top`), or the last heading once the page hits the bottom,
+  since a short final section can't scroll that far. Following an entry whose
+  heading sits in a closed collapsible box opens the box first.
+
+Styles are in `features.css`, section 6; tests in `test_toc.py`.
 
 ## Head and metadata
 
@@ -86,4 +108,6 @@ when social-share link previews matter.
 ## References
 - Jekyll pagination: <https://jekyllrb.com/docs/pagination/>
 - Jekyll collections: <https://jekyllrb.com/docs/collections/>
+- allejo/jekyll-toc: <https://github.com/allejo/jekyll-toc>
+- `aria-current`: <https://www.w3.org/TR/wai-aria-1.2/#aria-current>
 - kramdown automatic IDs: <https://kramdown.gettalong.org/converter/html.html#auto-ids>

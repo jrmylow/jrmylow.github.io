@@ -1,0 +1,23 @@
+{% comment %}
+  Table of contents for a post, built from its h2 and h3 headings.
+
+  On by default for the post layout; `toc: false` in front matter turns it
+  off, and a post with fewer than two headings gets none. One element serves
+  both widths (features.css, section 6): from 80em it is fixed in the right
+  margin, beside the column, and open; below that it is a closed box above
+  the post. The inline script opens it on wide screens before first paint, so
+  it doesn't open visibly after load; toc.js keeps it in step on resize and
+  marks the section being read. Guide: _documentation/page.md.
+{% endcomment %}
+{% capture toc_list %}{% include toc.html html=content sanitize=true h_min=2 h_max=3 skip_no_ids=true class="toc-list" %}{% endcapture %}
+{% assign toc_entries = toc_list | split: '<li' | size | minus: 1 %}
+{% if toc_entries >= 2 %}
+<nav class="toc" aria-label="Contents">
+  <details class="toc-details">
+    <summary class="toc-summary">Contents</summary>
+    {{ toc_list }}
+  </details>
+  <script>document.currentScript.previousElementSibling.open = matchMedia('(min-width: 80em)').matches;</script>
+</nav>
+<script src="{{ '/public/js/toc.js' | absolute_url }}" defer></script>
+{% endif %}

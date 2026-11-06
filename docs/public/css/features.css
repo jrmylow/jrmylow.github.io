@@ -12,6 +12,7 @@
  *   3. Command palette
  *   4. Webmentions
  *   5. Collapsible box
+ *   6. Table of contents
  */
 
 /* ==========================================================================
@@ -283,5 +284,144 @@
 @media (prefers-reduced-motion: reduce) {
   .collapsible > details > summary::after {
     transition: none;
+  }
+}
+
+/* ==========================================================================
+   6. Table of contents (_includes/post_toc.html, public/js/toc.js)
+   ========================================================================== */
+
+/* Narrow: a closed box above the post, in the collapsible box's colours */
+.toc {
+  margin: 0 0 1.5rem;
+  font-size: 0.875rem;
+}
+
+.toc-details {
+  padding: 0 1rem;
+  background-color: var(--code-bg);
+  border: 1px solid var(--header-border-color);
+  border-radius: 8px;
+}
+
+.toc-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  font-weight: bold;
+  color: var(--heading-color);
+  cursor: pointer;
+  list-style: none;
+}
+
+.toc-summary::-webkit-details-marker {
+  display: none;
+}
+
+/* The collapsible box's chevron: down when closed, up when open */
+.toc-summary::after {
+  content: "";
+  width: 0.45em;
+  height: 0.45em;
+  margin-right: 0.25rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-25%) rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.toc-details[open] > .toc-summary::after {
+  transform: translateY(25%) rotate(-135deg);
+}
+
+/* One rail down the left; the entry being read is marked on it */
+.toc-list,
+.toc-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc-list {
+  margin-bottom: 0.75rem;
+  border-left: 1px solid var(--border-color);
+}
+
+.toc-list li {
+  margin: 0;
+}
+
+.toc .toc-list a {
+  display: block;
+  margin-left: -1px;
+  padding: 0.2rem 0 0.2rem 0.75rem;
+  border-left: 2px solid transparent;
+  line-height: 1.35;
+  color: var(--muted-color);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+/* h3 entries sit under their h2, on the same rail */
+.toc .toc-list ul a {
+  padding-left: 1.5rem;
+}
+
+.toc .toc-list a:hover,
+.toc .toc-list a:focus-visible {
+  color: var(--heading-color);
+  text-decoration: underline;
+}
+
+.toc .toc-list a[aria-current] {
+  color: var(--heading-color);
+  border-left-color: var(--link-color);
+}
+
+/* Wide: fixed in the right margin, beside the 38rem column, open. The left
+   edge is half the column plus a gutter from the centre; the width is what's
+   left of that half less a gutter at the window's edge. The padding keeps
+   focus rings clear of the scroll box's clipping edge. */
+@media (min-width: 80em) {
+  .toc {
+    position: fixed;
+    top: 5rem;
+    left: calc(50% + 19rem + 1.25rem);
+    z-index: 3;
+    width: calc(50% - 19rem - 2.5rem);
+    max-width: 14rem;
+    max-height: calc(100vh - 6rem);
+    margin: 0;
+    padding: 0.25rem;
+    overflow-y: auto;
+    font-size: 0.75rem;
+  }
+
+  .toc-details {
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .toc-summary {
+    padding: 0 0 0.5rem;
+  }
+
+  .toc-list {
+    margin-bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toc-summary::after {
+    transition: none;
+  }
+}
+
+@media print {
+  .toc {
+    display: none;
   }
 }

@@ -27,6 +27,7 @@ THEMES = ["dark", "light"]
 WCAG_A_AA = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"]
 A11Y_DEMO = "2024-02-01-a11y-demo.md"
 DETAILS_DEMO = "2024-03-01-details-demo.md"
+TOC_DEMO = "2024-04-01-toc-demo.md"
 QUERY = "designed"  # in every designed post's title, so search and the palette return results
 AXE = Axe()
 
@@ -44,6 +45,17 @@ def _demo_url(site) -> str:
 
 def _details_url(site) -> str:
     return f"{site.url}{site.document(DETAILS_DEMO)['url']}"
+
+
+def _toc_url(site) -> str:
+    return f"{site.url}{site.document(TOC_DEMO)['url']}"
+
+
+def _open_narrow_toc(page: Page) -> None:
+    """Below 80em the table of contents is a closed box above the post; open it."""
+    page.set_viewport_size({"width": 1024, "height": 768})
+    page.locator(".toc-summary").click()
+    expect(page.locator(".toc-list a").first).to_be_visible()
 
 
 def _open_details(page: Page) -> None:
@@ -99,6 +111,8 @@ SCANS = [
     ("post", lambda site: f"{site.url}{site.document(DESIGNED_POST)['url']}", None),
     ("demo", _demo_url, _wait_for_maths),
     ("collapsible", _details_url, _open_details),
+    ("toc", _toc_url, None),
+    ("toc narrow", _toc_url, _open_narrow_toc),
     ("sidebar open", "/", _open_sidebar),
     ("command palette", "/", _open_palette),
 ]
@@ -197,7 +211,7 @@ def test_each_page_has_one_h1_and_no_skipped_heading_levels(page: Page, designed
     page.add_init_script("localStorage.setItem('theme', 'dark')")
     problems = []
     for name, where, ready in SCANS:
-        if name in ("sidebar open", "command palette"):
+        if name in ("sidebar open", "command palette", "toc narrow"):
             continue  # states of a page, not page types
         page.goto(where(designed_site) if callable(where) else f"{designed_site.url}{where}")
         if ready:
@@ -307,6 +321,7 @@ def _home_with_menu(page: Page, site) -> None:
 WALKS = [
     ("home and menu", _home_with_menu, None),
     ("search", lambda page, site: page.goto(f"{site.url}/search/?q={QUERY}"), None),
+    ("toc", lambda page, site: (page.goto(_toc_url(site)), page.locator(".toc-summary").focus()), ".toc"),
     ("command palette", lambda page, site: (page.goto(f"{site.url}/"), _open_palette(page)), ".command-palette"),
 ]
 
