@@ -44,7 +44,8 @@ def calculate_p90(values: List[float]) -> float:
 
 def get_performance_metrics(page: Page) -> PerformanceMetrics:
     """Extract performance metrics from page using Navigation Timing API."""
-    timing = page.evaluate("""
+    timing = page.evaluate(
+        """
         () => {
             const entries = performance.getEntriesByType('navigation');
             if (entries.length > 0) {
@@ -65,7 +66,8 @@ def get_performance_metrics(page: Page) -> PerformanceMetrics:
                 load_complete: t.loadEventEnd - t.navigationStart
             };
         }
-        """)
+        """
+    )
     return PerformanceMetrics(**timing)
 
 
@@ -241,9 +243,11 @@ class TestResourceMetrics:
         """Pages should not load excessive resources."""
         page.goto(f"{jekyll_server}/", wait_until="load")
 
-        resource_count = page.evaluate("""
+        resource_count = page.evaluate(
+            """
             () => performance.getEntriesByType('resource').length
-            """)
+            """
+        )
 
         assert (
             resource_count < PERF_MAX_RESOURCES
@@ -253,20 +257,24 @@ class TestResourceMetrics:
         """Total page weight should be under threshold."""
         page.goto(f"{jekyll_server}/", wait_until="load")
 
-        total_size = page.evaluate("""
+        total_size = page.evaluate(
+            """
             () => {
                 const resources = performance.getEntriesByType('resource');
                 return resources.reduce((sum, r) => sum + (r.transferSize || 0), 0);
             }
-            """)
+            """
+        )
 
         # Also get the document size
-        doc_size = page.evaluate("""
+        doc_size = page.evaluate(
+            """
             () => {
                 const nav = performance.getEntriesByType('navigation')[0];
                 return nav ? (nav.transferSize || 0) : 0;
             }
-            """)
+            """
+        )
 
         total = total_size + doc_size
         max_kb = PERF_MAX_TRANSFER_BYTES / 1024
@@ -279,9 +287,11 @@ class TestResourceMetrics:
         """DOM should not have excessive nodes."""
         page.goto(f"{jekyll_server}/", wait_until="load")
 
-        node_count = page.evaluate("""
+        node_count = page.evaluate(
+            """
             () => document.getElementsByTagName('*').length
-            """)
+            """
+        )
 
         print(f"\nDOM nodes: {node_count} (limit: {PERF_MAX_DOM_NODES})")
 
