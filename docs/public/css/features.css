@@ -393,17 +393,15 @@
 
 /* Wide: the panel hangs in the right margin, from the column's edge (half the
    38rem column, plus a gutter, from the centre) to the window's, up to 16rem,
-   and only as tall as its list. It covers nothing. Type and spacing as the
-   menu's at this width. */
+   and down to the window's bottom, like the menu: a column edged by one rule,
+   not a box that stops under its list. It covers nothing. Type and spacing as
+   the menu's at this width. */
 @media (min-width: 80em) {
   .toc {
     left: auto;
     width: min(16rem, calc(50% - 19rem - 0.5rem));
-    height: auto;
-    max-height: calc(100vh - var(--masthead-height, 3.7rem) - 1.5rem);
     padding: 1.25rem 1rem 1.25rem 1.25rem;
     font-size: 0.75rem;
-    border-bottom: 1px solid var(--border-color);
     border-left: 1px solid var(--border-color);
   }
 

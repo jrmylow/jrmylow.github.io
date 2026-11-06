@@ -146,7 +146,8 @@ By area (`_tests/<file>` -> what it guards):
   stylesheet is inserted and keeps that value for the rest of the load.
 - `test_header_toggles` — both header toggles (menu, contents), in both themes:
   the icon renders in the theme's colour on the page background, and open, it
-  is white on the sidebar blue with a 1px ring.
+  is white on the sidebar blue with a 1px ring; each has hover text matching its
+  accessible name.
 - `test_cards` — card grid presence, required card elements, clickable cards,
   hover styling.
 - `test_pagination` — the essays landing (max 5 posts + archive link) and the

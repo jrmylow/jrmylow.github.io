@@ -93,7 +93,8 @@ both share `.icon-toggle`, see `styling.md`).
   one on the panel's own top, at a fractional pixel, is antialiased and lets a
   sliver of page text show under the line.
 - **Wide (>= 80em).** It hangs in the right margin, from the 38rem column's edge
-  to the window's (up to 16rem), as tall as its list. It covers nothing, so it
+  to the window's (up to 16rem), and down to the window's bottom: a column edged
+  by one rule, like the menu, rather than a box that stops under its list. It covers nothing, so it
   starts open and stays open while the reader scrolls and clicks the page.
   Closing or opening it here is remembered in `localStorage` (key `toc`);
   Escape closes it when focus is inside.

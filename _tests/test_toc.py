@@ -77,6 +77,12 @@ def _rect(page: Page, selector: str) -> dict:
     return page.locator(selector).first.evaluate("el => el.getBoundingClientRect().toJSON()")
 
 
+def _assert_reaches_the_bottom(page: Page, viewport: dict) -> None:
+    """The panel runs down to the window's bottom edge, however short its list."""
+    bottom = _rect(page, PANEL)["bottom"]
+    assert abs(bottom - viewport["height"]) < 1, f"panel ends at {bottom}, not the window's bottom"
+
+
 def _assert_hangs_from_the_header(page: Page) -> None:
     """The panel's top is the header's bottom edge: the header line stays in view above it."""
     top, line = _rect(page, PANEL)["top"], _rect(page, ".masthead")["bottom"]
@@ -101,7 +107,7 @@ class TestContents:
         expect(wide.get_by_role("navigation", name="Contents")).to_be_visible()
 
     def test_toggle_is_a_named_button_for_the_panel(self, wide: Page):
-        toggle = wide.get_by_role("button", name="Contents")
+        toggle = wide.get_by_role("button", name="Table of contents", exact=True)
         expect(toggle).to_have_attribute("aria-controls", "toc")
         expect(wide.locator("#toc")).to_have_class("toc")
 
@@ -117,6 +123,13 @@ class TestWide:
         _assert_hangs_from_the_header(wide)
         _scroll_heading_to_top(wide, "second-section")
         _assert_hangs_from_the_header(wide)
+
+    def test_runs_down_to_the_bottom_of_the_window(self, wide: Page):
+        """A column down the margin, not a box cut off under its list (the demo's list is short)."""
+        _assert_reaches_the_bottom(wide, WIDE)
+        _scroll_heading_to_top(wide, "second-section")
+        _assert_reaches_the_bottom(wide, WIDE)
+        expect(wide.locator(PANEL)).to_have_css("border-bottom-width", "0px")
 
     def test_fills_the_right_margin_clear_of_the_column(self, wide: Page):
         panel, column = _rect(wide, PANEL), _rect(wide, ".container.content")
@@ -175,7 +188,7 @@ class TestNarrow:
         _assert_hangs_from_the_header(narrow)
         panel = _rect(narrow, PANEL)
         assert (panel["left"], panel["right"]) == (0, NARROW["width"]), f"panel spans {panel['left']}-{panel['right']}"
-        assert abs(panel["bottom"] - NARROW["height"]) < 1, f"panel ends at {panel['bottom']}, not the window's bottom"
+        _assert_reaches_the_bottom(narrow, NARROW)
 
     def test_click_outside_closes_it(self, narrow: Page):
         narrow.locator(TOGGLE).click()

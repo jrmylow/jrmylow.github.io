@@ -1,6 +1,9 @@
 """Tests for the header toggles: the menu's (hamburger, left) and the table of contents'
 (list, right, on posts with a TOC).
 
+Each is icon-only, so it carries hover text (a native `title` tooltip) that matches
+its accessible name: what a mouse user reads is what a screen reader says.
+
 Both share one face (.icon-toggle in lanyon.css): an icon masked over currentColor, so
 a single colour token per theme paints both. Closed, the icon takes the theme's colour on
 the page background; open, the toggle takes the sidebar's blue, the same in both themes,
@@ -69,3 +72,18 @@ def test_the_toggles_show_different_icons(page: Page, designed_site):
     contents = _load(page, designed_site, "contents", "dark")
     menu = page.locator(TOGGLES["menu"][0])
     assert menu.evaluate(ICON_JS)["mask"] != contents.evaluate(ICON_JS)["mask"]
+
+
+# name -> (hover text, the accessible control: the menu's is the hidden checkbox its label shows)
+HOVER = {
+    "menu": ("Menu", lambda page: page.get_by_role("checkbox", name="Menu", exact=True)),
+    "contents": ("Table of contents", lambda page: page.get_by_role("button", name="Table of contents", exact=True)),
+}
+
+
+@pytest.mark.parametrize("name", TOGGLES)
+def test_hover_text_names_the_toggle(page: Page, designed_site, name: str):
+    toggle = _load(page, designed_site, name, "dark")
+    text, control = HOVER[name]
+    expect(toggle).to_have_attribute("title", text)
+    expect(control(page)).to_have_count(1)
