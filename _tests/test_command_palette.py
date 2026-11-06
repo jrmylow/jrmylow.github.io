@@ -6,13 +6,11 @@ from playwright.sync_api import Page, expect
 def _first_title_word(page: Page, jekyll_server: str) -> str:
     """A real query term drawn from the live index, so results are deterministic."""
     page.goto(f"{jekyll_server}/search-index.json")
-    return page.evaluate(
-        """() => {
+    return page.evaluate("""() => {
             const data = JSON.parse(document.body.innerText);
             const title = (data[0] && data[0].title) || '';
             return (title.split(/\\s+/).find(w => w.length >= 3) || '').toLowerCase();
-        }"""
-    )
+        }""")
 
 
 class TestCommandPalette:

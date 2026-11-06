@@ -49,21 +49,17 @@ class TestSearchBar:
         # Check DOM order: theme-toggle should come before search-container
         sidebar = page.locator(".sidebar")
 
-        theme_toggle_index = sidebar.evaluate(
-            """el => {
+        theme_toggle_index = sidebar.evaluate("""el => {
                 const children = Array.from(el.querySelectorAll('.theme-toggle, .search-container'));
                 const toggle = el.querySelector('.theme-toggle');
                 return children.indexOf(toggle);
-            }"""
-        )
+            }""")
 
-        search_index = sidebar.evaluate(
-            """el => {
+        search_index = sidebar.evaluate("""el => {
                 const children = Array.from(el.querySelectorAll('.theme-toggle, .search-container'));
                 const search = el.querySelector('.search-container');
                 return children.indexOf(search);
-            }"""
-        )
+            }""")
 
         assert theme_toggle_index < search_index, "Theme toggle should come before search container"
 
@@ -109,42 +105,36 @@ class TestSearchIndex:
         page.goto(f"{jekyll_server}/search-index.json")
 
         # Try to parse as JSON
-        is_valid = page.evaluate(
-            """() => {
+        is_valid = page.evaluate("""() => {
                 try {
                     JSON.parse(document.body.innerText);
                     return true;
                 } catch (e) {
                     return false;
                 }
-            }"""
-        )
+            }""")
         assert is_valid, "search-index.json should be valid JSON"
 
     def test_search_index_contains_posts(self, page: Page, jekyll_server: str):
         """Search index should contain post data."""
         page.goto(f"{jekyll_server}/search-index.json")
 
-        has_posts = page.evaluate(
-            """() => {
+        has_posts = page.evaluate("""() => {
                 const data = JSON.parse(document.body.innerText);
                 return Array.isArray(data) && data.length > 0;
-            }"""
-        )
+            }""")
         assert has_posts, "search-index.json should contain posts"
 
     def test_search_index_post_has_required_fields(self, page: Page, jekyll_server: str):
         """Each post in index should have title, url, and content."""
         page.goto(f"{jekyll_server}/search-index.json")
 
-        has_fields = page.evaluate(
-            """() => {
+        has_fields = page.evaluate("""() => {
                 const data = JSON.parse(document.body.innerText);
                 if (!Array.isArray(data) || data.length === 0) return false;
                 const post = data[0];
                 return 'title' in post && 'url' in post && 'content' in post;
-            }"""
-        )
+            }""")
         assert has_fields, "Posts should have title, url, and content fields"
 
 

@@ -75,21 +75,26 @@ matter.
 
 kramdown generates heading IDs (`auto_ids: true`, `toc_levels: 1..6` in
 `_config.yml`); `toc.html` (allejo/jekyll-toc) builds a list from them, and
-`post_toc.html` wraps it for the `post` layout.
+`post_toc.html` turns it into a panel that slides out from the right, the
+mirror image of the menu on the left.
 
 - **When.** On by default for posts and previews; `toc: false` in front matter
   turns it off. It lists h2 and h3 only, and a post with fewer than two of them
-  gets no TOC (and no `toc.js` request).
-- **Wide (>= 80em).** Fixed in the right margin, beside the 38rem column and
-  below the masthead, open. Its width is whatever the margin leaves, capped at
-  14rem; a long list scrolls inside its own box. The left sidebar is an overlay,
-  so it never competes for this space.
-- **Narrow (< 80em).** The same element is a closed box above the post, styled
-  like the collapsible box.
-- **Open state.** One `<details>` serves both. A one-line inline script after it
-  sets `open` from the breakpoint before first paint, so a wide screen never
-  sees it expand after load; `toc.js` keeps it in step when the window crosses
-  the breakpoint.
+  gets no panel, no button and no `toc.js` request.
+- **Where in the DOM.** `default.html` includes it (with `page.content`) outside
+  `.wrap`, next to the sidebar. The open menu gives `.wrap` a transform, and a
+  transformed ancestor would carry fixed elements with it.
+- **Wide (>= 80em).** The panel fills the right margin, from the 38rem column's
+  edge to the window's (up to 16rem), so it covers nothing: it starts open and
+  stays open while the reader scrolls and clicks the page. Closing or opening it
+  here is remembered in `localStorage` (key `toc`); Escape closes it when focus
+  is inside.
+- **Narrow (< 80em).** There is no margin to fill, so it slides over the page
+  like the menu: it starts closed, and a click outside, Escape, or following one
+  of its links closes it. The stored choice doesn't apply here.
+- **State.** `data-toc="open|closed"` on `<html>`, set by an inline script before
+  the panel is parsed, so the first paint is already right and nothing slides on
+  load; slide transitions switch on (`.toc-ready`) a frame later.
 - **Current section.** `toc.js` marks the entry being read with
   `aria-current="location"`: the last heading scrolled past the masthead line
   (`scroll-padding-top`), or the last heading once the page hits the bottom,

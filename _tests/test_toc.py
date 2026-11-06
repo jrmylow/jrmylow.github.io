@@ -1,9 +1,11 @@
 """Tests for the table of contents: _includes/post_toc.html and public/js/toc.js.
 
 Uses the fixture previews _tests/fixtures/_previews/2024-04-0*-toc-*.md, served by the
-designed build. From 80em the TOC is open and fixed in the right margin, beside the
-column, while the post scrolls; below that it is a closed box above the post. It marks
-the section being read with aria-current="location".
+designed build. The TOC is a panel that slides out from the right, toggled by a button
+that mirrors the menu button. From 80em it fills the right margin, covering nothing,
+and starts open unless the reader closed it before; below that it slides over the page,
+starts closed, and closes like the menu. It marks the section being read with
+aria-current="location".
 """
 
 import corpus
@@ -14,7 +16,8 @@ DEMO = "2024-04-01-toc-demo.md"
 OPT_OUT = "2024-04-02-toc-off-demo.md"
 SINGLE = "2024-04-03-toc-single-demo.md"
 
-TOC = ".toc"
+PANEL = ".toc"
+TOGGLE = ".toc-toggle"
 LINKS = ".toc-list a"
 CURRENT = ".toc-list a[aria-current='location']"
 WIDE = {"width": 1280, "height": 720}  # 80em, the breakpoint
@@ -35,12 +38,33 @@ def _url(site, filename: str) -> str:
     return f"{site.url}{site.document(filename)['url']}"
 
 
-@pytest.fixture
-def demo(page: Page, designed_site) -> Page:
-    page.set_viewport_size(WIDE)
-    page.goto(_url(designed_site, DEMO))
-    expect(page.locator(TOC)).to_be_visible()
+def _load(page: Page, site, viewport: dict) -> Page:
+    page.set_viewport_size(viewport)
+    page.goto(_url(site, DEMO))
+    expect(page.locator(TOGGLE)).to_be_visible()
     return page
+
+
+@pytest.fixture
+def wide(page: Page, designed_site) -> Page:
+    return _load(page, designed_site, WIDE)
+
+
+@pytest.fixture
+def narrow(page: Page, designed_site) -> Page:
+    return _load(page, designed_site, NARROW)
+
+
+def _expect_open(page: Page) -> None:
+    expect(page.locator(TOGGLE)).to_have_attribute("aria-expanded", "true")
+    expect(page.locator(LINKS).first).to_be_visible()
+    expect(page.locator(PANEL)).to_be_in_viewport(ratio=1)
+
+
+def _expect_closed(page: Page) -> None:
+    expect(page.locator(TOGGLE)).to_have_attribute("aria-expanded", "false")
+    expect(page.locator(LINKS).first).to_be_hidden()
+    expect(page.locator(PANEL)).not_to_be_in_viewport()
 
 
 def _scroll_heading_to_top(page: Page, heading_id: str) -> None:
@@ -55,112 +79,150 @@ def _rect(page: Page, selector: str) -> dict:
 class TestContents:
     """The list is the post's h2 and h3 headings, nested, linking to their ids."""
 
-    def test_links_follow_the_headings(self, demo: Page):
-        links = demo.locator(LINKS)
+    def test_links_follow_the_headings(self, wide: Page):
+        links = wide.locator(LINKS)
         expect(links).to_have_count(len(OUTLINE))
         for i, (_, text, anchor) in enumerate(OUTLINE):
             expect(links.nth(i)).to_have_text(text)
             expect(links.nth(i)).to_have_attribute("href", f"#{anchor}")
 
-    def test_h3_entries_nest_under_their_h2(self, demo: Page):
+    def test_h3_entries_nest_under_their_h2(self, wide: Page):
         nested = [text for level, text, _ in OUTLINE if level == 3]
-        expect(demo.locator(".toc-list > li > ul a")).to_have_text(nested)
+        expect(wide.locator(".toc-list > li > ul a")).to_have_text(nested)
 
-    def test_is_a_named_navigation_landmark(self, demo: Page):
-        expect(demo.get_by_role("navigation", name="Contents")).to_be_visible()
+    def test_panel_is_a_named_navigation_landmark(self, wide: Page):
+        expect(wide.get_by_role("navigation", name="Contents")).to_be_visible()
+
+    def test_toggle_is_a_named_button_for_the_panel(self, wide: Page):
+        toggle = wide.get_by_role("button", name="Contents")
+        expect(toggle).to_have_attribute("aria-controls", "toc")
+        expect(wide.locator("#toc")).to_have_class("toc")
 
 
 class TestWide:
-    """From 80em: open, fixed in the right margin, clear of the column and the masthead."""
+    """From 80em: open in the right margin, beside the column, until the reader closes it."""
 
-    def test_open_on_load(self, demo: Page):
-        expect(demo.locator(f"{TOC} details")).to_have_attribute("open", "")
-        expect(demo.locator(LINKS).first).to_be_visible()
+    def test_open_on_load_without_sliding(self, wide: Page):
+        _expect_open(wide)
+        assert wide.locator(PANEL).evaluate("el => el.getAnimations().length") == 0
 
-    def test_sits_right_of_the_column_inside_the_window(self, demo: Page):
-        toc, column = _rect(demo, TOC), _rect(demo, ".container.content")
-        assert toc["left"] >= column["right"], f"TOC (left {toc['left']}) overlaps the column (right {column['right']})"
-        assert toc["right"] <= WIDE["width"], f"TOC runs off the window (right {toc['right']})"
+    def test_fills_the_right_margin_clear_of_the_column(self, wide: Page):
+        panel, column = _rect(wide, PANEL), _rect(wide, ".container.content")
+        assert (
+            panel["left"] >= column["right"]
+        ), f"panel (left {panel['left']}) covers the column (right {column['right']})"
+        assert panel["right"] == WIDE["width"], f"panel isn't at the window's edge (right {panel['right']})"
 
-    def test_below_the_masthead(self, demo: Page):
-        assert _rect(demo, TOC)["top"] >= _rect(demo, ".masthead")["bottom"]
+    def test_stays_open_while_reading(self, wide: Page):
+        before = _rect(wide, PANEL)
+        _scroll_heading_to_top(wide, "second-section")
+        wide.locator(".post > p").first.click()
+        _expect_open(wide)
+        assert _rect(wide, PANEL) == before
 
-    def test_stays_in_view_while_scrolling(self, demo: Page):
-        before = _rect(demo, TOC)["top"]
-        _scroll_heading_to_top(demo, "last-section")
-        expect(demo.locator(CURRENT)).to_have_text("Last section")
-        assert _rect(demo, TOC)["top"] == before
+    def test_toggle_closes_and_reopens(self, wide: Page):
+        wide.locator(TOGGLE).click()
+        _expect_closed(wide)
+        wide.locator(TOGGLE).click()
+        _expect_open(wide)
+
+    def test_closing_is_remembered(self, wide: Page):
+        wide.locator(TOGGLE).click()
+        _expect_closed(wide)
+        wide.reload()
+        _expect_closed(wide)
+        wide.locator(TOGGLE).click()
+        wide.reload()
+        _expect_open(wide)
+
+    def test_escape_inside_closes_and_returns_focus(self, wide: Page):
+        wide.locator(LINKS).first.focus()
+        wide.keyboard.press("Escape")
+        _expect_closed(wide)
+        expect(wide.locator(TOGGLE)).to_be_focused()
+
+    def test_opening_the_menu_leaves_it_in_place(self, wide: Page):
+        """The panel sits outside .wrap, which the open menu transforms."""
+        before = _rect(wide, PANEL)
+        wide.locator(".sidebar-toggle").click()
+        expect(wide.locator("#sidebar")).to_be_visible()
+        _expect_open(wide)
+        assert _rect(wide, PANEL) == before
 
 
 class TestNarrow:
-    """Below 80em: a closed box in the column, above the post's first paragraph."""
-
-    @pytest.fixture
-    def narrow(self, page: Page, designed_site) -> Page:
-        page.set_viewport_size(NARROW)
-        page.goto(_url(designed_site, DEMO))
-        return page
+    """Below 80em: closed on load; opens over the page and closes like the menu."""
 
     def test_closed_on_load(self, narrow: Page):
-        expect(narrow.locator(".toc-summary")).to_be_visible()
-        expect(narrow.locator(f"{TOC} details")).not_to_have_attribute("open", "")
-        expect(narrow.locator(LINKS).first).to_be_hidden()
+        _expect_closed(narrow)
 
-    def test_in_the_column_above_the_post(self, narrow: Page):
-        toc, column = _rect(narrow, TOC), _rect(narrow, ".container.content")
-        first = _rect(narrow, ".post > p")
-        assert column["left"] <= toc["left"] and toc["right"] <= column["right"]
-        assert toc["bottom"] <= first["top"]
+    def test_toggle_opens_it_at_the_right_edge(self, narrow: Page):
+        narrow.locator(TOGGLE).click()
+        _expect_open(narrow)
+        assert _rect(narrow, PANEL)["right"] == NARROW["width"]
 
-    def test_summary_opens_it(self, narrow: Page):
-        narrow.locator(".toc-summary").click()
-        expect(narrow.locator(LINKS).first).to_be_visible()
+    def test_click_outside_closes_it(self, narrow: Page):
+        narrow.locator(TOGGLE).click()
+        _expect_open(narrow)
+        narrow.locator(".post-title").click()
+        _expect_closed(narrow)
+
+    def test_escape_closes_it(self, narrow: Page):
+        narrow.locator(TOGGLE).click()
+        _expect_open(narrow)
+        narrow.keyboard.press("Escape")
+        _expect_closed(narrow)
+        expect(narrow.locator(TOGGLE)).to_be_focused()
+
+    def test_following_a_link_closes_it_and_jumps(self, narrow: Page):
+        narrow.locator(TOGGLE).click()
+        narrow.locator(LINKS, has_text="Second section").click()
+        _expect_closed(narrow)
+        expect(narrow.locator("#second-section")).to_be_in_viewport()
 
     def test_follows_the_breakpoint(self, narrow: Page):
-        details = narrow.locator(f"{TOC} details")
         narrow.set_viewport_size(WIDE)
-        expect(details).to_have_attribute("open", "")
+        _expect_open(narrow)
         narrow.set_viewport_size(NARROW)
-        expect(details).not_to_have_attribute("open", "")
+        _expect_closed(narrow)
 
 
 class TestCurrentSection:
     """The entry for the section being read carries aria-current="location"."""
 
-    def test_none_before_the_first_heading(self, demo: Page):
-        expect(demo.locator(CURRENT)).to_have_count(0)
+    def test_none_before_the_first_heading(self, wide: Page):
+        expect(wide.locator(CURRENT)).to_have_count(0)
 
     @pytest.mark.parametrize(
         "anchor, text", [("first-subsection", "First subsection"), ("second-section", "Second section")]
     )
-    def test_marks_the_heading_scrolled_to(self, demo: Page, anchor: str, text: str):
-        _scroll_heading_to_top(demo, anchor)
-        expect(demo.locator(CURRENT)).to_have_text(text)
-        expect(demo.locator(CURRENT)).to_have_count(1)
+    def test_marks_the_heading_scrolled_to(self, wide: Page, anchor: str, text: str):
+        _scroll_heading_to_top(wide, anchor)
+        expect(wide.locator(CURRENT)).to_have_text(text)
+        expect(wide.locator(CURRENT)).to_have_count(1)
 
-    def test_marks_the_last_heading_at_the_bottom(self, demo: Page):
+    def test_marks_the_last_heading_at_the_bottom(self, wide: Page):
         """The short last section never reaches the masthead; the bottom of the page marks it."""
-        demo.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
-        expect(demo.locator(CURRENT)).to_have_text("Last section")
+        wide.evaluate("window.scrollTo(0, document.documentElement.scrollHeight)")
+        expect(wide.locator(CURRENT)).to_have_text("Last section")
 
-    def test_following_a_link_marks_it(self, demo: Page):
-        demo.locator(LINKS, has_text="Second subsection").click()
-        expect(demo.locator(CURRENT)).to_have_text("Second subsection")
+    def test_following_a_link_marks_it(self, wide: Page):
+        wide.locator(LINKS, has_text="Second subsection").click()
+        expect(wide.locator(CURRENT)).to_have_text("Second subsection")
 
 
 class TestJumps:
     """Following an entry lands on its heading, in view below the masthead."""
 
-    def test_lands_below_the_masthead(self, demo: Page):
-        demo.locator(LINKS, has_text="Second section").click()
-        heading = demo.locator("#second-section")
-        expect(heading).to_be_in_viewport()
-        assert _rect(demo, "#second-section")["top"] >= _rect(demo, ".masthead")["bottom"]
+    def test_lands_below_the_masthead(self, wide: Page):
+        wide.locator(LINKS, has_text="Second section").click()
+        expect(wide.locator("#second-section")).to_be_in_viewport()
+        assert _rect(wide, "#second-section")["top"] >= _rect(wide, ".masthead")["bottom"]
 
-    def test_opens_a_closed_box_around_its_target(self, demo: Page):
-        heading = demo.locator("#hidden-subsection")
+    def test_opens_a_closed_box_around_its_target(self, wide: Page):
+        heading = wide.locator("#hidden-subsection")
         expect(heading).to_be_hidden()
-        demo.locator(LINKS, has_text="Hidden subsection").click()
+        wide.locator(LINKS, has_text="Hidden subsection").click()
         expect(heading).to_be_visible()
         expect(heading).to_be_in_viewport()
 
@@ -172,15 +234,15 @@ class TestWhenShown:
     def test_absent(self, page: Page, designed_site, filename: str):
         page.goto(_url(designed_site, filename))
         expect(page.locator(".post-title")).to_be_visible()
-        expect(page.locator(TOC)).to_have_count(0)
+        expect(page.locator(f"{PANEL}, {TOGGLE}")).to_have_count(0)
 
     def test_absent_without_headings_and_loads_no_script(self, page: Page, designed_site):
         requests = []
         page.on("request", lambda request: requests.append(request.url))
         page.goto(_url(designed_site, corpus.DESIGNED[0].filename))
-        expect(page.locator(TOC)).to_have_count(0)
+        expect(page.locator(f"{PANEL}, {TOGGLE}")).to_have_count(0)
         assert not [url for url in requests if url.endswith("/toc.js")]
 
     def test_absent_from_pages(self, page: Page, designed_site):
         page.goto(f"{designed_site.url}/about/")
-        expect(page.locator(TOC)).to_have_count(0)
+        expect(page.locator(f"{PANEL}, {TOGGLE}")).to_have_count(0)

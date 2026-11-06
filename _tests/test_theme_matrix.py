@@ -43,13 +43,11 @@ def _change_os(page: Page, theme: str) -> None:
     https://html.spec.whatwg.org/multipage/webappapis.html#event-loop-processing-model),
     so the site's listener has run by then, whichever order the listeners were called in.
     """
-    page.evaluate(
-        """() => {
+    page.evaluate("""() => {
             window.__osChanged = false;
             window.__osQuery = matchMedia('(prefers-color-scheme: light)');
             window.__osQuery.addEventListener('change', () => { window.__osChanged = true; });
-        }"""
-    )
+        }""")
     page.emulate_media(color_scheme=theme)
     page.wait_for_function("window.__osChanged")
     page.evaluate("() => new Promise((done) => requestAnimationFrame(() => done()))")

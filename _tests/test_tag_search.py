@@ -10,13 +10,11 @@ class TestTagIndex:
         """Each indexed post exposes a tags array."""
         page.goto(f"{jekyll_server}/search-index.json")
 
-        ok = page.evaluate(
-            """() => {
+        ok = page.evaluate("""() => {
                 const data = JSON.parse(document.body.innerText);
                 if (!Array.isArray(data) || data.length === 0) return false;
                 return 'tags' in data[0] && Array.isArray(data[0].tags);
-            }"""
-        )
+            }""")
         assert ok, "index posts should have a tags array"
 
     def test_search_by_tag_returns_results(self, page: Page, jekyll_server: str, any_post_tag: str):

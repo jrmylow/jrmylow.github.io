@@ -1,23 +1,37 @@
 {% comment %}
-  Table of contents for a post, built from its h2 and h3 headings.
+  Table of contents for a post: a panel that slides out from the right, opened
+  and closed by a button that mirrors the menu button on the left.
 
-  On by default for the post layout; `toc: false` in front matter turns it
-  off, and a post with fewer than two headings gets none. One element serves
-  both widths (features.css, section 6): from 80em it is fixed in the right
-  margin, beside the column, and open; below that it is a closed box above
-  the post. The inline script opens it on wide screens before first paint, so
-  it doesn't open visibly after load; toc.js keeps it in step on resize and
-  marks the section being read. Guide: _documentation/page.md.
+  Included from default.html, outside .wrap: .wrap takes a transform while the
+  menu is open, and a transformed ancestor would carry these fixed elements
+  with it. Pass the post's converted HTML (page.content) as `html`.
+
+  Built from the post's h2 and h3 headings. On by default for the post layout;
+  `toc: false` in front matter turns it off, and a post with fewer than two
+  headings gets none.
+
+  From 80em the panel sits in the right margin, beside the column, and starts
+  open unless the reader closed it before; below that it slides over the page
+  and starts closed. The inline script sets the state on <html> before the
+  panel is parsed, so it never animates open on load. toc.js does the rest.
+  Styles: features.css, section 6. Guide: _documentation/page.md.
 {% endcomment %}
-{% capture toc_list %}{% include toc.html html=content sanitize=true h_min=2 h_max=3 skip_no_ids=true class="toc-list" %}{% endcapture %}
+{% capture toc_list %}{% include toc.html html=include.html sanitize=true h_min=2 h_max=3 skip_no_ids=true class="toc-list" %}{% endcapture %}
 {% assign toc_entries = toc_list | split: '<li' | size | minus: 1 %}
 {% if toc_entries >= 2 %}
-<nav class="toc" aria-label="Contents">
-  <details class="toc-details">
-    <summary class="toc-summary">Contents</summary>
-    {{ toc_list }}
-  </details>
-  <script>document.currentScript.previousElementSibling.open = matchMedia('(min-width: 80em)').matches;</script>
+<button type="button" class="toc-toggle" aria-label="Contents" aria-controls="toc" aria-expanded="false"></button>
+<script>
+  (function () {
+    var stored = null;
+    try { stored = localStorage.getItem('toc'); } catch (e) {}
+    var open = matchMedia('(min-width: 80em)').matches && stored !== 'closed';
+    document.documentElement.setAttribute('data-toc', open ? 'open' : 'closed');
+    document.currentScript.previousElementSibling.setAttribute('aria-expanded', String(open));
+  })();
+</script>
+<nav class="toc" id="toc" aria-labelledby="toc-title">
+  <p class="toc-title" id="toc-title">Contents</p>
+  {{ toc_list }}
 </nav>
 <script src="{{ '/public/js/toc.js' | absolute_url }}" defer></script>
 {% endif %}

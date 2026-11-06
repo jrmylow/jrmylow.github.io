@@ -1,9 +1,14 @@
 /**
  * Table of contents (_includes/post_toc.html)
  *
- * The TOC is one <details>: open in the right margin from 80em, a closed box
- * above the post below that. An inline script sets the initial state before
- * first paint; this keeps it in step when the viewport crosses the breakpoint.
+ * A panel that slides out from the right, toggled by .toc-toggle. The state is
+ * data-toc="open|closed" on <html>; an inline script sets it before first paint.
+ *
+ * - From 80em the panel sits in the right margin and covers nothing, so it stays
+ *   open while the reader scrolls and clicks the page. Opening or closing it
+ *   there is remembered (localStorage key `toc`) and applied on the next post.
+ * - Below 80em it slides over the page, like the menu: it starts closed, and a
+ *   click outside it, Escape, or following one of its links closes it.
  *
  * It also marks the section being read with aria-current="location": the last
  * heading whose top has scrolled past the masthead, or the last heading once
@@ -18,32 +23,87 @@
   'use strict';
 
   var WIDE = '(min-width: 80em)';
+  var KEY = 'toc';
+  var root = document.documentElement;
+
+  function stored() {
+    try { return localStorage.getItem(KEY); } catch (e) { return null; }
+  }
+
+  function remember(value) {
+    try { localStorage.setItem(KEY, value); } catch (e) { /* private mode: not remembered */ }
+  }
+
+  function targetOf(link) {
+    return document.getElementById(decodeURIComponent(link.hash.slice(1)));
+  }
 
   function init() {
-    var toc = document.querySelector('.toc');
-    if (!toc) return;
-    var details = toc.querySelector('.toc-details');
+    var toc = document.getElementById('toc');
+    var button = document.querySelector('.toc-toggle');
+    if (!toc || !button) return;
 
     var wide = window.matchMedia(WIDE);
-    wide.addEventListener('change', function (e) { details.open = e.matches; });
 
-    var entries = [];
-    toc.querySelectorAll('a[href^="#"]').forEach(function (link) {
-      var heading = document.getElementById(decodeURIComponent(link.hash.slice(1)));
-      if (heading) entries.push({ link: link, heading: heading });
+    function isOpen() { return root.getAttribute('data-toc') === 'open'; }
+
+    function setOpen(open) {
+      root.setAttribute('data-toc', open ? 'open' : 'closed');
+      button.setAttribute('aria-expanded', String(open));
+    }
+
+    function choose(open) {
+      setOpen(open);
+      if (wide.matches) remember(open ? 'open' : 'closed');
+    }
+
+    // Slide only on changes after load, never into the initial state.
+    window.requestAnimationFrame(function () {
+      window.requestAnimationFrame(function () { root.classList.add('toc-ready'); });
     });
-    if (!entries.length) return;
 
-    // Open any collapsible box hiding the target before the browser jumps.
+    button.addEventListener('click', function () { choose(!isOpen()); });
+
+    wide.addEventListener('change', function (e) {
+      setOpen(e.matches && stored() !== 'closed');
+    });
+
+    // Over the page (narrow), a click outside closes it, as the menu does.
+    document.addEventListener('click', function (e) {
+      if (wide.matches || !isOpen()) return;
+      if (toc.contains(e.target) || button.contains(e.target)) return;
+      setOpen(false);
+    });
+
+    // Escape closes it when it covers the page, or when focus is inside it.
+    // Keys another handler already used (the command palette's) are left alone.
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Escape' || e.defaultPrevented || !isOpen()) return;
+      var focusInside = toc.contains(document.activeElement);
+      if (wide.matches && !focusInside) return;
+      e.preventDefault();
+      choose(false);
+      if (focusInside || document.activeElement === document.body) button.focus();
+    });
+
     toc.addEventListener('click', function (e) {
       var link = e.target.closest('a[href^="#"]');
       if (!link) return;
-      var target = document.getElementById(decodeURIComponent(link.hash.slice(1)));
+      // Open any collapsible box hiding the target before the browser jumps.
+      var target = targetOf(link);
       for (var box = target && target.closest('details:not([open])'); box;
            box = box.parentElement.closest('details:not([open])')) {
         box.open = true;
       }
+      if (!wide.matches) setOpen(false);
     });
+
+    var entries = [];
+    toc.querySelectorAll('a[href^="#"]').forEach(function (link) {
+      var heading = targetOf(link);
+      if (heading) entries.push({ link: link, heading: heading });
+    });
+    if (!entries.length) return;
 
     var current = null;
 
@@ -53,19 +113,17 @@
       current = entry;
       if (!entry) return;
       entry.link.setAttribute('aria-current', 'location');
-      // Keep the marked entry visible when the TOC is taller than its box.
-      // Only the TOC scrolls: scrollIntoView would move the page as well.
+      // Keep the marked entry in view when the list is taller than the panel.
+      // Only the panel scrolls: scrollIntoView would move the page as well.
       if (toc.scrollHeight > toc.clientHeight) {
-        var top = entry.link.offsetTop - toc.clientHeight / 2;
-        toc.scrollTop = Math.max(0, top);
+        toc.scrollTop = Math.max(0, entry.link.offsetTop - toc.clientHeight / 2);
       }
     }
 
     function update() {
       // Below the masthead: scroll-padding-top is where anchor jumps land.
-      var line = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
-      line += 8;
-      var atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+      var line = (parseFloat(getComputedStyle(root).scrollPaddingTop) || 0) + 8;
+      var atBottom = window.innerHeight + window.scrollY >= root.scrollHeight - 2;
       var found = null;
       for (var i = 0; i < entries.length; i++) {
         var h = entries[i].heading;

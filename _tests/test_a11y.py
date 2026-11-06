@@ -52,10 +52,10 @@ def _toc_url(site) -> str:
 
 
 def _open_narrow_toc(page: Page) -> None:
-    """Below 80em the table of contents is a closed box above the post; open it."""
+    """Below 80em the table of contents starts closed; open it over the page."""
     page.set_viewport_size({"width": 1024, "height": 768})
-    page.locator(".toc-summary").click()
-    expect(page.locator(".toc-list a").first).to_be_visible()
+    page.locator(".toc-toggle").click()
+    expect(page.locator(".toc-list a").first).to_be_in_viewport()
 
 
 def _open_details(page: Page) -> None:
@@ -321,7 +321,7 @@ def _home_with_menu(page: Page, site) -> None:
 WALKS = [
     ("home and menu", _home_with_menu, None),
     ("search", lambda page, site: page.goto(f"{site.url}/search/?q={QUERY}"), None),
-    ("toc", lambda page, site: (page.goto(_toc_url(site)), page.locator(".toc-summary").focus()), ".toc"),
+    ("toc", lambda page, site: (page.goto(_toc_url(site)), page.locator(".toc-toggle").focus()), ".toc, .toc-toggle"),
     ("command palette", lambda page, site: (page.goto(f"{site.url}/"), _open_palette(page)), ".command-palette"),
 ]
 
