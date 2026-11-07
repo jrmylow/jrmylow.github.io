@@ -3,7 +3,9 @@
  *
  * A panel that drops down from the header bar, toggled by .toc-toggle. The
  * state is data-toc="open|closed" on <html>; an inline script sets it before
- * first paint.
+ * first paint. It is one state at every width: resizing across 80em leaves it
+ * as the reader left it, and only the layout changes (CSS). The stored choice
+ * decides how a page loads, never what a resize does.
  *
  * - From 80em the panel hangs in the right margin and covers nothing, so it
  *   stays open while the reader scrolls and clicks the page. Opening or closing
@@ -29,10 +31,6 @@
   var WIDE = '(min-width: 80em)';
   var KEY = 'toc';
   var root = document.documentElement;
-
-  function stored() {
-    try { return localStorage.getItem(KEY); } catch (e) { return null; }
-  }
 
   function remember(value) {
     try { localStorage.setItem(KEY, value); } catch (e) { /* private mode: not remembered */ }
@@ -74,10 +72,6 @@
     });
 
     button.addEventListener('click', function () { choose(!isOpen()); });
-
-    wide.addEventListener('change', function (e) {
-      setOpen(e.matches && stored() !== 'closed');
-    });
 
     // Over the page (narrow), a click outside closes it, as the menu does.
     document.addEventListener('click', function (e) {

@@ -106,9 +106,11 @@ both share `.icon-toggle`, see `styling.md`).
 - **Type.** The menu's scale at every width (0.875rem, then 0.75rem from
   30em, as `.sidebar`): navigation reads smaller than the article, and the
   size doesn't jump at 80em. Phones keep taller entries for touch.
-- **State.** `data-toc="open|closed"` on `<html>`, set by an inline script before
-  the panel is parsed, so the first paint is already right and nothing unrolls
-  on load; transitions switch on (`.toc-ready`) a frame later.
+- **State.** One toggle at every width: `data-toc="open|closed"` on `<html>`.
+  Resizing across 80em leaves it as the reader left it (only the layout
+  changes); the stored desktop choice decides how a page loads, never what a
+  resize does. It is set by an inline script before the panel is parsed, so
+  the first paint is already right and nothing unrolls on load; transitions switch on (`.toc-ready`) a frame later.
 - **Current section.** `toc.js` marks the entry being read with
   `aria-current="location"`: the last heading scrolled past the masthead line
   (`scroll-padding-top`), or the last heading once the page hits the bottom,

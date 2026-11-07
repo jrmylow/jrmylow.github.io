@@ -210,12 +210,6 @@ class TestNarrow:
         _expect_closed(narrow)
         expect(narrow.locator("#second-section")).to_be_in_viewport()
 
-    def test_follows_the_breakpoint(self, narrow: Page):
-        narrow.set_viewport_size(WIDE)
-        _expect_open(narrow)
-        narrow.set_viewport_size(NARROW)
-        _expect_closed(narrow)
-
 
 class TestThemes:
     """The panel is part of the page: the page's background and colours, in either theme."""
@@ -254,6 +248,56 @@ class TestType:
         )
         assert sizes["entry"] == sizes["title"] == sizes["menu"], f"at {width}px: {sizes}"
         assert sizes["entry"] < sizes["article"], f"at {width}px: {sizes}"
+
+
+def _resize(page: Page, viewport: dict) -> None:
+    """Resize, then wait until the page has handled it. A media-query `change` has no DOM
+    change to wait on, but browsers run its listeners before animation-frame callbacks
+    (as test_theme_matrix relies on), so one frame after the query flips, toc.js has run.
+    Without this, an assertion can pass on the old state before the listener fires."""
+    page.set_viewport_size(viewport)
+    wide = viewport["width"] >= WIDE["width"]
+    page.wait_for_function(f"matchMedia('(min-width: 80em)').matches === {str(wide).lower()}")
+    page.evaluate("() => new Promise((done) => requestAnimationFrame(() => done()))")
+
+
+class TestResize:
+    """One toggle: resizing across 80em keeps the panel as the reader left it. The stored
+    desktop choice only decides how a page loads. Old: crossing the breakpoint re-applied
+    it, so a panel opened on a narrow window shut on widening once the reader had closed
+    it on desktop before."""
+
+    @pytest.fixture(params=[None, "open", "closed"], ids=["nothing-stored", "stored-open", "stored-closed"])
+    def stored(self, request, page: Page):
+        if request.param:
+            page.add_init_script(f"localStorage.setItem('toc', '{request.param}')")
+        return request.param
+
+    def test_opened_narrow_stays_open_when_widened(self, page: Page, designed_site, stored):
+        narrow = _load(page, designed_site, NARROW)
+        narrow.locator(TOGGLE).click()
+        _expect_open(narrow)
+        _resize(narrow, WIDE)
+        _expect_open(narrow)
+
+    def test_closed_narrow_stays_closed_when_widened(self, page: Page, designed_site, stored):
+        narrow = _load(page, designed_site, NARROW)
+        _expect_closed(narrow)
+        _resize(narrow, WIDE)
+        _expect_closed(narrow)
+
+    def test_open_wide_stays_open_when_narrowed(self, wide: Page):
+        _expect_open(wide)
+        _resize(wide, NARROW)
+        _expect_open(wide)
+        wide.locator(TOGGLE).click()
+        _expect_closed(wide)
+
+    def test_widening_doesnt_change_the_stored_choice(self, page: Page, designed_site, stored):
+        narrow = _load(page, designed_site, NARROW)
+        narrow.locator(TOGGLE).click()
+        _resize(narrow, WIDE)
+        assert narrow.evaluate("localStorage.getItem('toc')") == stored
 
 
 class TestCurrentSection:

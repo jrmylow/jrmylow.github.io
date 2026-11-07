@@ -541,8 +541,10 @@ def test_toggle_icons_and_the_toc_marker_have_contrast(page: Page, designed_site
     _open_sidebar(page)
     icon("menu (open)", menu)
 
-    page.set_viewport_size({"width": 1280, "height": 720})  # the TOC opens in the margin
     page.keyboard.press("Escape")  # close the menu
+    page.set_viewport_size({"width": 1280, "height": 720})
+    contents.click()  # open the TOC, now in the margin
+    expect(contents).to_have_attribute("aria-expanded", "true")
     page.evaluate("document.getElementById('second-section').scrollIntoView()")
     marker = page.locator(".toc-list a[aria-current]")
     expect(marker).to_have_count(1)
