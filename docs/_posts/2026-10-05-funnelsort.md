@@ -11,7 +11,6 @@ tags:
  - algorithm
  - HPC
 
-toc: false
 math: true
 
 ---

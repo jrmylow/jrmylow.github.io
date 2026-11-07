@@ -1,0 +1,38 @@
+{% comment %}
+  Table of contents for a post: a panel that drops down from the header bar,
+  opened and closed by a button at the bar's right end.
+
+  Included from default.html inside .masthead, which is sticky: the panel is
+  positioned against the masthead's bottom edge, so it hangs from the header
+  line wherever the page is scrolled, and unrolls down from it. Pass the
+  post's converted HTML (page.content) as `html`.
+
+  Built from the post's h2 and h3 headings. On by default for the post layout;
+  `toc: false` in front matter turns it off, and a post with fewer than two
+  headings gets none.
+
+  From 80em the panel hangs in the right margin, beside the column, and starts
+  open unless the reader closed it before; below that it covers the screen
+  under the header and starts closed. The inline script sets the state on
+  <html> before the panel is parsed, so it never unrolls on load. toc.js does
+  the rest. Styles: features.css, section 6. Guide: _documentation/page.md.
+{% endcomment %}
+{% capture toc_list %}{% include toc.html html=include.html sanitize=true h_min=2 h_max=3 skip_no_ids=true class="toc-list" %}{% endcapture %}
+{% assign toc_entries = toc_list | split: '<li' | size | minus: 1 %}
+{% if toc_entries >= 2 %}
+<button type="button" class="toc-toggle icon-toggle" aria-label="Table of contents" title="Table of contents" aria-controls="toc" aria-expanded="false"></button>
+<script>
+  (function () {
+    var stored = null;
+    try { stored = localStorage.getItem('toc'); } catch (e) {}
+    var open = matchMedia('(min-width: 80em)').matches && stored !== 'closed';
+    document.documentElement.setAttribute('data-toc', open ? 'open' : 'closed');
+    document.currentScript.previousElementSibling.setAttribute('aria-expanded', String(open));
+  })();
+</script>
+<nav class="toc" id="toc" aria-labelledby="toc-title">
+  <p class="toc-title" id="toc-title">Contents</p>
+  {{ toc_list }}
+</nav>
+<script src="{{ '/public/js/toc.js' | absolute_url }}" defer></script>
+{% endif %}

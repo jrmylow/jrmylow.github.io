@@ -17,6 +17,7 @@
             <small>{{ site.tagline }}</small>
           </{{ title_tag }}>
         </div>
+        {% if page.layout == "post" and page.toc != false %}{% include post_toc.html html=page.content %}{% endif %}
       </div>
 
       <div class="container content">
@@ -24,7 +25,7 @@
       </div>
     </div>
 
-    <label for="sidebar-checkbox" class="sidebar-toggle"></label>
+    <label for="sidebar-checkbox" class="sidebar-toggle icon-toggle" title="Menu"></label>
 
     <script src='{{ site.baseurl }}/public/js/script.js'></script>
     <script data-goatcounter="https://jrmylow-gc.goatcounter.com/count"

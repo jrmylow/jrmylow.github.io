@@ -18,7 +18,7 @@ the masthead, and the content container. Other layouts wrap it:
   merge with it.
 
 Shared partials live in `_includes`: `head.html`, `sidebar.html`,
-`post_card.html`, `toc.html`, and `details_open.html`/`details_close.html`, the
+`post_card.html`, `toc.html` and `post_toc.html`, and `details_open.html`/`details_close.html`, the
 collapsible box used inside Markdown (`collapsible.md`).
 
 ## The post card is a single source of truth
@@ -74,7 +74,56 @@ matter.
 ## Table of contents
 
 kramdown generates heading IDs (`auto_ids: true`, `toc_levels: 1..6` in
-`_config.yml`); `toc.html` builds the list from them.
+`_config.yml`); `toc.html` (allejo/jekyll-toc) builds a list from them, and
+`post_toc.html` turns it into a panel that drops down from the header bar,
+toggled by a button at the bar's right end (the menu button's mirror image;
+both share `.icon-toggle`, see `styling.md`).
+
+- **When.** On by default for posts and previews; `toc: false` in front matter
+  turns it off. It lists h2 and h3 only, and a post with fewer than two of them
+  gets no panel, no button and no `toc.js` request.
+- **Where in the DOM.** `default.html` includes it (with `page.content`) inside
+  `.masthead`. The masthead is sticky, so the panel, absolutely positioned
+  against its bottom edge, hangs from the header line wherever the page is
+  scrolled, and the line stays visible above it. Being absolute rather than
+  fixed, it isn't carried off by the transform the open menu puts on `.wrap`.
+- **Unroll and fold.** Closed, the panel is clipped to nothing at its top edge;
+  opening animates the clip down (it unrolls from the header line), closing
+  animates it back up into the bar. Open, the clip edge sits above the panel:
+  one on the panel's own top, at a fractional pixel, is antialiased and lets a
+  sliver of page text show under the line.
+- **Wide (>= 80em).** It hangs in the right margin, from the 38rem column's edge
+  to the window's (up to 16rem), and down to the window's bottom: a column edged
+  by one rule, like the menu, rather than a box that stops under its list. It covers nothing, so it
+  starts open and stays open while the reader scrolls and clicks the page.
+  Closing or opening it here is remembered in `localStorage` (key `toc`);
+  Escape closes it when focus is inside.
+- **Narrow (< 80em).** It covers the screen below the header and starts closed;
+  a click on the header bar, Escape, or following one of its links closes it.
+  The stored choice doesn't apply here. Its height is the window less the
+  header: `toc.js` keeps `--masthead-height` on `<html>` current (CSS falls
+  back to 3.7rem, the header's computed height at both type sizes).
+- **Crossing the breakpoint.** With the panel open, it morphs between its two
+  shapes (full width, the right margin) over 0.3s rather than snapping: `toc.js`
+  animates from the old shape on the media query's `change`, leaving the end as
+  the live layout. Not a CSS transition: the browser applies the new layout
+  before any handler could switch one on, and one left on would make the panel
+  lag behind every resize within a shape. Reduced motion skips it.
+- **Type.** The menu's scale at every width (0.875rem, then 0.75rem from
+  30em, as `.sidebar`): navigation reads smaller than the article, and the
+  size doesn't jump at 80em. Phones keep taller entries for touch.
+- **State.** One toggle at every width: `data-toc="open|closed"` on `<html>`.
+  Resizing across 80em leaves it as the reader left it (only the layout
+  changes); the stored desktop choice decides how a page loads, never what a
+  resize does. It is set by an inline script before the panel is parsed, so
+  the first paint is already right and nothing unrolls on load; transitions switch on (`.toc-ready`) a frame later.
+- **Current section.** `toc.js` marks the entry being read with
+  `aria-current="location"`: the last heading scrolled past the masthead line
+  (`scroll-padding-top`), or the last heading once the page hits the bottom,
+  since a short final section can't scroll that far. Following an entry whose
+  heading sits in a closed collapsible box opens the box first.
+
+Styles are in `features.css`, section 6; tests in `test_toc.py`.
 
 ## Head and metadata
 
@@ -86,4 +135,6 @@ when social-share link previews matter.
 ## References
 - Jekyll pagination: <https://jekyllrb.com/docs/pagination/>
 - Jekyll collections: <https://jekyllrb.com/docs/collections/>
+- allejo/jekyll-toc: <https://github.com/allejo/jekyll-toc>
+- `aria-current`: <https://www.w3.org/TR/wai-aria-1.2/#aria-current>
 - kramdown automatic IDs: <https://kramdown.gettalong.org/converter/html.html#auto-ids>
