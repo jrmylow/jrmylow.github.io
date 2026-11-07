@@ -54,6 +54,24 @@
     measure();
     window.addEventListener('resize', measure);
 
+    // Crossing 80em with the panel open, morph it from its old shape into its
+    // new one (full width <-> the right margin) rather than snapping. Only
+    // the start is given: the end is the live layout, so a reader still
+    // dragging the window never sees it lag or overshoot. A CSS transition
+    // can't do this: the browser applies the new layout before any resize or
+    // change handler could switch one on, and one left on would lag every
+    // resize within a shape.
+    var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var MARGIN = 'min(16rem, calc(50% - 19rem - 0.5rem))'; // features.css, wide
+    wide.addEventListener('change', function (e) {
+      if (!isOpen() || calm.matches || !toc.animate) return;
+      var rule = getComputedStyle(root).getPropertyValue('--border-color');
+      var from = e.matches
+        ? { width: '100%', maxWidth: '100%', borderLeftColor: 'transparent' }
+        : { width: MARGIN, maxWidth: '16rem', borderLeftColor: rule };
+      toc.animate([from, {}], { duration: 300, easing: 'ease-in-out' });
+    });
+
     function isOpen() { return root.getAttribute('data-toc') === 'open'; }
 
     function setOpen(open) {

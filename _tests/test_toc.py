@@ -300,6 +300,43 @@ class TestResize:
         assert narrow.evaluate("localStorage.getItem('toc')") == stored
 
 
+class TestMorph:
+    """Crossing 80em with the panel open, it morphs between its two shapes (full width, the
+    right margin) instead of snapping. Resizing within either shape moves it with the window,
+    no animation, so it never lags behind the column. Reduced motion: no animation."""
+
+    # Properties animating on the panel right now, whatever started the animation
+    TRANSITIONS_JS = """el => el.getAnimations().flatMap((a) => a.effect.getKeyframes())
+      .flatMap((k) => Object.keys(k)).filter((p) => !['offset', 'computedOffset', 'easing', 'composite'].includes(p))"""
+
+    def test_widening_across_the_breakpoint_transitions(self, page: Page, designed_site):
+        narrow = _load(page, designed_site, NARROW)
+        narrow.locator(TOGGLE).click()
+        _expect_open(narrow)
+        narrow.wait_for_function("document.querySelector('.toc').getAnimations().length === 0")
+        _resize(narrow, WIDE)
+        moving = narrow.locator(PANEL).evaluate(self.TRANSITIONS_JS)
+        assert "width" in moving, f"panel snapped to the margin; running transitions: {moving}"
+
+    def test_narrowing_across_the_breakpoint_transitions(self, wide: Page):
+        _resize(wide, NARROW)
+        moving = wide.locator(PANEL).evaluate(self.TRANSITIONS_JS)
+        assert "width" in moving, f"panel snapped to full width; running transitions: {moving}"
+
+    def test_resizing_within_the_margin_tracks_the_window(self, page: Page, designed_site):
+        wide = _load(page, designed_site, {"width": 1300, "height": 720})
+        _resize(wide, {"width": 1400, "height": 720})
+        assert wide.locator(PANEL).evaluate(self.TRANSITIONS_JS) == []
+        panel, column = _rect(wide, PANEL), _rect(wide, ".container.content")
+        assert panel["left"] >= column["right"], "panel lags over the column"
+
+    def test_reduced_motion_snaps(self, page: Page, designed_site):
+        page.emulate_media(reduced_motion="reduce")
+        wide = _load(page, designed_site, WIDE)
+        _resize(wide, NARROW)
+        assert wide.locator(PANEL).evaluate(self.TRANSITIONS_JS) == []
+
+
 class TestCurrentSection:
     """The entry for the section being read carries aria-current="location"."""
 

@@ -103,6 +103,12 @@ both share `.icon-toggle`, see `styling.md`).
   The stored choice doesn't apply here. Its height is the window less the
   header: `toc.js` keeps `--masthead-height` on `<html>` current (CSS falls
   back to 3.7rem, the header's computed height at both type sizes).
+- **Crossing the breakpoint.** With the panel open, it morphs between its two
+  shapes (full width, the right margin) over 0.3s rather than snapping: `toc.js`
+  animates from the old shape on the media query's `change`, leaving the end as
+  the live layout. Not a CSS transition: the browser applies the new layout
+  before any handler could switch one on, and one left on would make the panel
+  lag behind every resize within a shape. Reduced motion skips it.
 - **Type.** The menu's scale at every width (0.875rem, then 0.75rem from
   30em, as `.sidebar`): navigation reads smaller than the article, and the
   size doesn't jump at 80em. Phones keep taller entries for touch.

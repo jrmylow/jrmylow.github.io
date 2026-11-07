@@ -166,7 +166,9 @@ By area (`_tests/<file>` -> what it guards):
   on Escape from inside, and stays put when the menu opens; below 80em it starts
   closed, covers the screen below the header when opened, closes on a header
   click, Escape or a followed link, and keeps its open or closed state when
-  the window is resized across the breakpoint, whatever is stored; the section
+  the window is resized across the breakpoint, whatever is stored, morphing
+  between its shapes as it crosses (but not when resized within one, or with
+  reduced motion); the section
   being read is marked; entries are on the menu's type scale, below the
   article's, at every width; jumps land below the masthead and open a closed box
   around their target; `toc: false`, a single heading, no headings and non-post

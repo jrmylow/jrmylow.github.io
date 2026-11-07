@@ -314,13 +314,15 @@
   position: absolute;
   top: calc(100% + 1px);
   right: 0;
-  left: 0;
+  width: 100%;
+  max-width: 100%;
   height: calc(100vh - var(--masthead-height, 3.7rem));
   height: calc(100dvh - var(--masthead-height, 3.7rem));
   padding: 1.25rem 1rem 1.25rem 1.25rem;
   overflow-y: auto;
   overscroll-behavior: contain;
   background-color: var(--body-bg);
+  border-left: 1px solid transparent;
   visibility: hidden;
   clip-path: inset(0 0 100% 0);
 }
@@ -409,15 +411,19 @@
   }
 }
 
+/* Both shapes are a width and max-width from the right edge, with a left rule
+   that is transparent at full width, so toc.js can animate one into the other
+   when the window crosses 80em. */
+
 /* Wide: the panel hangs in the right margin, from the column's edge (half the
    38rem column, plus a gutter, from the centre) to the window's, up to 16rem,
    and down to the window's bottom, like the menu: a column edged by one rule,
    not a box that stops under its list. It covers nothing. */
 @media (min-width: 80em) {
   .toc {
-    left: auto;
-    width: min(16rem, calc(50% - 19rem - 0.5rem));
-    border-left: 1px solid var(--border-color);
+    width: calc(50% - 19rem - 0.5rem);
+    max-width: 16rem;
+    border-left-color: var(--border-color);
   }
 }
 
