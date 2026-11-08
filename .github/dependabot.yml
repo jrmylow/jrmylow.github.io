@@ -1,5 +1,13 @@
 # Version updates, grouped to one PR per ecosystem per month. Security
 # updates are separate and arrive as soon as an advisory lands.
+#
+# Which PRs are safe to merge:
+# - github-actions and uv: SAFE. They only change CI and the local test and
+#   lint tools (pytest, Playwright, axe, black, ruff, pre-commit). GitHub Pages
+#   builds docs/ with its own Ruby and never sees any of it. Merge once CI is
+#   green.
+# - bundler: CHECK FIRST. The gems must match https://pages.github.com/versions.json,
+#   so github-pages and nokogiri are ignored here and bumped by hand (see Gemfile).
 version: 2
 updates:
   - package-ecosystem: github-actions
@@ -18,11 +26,15 @@ updates:
       python:
         patterns: ["*"]
 
-  # github-pages pins Jekyll and its plugins to what Pages builds with.
   - package-ecosystem: bundler
     directory: /
     schedule:
       interval: monthly
+    ignore:
+      # Pinned to Pages' versions. Dependabot would bump these as soon as a
+      # release exists, which can be before Pages builds with it.
+      - dependency-name: github-pages
+      - dependency-name: nokogiri
     groups:
       ruby:
         patterns: ["*"]

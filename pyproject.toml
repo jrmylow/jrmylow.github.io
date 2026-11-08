@@ -1,3 +1,6 @@
+# Test and lint tooling only. GitHub Pages builds docs/ with its own Ruby and
+# never installs any of this, so Dependabot bumps here are safe to merge once
+# CI is green. (The site's build pins live in Gemfile, not here.)
 [project]
 name = "jrmylow-github-io"
 version = "0.1.0"

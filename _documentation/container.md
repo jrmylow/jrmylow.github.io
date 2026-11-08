@@ -18,7 +18,7 @@ Over time, the `Makefile` and container helped land a habitual, simple workflow,
 
 Defined in `Containerfile`, run through rootless Podman:
 
-- **Base:** `ruby:3.3-slim-bookworm`, pinned to track what GitHub Pages builds with. The `github-pages` gem pins Jekyll 3.10, so bump the base deliberately to keep parity.
+- **Base:** `ruby:3.3.4-slim-bookworm`, the exact Ruby that GitHub Pages builds with ([versions.json](https://pages.github.com/versions.json)). The `github-pages` gem pins Jekyll and its plugins, and the Gemfile pins `nokogiri`, which `github-pages` leaves as a range. `BUNDLE_FROZEN` makes the image build fail if `Gemfile.lock` doesn't match the Gemfile, rather than quietly installing something else. When versions.json changes, bump the base tag, `github-pages` and `nokogiri` together. Dependabot ignores the last two for this reason; its Python and Actions PRs don't touch the Pages build and are safe to merge (see `.github/dependabot.yml`).
 - **uv 0.9.5** (static binary, copied from its official image) for the Python toolchain.
 - **System libraries** for native gem and wheel builds: `build-essential`, `git`, `curl`, `ca-certificates`.
 - **Bundler pinned to 2.4.22**, matching `Gemfile.lock`'s `BUNDLED WITH`, so dependency resolution matches the lockfile exactly.
