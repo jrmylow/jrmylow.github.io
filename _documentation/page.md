@@ -23,7 +23,8 @@ collapsible box used inside Markdown (`collapsible.md`).
 
 ## The post card is a single source of truth
 
-Every post preview renders through `_includes/post_card.html`. The caller owns
+Every post card (home page, essays landing) renders through
+`_includes/post_card.html`. The caller owns
 post selection, ordering, the limit, and the `.card-grid` wrapper; the include
 renders exactly one card — title, date and reading time, and the first `summary`
 paragraph (or the `excerpt` as a fallback). It takes a `heading` parameter so the card title sits
@@ -46,14 +47,14 @@ quote) followed by the five most recent posts in a single column
 
 ## Essays archive (`/essays/all/`)
 
-`docs/essays/all/index.html`, paginated. `jekyll-paginate` only paginates
-`index.html` files, which is why the archive is its own `index.html` rather than
-a Markdown page. `paginate: 10` and `paginate_path: /essays/all/page/:num/` are
-set in `_config.yml`; the template renders `paginator.posts` in a single-column
-grid with prev/next controls and a "Page X of Y" line. Note that
-`jekyll-paginate` v1 (the GitHub Pages-whitelisted version) has no front-matter
-filter — one reason drafts are kept out of the archive by living in a separate
-collection rather than behind a flag (see `workflow.md`).
+`_pages/archive.html`: every post on one page, grouped by year (`group_by_exp`
+on `post.date`), newest first. Each entry is the title, the day and month, and
+the reading time, as a compact list rather than cards.
+
+It isn't paginated. At a handful of posts a year the page stays short for a
+long time, and one page is easier to scan and search with the browser's find
+than a run of numbered pages. `jekyll-paginate` was removed with it. If the page
+ever gets too long, collapsing older years is the next step, before pagination.
 
 ## Card grid
 

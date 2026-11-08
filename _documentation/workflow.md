@@ -59,7 +59,7 @@ See `container.md` for the full target list.
 ## Why this design
 
 - **Git history is permanent.** A committed draft lives forever in history and blame, so candid early drafts stay in the gitignored `_drafts/` and never get committed.
-- **Location beats a flag.** A folder per stage is simpler than a `listed:` front-matter flag, and `jekyll-paginate` (v1) cannot filter a flag out of the `/essays/all/` archive cleanly — a separate collection is excluded for free.
+- **Location beats a flag.** A folder per stage is simpler than a `listed:` front-matter flag: every listing reads `site.posts`, so a separate collection is excluded for free, with no filter to remember on each page.
 - **Permalink continuity.** A final URL chosen up front means publishing is a file move with no dead links.
 
 ## Navigation

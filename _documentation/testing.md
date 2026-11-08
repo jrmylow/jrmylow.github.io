@@ -150,9 +150,9 @@ By area (`_tests/<file>` -> what it guards):
   accessible name.
 - `test_cards` — card grid presence, required card elements, clickable cards,
   hover styling.
-- `test_pagination` — the essays landing (max 5 posts + archive link) and the
-  paginated `/essays/all/` archive: the page count follows `paginate`, every
-  post appears exactly once, and each page's nav matches its position.
+- `test_essays` — the essays landing (max 5 posts + archive link) and the
+  `/essays/all/` archive: one page, every post exactly once under its year,
+  years and posts newest first, each entry with a reading time.
 - `test_feed` — `/atom.xml` uses the Atom namespace, the autodiscovery link
   declares `application/atom+xml`, and the sidebar links to the feed.
 - `test_reading_time` — the designed long post rounds up to the expected
