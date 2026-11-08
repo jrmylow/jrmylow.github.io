@@ -35,13 +35,19 @@ class Post:
         return f"---\n{yaml.safe_dump(front, sort_keys=False, allow_unicode=True)}---\n\n{self.body}\n"
 
 
+# Words in the designed long post: 1000 / 220 wpm is about 4.5 minutes, which rounds up to 5.
+LONG_WORDS = 1000
+
 # Hand-picked cases, newest first. P2 grows this list; say what each case is for.
 DESIGNED = [
     # Tag sets where AND and OR filtering differ: A only, B only, both.
     Post(dt.date(2025, 3, 1), "designed-alpha", "Designed alpha", ("alpha",)),
     Post(dt.date(2025, 2, 1), "designed-beta", "Designed beta", ("beta",)),
     Post(dt.date(2025, 1, 1), "designed-alpha-beta", "Designed alpha and beta", ("alpha", "beta")),
+    # Reading time: a long body whose minutes round up, against the one-line bodies above.
+    Post(dt.date(2024, 12, 1), "designed-long", "Designed long", (), " ".join(["word"] * LONG_WORDS)),
 ]
+LONG_POST = DESIGNED[-1]
 
 FILLER_TAGS = ("systems", "planning", "writing", "tools", "notes")
 FILLER_WORDS = 300
