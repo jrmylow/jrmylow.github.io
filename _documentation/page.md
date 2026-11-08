@@ -72,8 +72,8 @@ maths count as words, so technical posts read slightly long.
 ## Feed links
 
 Browsers no longer show `<link rel="alternate">` feeds, so the feed is linked
-visibly as well: a line after each post's body and an "Atom feed" link in the
-sidebar footer. The autodiscovery link in `head.html` stays for feed readers.
+visibly as well, as an "Atom feed" link in the sidebar footer. The
+autodiscovery link in `head.html` stays for feed readers.
 
 ## Navigation
 

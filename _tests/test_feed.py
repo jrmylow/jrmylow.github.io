@@ -28,10 +28,6 @@ class TestAtomFeed:
 class TestFeedLinks:
     """Browsers don't surface autodiscovery links, so readers need a visible one."""
 
-    def test_post_links_to_the_feed(self, page: Page, jekyll_server: str, any_post_url: str):
-        page.goto(f"{jekyll_server}{any_post_url}")
-        assert page.locator(".post a[href$='/atom.xml']").is_visible()
-
     def test_sidebar_links_to_the_feed(self, page: Page, jekyll_server: str):
         page.goto(jekyll_server)
         page.locator(".sidebar-toggle").click()
