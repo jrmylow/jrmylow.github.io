@@ -1,7 +1,7 @@
 """Characterization tests for the shared post-card component.
 
-Home, Essays, and the paginated archive render post previews through one
-include, _includes/post_card.html, taking `post` and `heading` params.
+Home and the Essays landing render post previews through one include,
+_includes/post_card.html, taking `post` and `heading` params.
 Extracting the include is a pure refactor: the card's structure is a single
 source of truth, so the inner markup must be identical across every page.
 
@@ -14,7 +14,7 @@ from playwright.sync_api import Page
 
 CARD = ".card"
 CARD_TITLE = ".card-title"
-PAGES = ("/", "/essays/", "/essays/all/")
+PAGES = ("/", "/essays/")
 
 
 def _first_card_title_tag(page: Page, jekyll_server: str, path: str) -> str:

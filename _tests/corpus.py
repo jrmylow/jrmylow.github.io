@@ -45,6 +45,7 @@ DESIGNED = [
     Post(dt.date(2025, 2, 1), "designed-beta", "Designed beta", ("beta",)),
     Post(dt.date(2025, 1, 1), "designed-alpha-beta", "Designed alpha and beta", ("alpha", "beta")),
     # Reading time: a long body whose minutes round up, against the one-line bodies above.
+    # Also the only 2024 post, so the year-grouped archive has more than one year.
     Post(dt.date(2024, 12, 1), "designed-long", "Designed long", (), " ".join(["word"] * LONG_WORDS)),
 ]
 LONG_POST = DESIGNED[-1]

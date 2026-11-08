@@ -25,6 +25,6 @@ class TestReadingTime:
 
     def test_card_shows_the_posts_minutes(self, page: Page, designed_site):
         url = designed_site.document(corpus.LONG_POST.filename)["url"]
-        page.goto(f"{designed_site.url}/essays/all/")
+        page.goto(f"{designed_site.url}/essays/")
         meta = page.locator(f"a.card-link[href='{url}'] .card-meta")
         assert f"{LONG_MINUTES} min read" in meta.inner_text()
