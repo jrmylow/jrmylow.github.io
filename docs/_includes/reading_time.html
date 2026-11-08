@@ -1,0 +1,10 @@
+{% comment %}
+  Reading-time estimate: words / 220, rounded up, at least one minute.
+
+  Usage:
+    {% include reading_time.html content=content %}
+    {% include reading_time.html content=post.content %}
+{% endcomment %}
+{%- assign words = include.content | strip_html | number_of_words -%}
+{%- assign minutes = words | divided_by: 220.0 | ceil | at_least: 1 -%}
+{{- minutes }} min read

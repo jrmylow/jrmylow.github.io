@@ -25,8 +25,8 @@ collapsible box used inside Markdown (`collapsible.md`).
 
 Every post preview renders through `_includes/post_card.html`. The caller owns
 post selection, ordering, the limit, and the `.card-grid` wrapper; the include
-renders exactly one card — title, date, and the first `summary` paragraph (or the
-`excerpt` as a fallback). It takes a `heading` parameter so the card title sits
+renders exactly one card — title, date and reading time, and the first `summary`
+paragraph (or the `excerpt` as a fallback). It takes a `heading` parameter so the card title sits
 at the correct level beneath each page's surrounding heading. It was extracted to
 kill three drifting copies of the same markup across the index, essays landing,
 and archive.
@@ -61,6 +61,19 @@ collection rather than behind a flag (see `workflow.md`).
 step up at `em` breakpoints (48em / 64em / 80em); every variant is single-column
 on mobile. Choose a post count divisible by the column number for an even grid.
 Visual detail is in `styling.md`.
+
+## Reading time
+
+`_includes/reading_time.html` takes rendered `content`, strips the HTML, and
+prints words / 220, rounded up, at least one minute ("5 min read"). The post
+header and the post card both use it, so the two always agree. Code blocks and
+maths count as words, so technical posts read slightly long.
+
+## Feed links
+
+Browsers no longer show `<link rel="alternate">` feeds, so the feed is linked
+visibly as well, as an "Atom feed" link in the sidebar footer. The
+autodiscovery link in `head.html` stays for feed readers.
 
 ## Navigation
 

@@ -23,3 +23,13 @@ class TestAtomFeed:
         link = page.locator('head link[rel="alternate"][href$="/atom.xml"]')
         assert link.count() == 1, "expected one feed autodiscovery link"
         assert link.get_attribute("type") == "application/atom+xml"
+
+
+class TestFeedLinks:
+    """Browsers don't surface autodiscovery links, so readers need a visible one."""
+
+    def test_sidebar_links_to_the_feed(self, page: Page, jekyll_server: str):
+        page.goto(jekyll_server)
+        page.locator(".sidebar-toggle").click()
+        link = page.locator(".sidebar a[href$='/atom.xml']")
+        link.wait_for(state="visible")

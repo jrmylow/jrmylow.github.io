@@ -153,6 +153,10 @@ By area (`_tests/<file>` -> what it guards):
 - `test_pagination` — the essays landing (max 5 posts + archive link) and the
   paginated `/essays/all/` archive: the page count follows `paginate`, every
   post appears exactly once, and each page's nav matches its position.
+- `test_feed` — `/atom.xml` uses the Atom namespace, the autodiscovery link
+  declares `application/atom+xml`, and the sidebar links to the feed.
+- `test_reading_time` — the designed long post rounds up to the expected
+  minutes on its page and its card; a one-line post shows one minute.
 - `test_search` — sidebar search, the `/search/` page, and `search-index.json`
   shape/contents.
 - `test_details` — the collapsible box includes: Markdown in the summary and
