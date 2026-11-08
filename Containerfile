@@ -10,12 +10,12 @@
 #   base Ruby  ->  system libs  ->  gems  ->  Python venv  ->  browsers
 #
 # ---------------------------------------------------------------------------
-# Base: official Ruby image. This is a from-source, version-pinned Ruby on a
-# Debian Bookworm base, maintained by the Docker official-images team. The repo
-# uses the github-pages gem, which pins Jekyll 3.10; keep this tag aligned with
-# the Ruby that GitHub Pages builds with. Bump deliberately.
+# Base: official Ruby image, from-source Ruby on Debian Bookworm, maintained by
+# the Docker official-images team. Pinned to the exact Ruby that GitHub Pages
+# builds with, as listed at https://pages.github.com/versions.json ("ruby").
+# Bump only when that file changes, together with Gemfile's pins.
 # ---------------------------------------------------------------------------
-FROM docker.io/library/ruby:3.3-slim-bookworm
+FROM docker.io/library/ruby:3.3.4-slim-bookworm
 
 # uv as a static binary, copied from its official image and version-pinned.
 COPY --from=ghcr.io/astral-sh/uv:0.9.5 /uv /uvx /bin/
@@ -37,7 +37,10 @@ WORKDIR /app
 # Gems install to a fixed path OUTSIDE /app so the runtime bind-mount of the
 # repo over /app cannot shadow them. Pin bundler to the Gemfile.lock's
 # "BUNDLED WITH" (2.4.22) so resolution matches your lockfile exactly.
+# BUNDLE_FROZEN: fail if Gemfile and Gemfile.lock disagree, instead of quietly
+# re-resolving to versions Pages doesn't run (the Ruby twin of UV_FROZEN).
 ENV BUNDLE_PATH=/usr/local/bundle \
+    BUNDLE_FROZEN=true \
     BUNDLE_JOBS=4 \
     BUNDLE_RETRY=3
 RUN gem install bundler -v 2.4.22
