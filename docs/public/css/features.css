@@ -12,6 +12,7 @@
  *   3. Command palette
  *   4. Webmentions
  *   5. Collapsible box
+ *   6. Table of contents
  */
 
 /* ==========================================================================
@@ -283,5 +284,158 @@
 @media (prefers-reduced-motion: reduce) {
   .collapsible > details > summary::after {
     transition: none;
+  }
+}
+
+/* ==========================================================================
+   6. Table of contents (_includes/post_toc.html, public/js/toc.js)
+   ========================================================================== */
+
+/* The button: the menu button's mirror image, at the header bar's right end.
+   Its face, colours and open state are .icon-toggle's (lanyon.css); this only
+   places it, resets the <button>, and names its icon: Bootstrap Icons
+   "list-ul" (MIT), the hamburger's set. */
+.toc-toggle {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  margin: 0;
+  border: 0;
+  --toggle-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M5 11.5a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h9a.5.5 0 010 1h-9a.5.5 0 01-.5-.5zm-3 1a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2zm0 4a1 1 0 100-2 1 1 0 000 2z'/%3E%3C/svg%3E");
+}
+
+/* The panel hangs from the header line: positioned against the sticky
+   masthead's bottom edge (top: 100% is the padding edge, so +1px clears the
+   border), it moves with the header and covers none of it. Closed, it is
+   clipped to nothing at its top edge; opening unrolls it downward and closing
+   rolls it back up into the bar. Hidden when closed, so its links leave the
+   tab order. Narrow: it covers the screen below the header. */
+.toc {
+  position: absolute;
+  top: calc(100% + 1px);
+  right: 0;
+  width: 100%;
+  max-width: 100%;
+  height: calc(100vh - var(--masthead-height, 3.7rem));
+  height: calc(100dvh - var(--masthead-height, 3.7rem));
+  padding: 1.25rem 1rem 1.25rem 1.25rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: var(--body-bg);
+  border-left: 1px solid transparent;
+  visibility: hidden;
+  clip-path: inset(0 0 100% 0);
+}
+
+/* Open, the clip edge sits above the panel: an edge on the panel's own top,
+   at a fractional pixel, is antialiased and lets a sliver of the page show
+   through under the header line. */
+[data-toc="open"] .toc {
+  visibility: visible;
+  clip-path: inset(-1rem 0 0 0);
+}
+
+.toc-ready .toc {
+  transition: clip-path 0.3s ease-in-out, visibility 0.3s;
+}
+
+.toc-title {
+  margin: 0 0 0.5rem;
+  font-weight: bold;
+  color: var(--heading-color);
+}
+
+/* One rail down the left; the entry being read is marked on it */
+.toc-list,
+.toc-list ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.toc-list {
+  border-left: 1px solid var(--border-color);
+}
+
+.toc-list li {
+  margin: 0;
+}
+
+.toc-list a {
+  display: block;
+  margin-left: -1px;
+  padding: 0.5rem 0 0.5rem 0.75rem;
+  border-left: 2px solid transparent;
+  line-height: 1.35;
+  color: var(--muted-color);
+  text-decoration: none;
+  overflow-wrap: anywhere;
+}
+
+/* h3 entries sit under their h2, on the same rail */
+.toc-list ul a {
+  padding-left: 1.5rem;
+}
+
+.toc-list a:hover,
+.toc-list a:focus-visible {
+  color: var(--heading-color);
+  text-decoration: underline;
+}
+
+/* The panel clips its contents, so its focus rings are drawn inside */
+.toc-list a:focus-visible {
+  outline-offset: -2px;
+}
+
+.toc-list a[aria-current] {
+  color: var(--heading-color);
+  border-left-color: var(--link-color);
+}
+
+/* Type on the menu's scale at every width (.sidebar, lanyon.css): navigation,
+   so smaller than the article, and the same size either side of 80em. Phones
+   keep taller entries, for touch. */
+.toc {
+  font-size: 0.875rem;
+}
+
+@media (min-width: 30em) {
+  .toc {
+    font-size: 0.75rem;
+  }
+
+  .toc-list a {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+  }
+}
+
+/* Both shapes are a width and max-width from the right edge, with a left rule
+   that is transparent at full width, so toc.js can animate one into the other
+   when the window crosses 80em. */
+
+/* Wide: the panel hangs in the right margin, from the column's edge (half the
+   38rem column, plus a gutter, from the centre) to the window's, up to 16rem,
+   and down to the window's bottom, like the menu: a column edged by one rule,
+   not a box that stops under its list. It covers nothing. */
+@media (min-width: 80em) {
+  .toc {
+    width: calc(50% - 19rem - 0.5rem);
+    max-width: 16rem;
+    border-left-color: var(--border-color);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .toc-ready .toc {
+    transition: none;
+  }
+}
+
+/* The button hides with .icon-toggle (lanyon.css) */
+@media print {
+  .toc {
+    display: none;
   }
 }

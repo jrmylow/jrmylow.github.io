@@ -4,9 +4,9 @@
 DARK_BG_COLOR = "rgb(26, 26, 26)"
 LIGHT_BG_COLOR = "rgb(242, 237, 231)"
 
-# Icon colors
-WHITE_HEX = "ffffff"
-WHITE_HEX_SHORT = "fff"
+# Header toggle icons (menu, contents): closed, per theme, and open over the sidebar blue
+TOGGLE_ICON_COLORS = {"dark": "rgb(255, 255, 255)", "light": "rgb(33, 75, 138)"}
+TOGGLE_ICON_OPEN_COLOR = "rgb(255, 255, 255)"
 
 # Written into each session's build so tests can confirm which server they hit
 BUILD_TOKEN_FILE = "__test_build_token__.txt"
@@ -60,9 +60,6 @@ SELECTORS = {
     "card_body": ".card-body",
     "view_all_link": ".view-all-link a",
     "pagination": ".pagination",
-    "pagination_info": ".pagination-info",
-    "pagination_prev": ".pagination-prev",
-    "pagination_next": ".pagination-next",
     "search_container": ".search-container",
     "search_input": ".search-input",
     "search_results": ".search-results",

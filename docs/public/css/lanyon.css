@@ -28,7 +28,6 @@
  * Sidebar
  * Slide effect
  * Posts and pages
- * Pagination
  * Reverse layout
  * Overlay sidebar
  * Theme Toggle
@@ -411,49 +410,49 @@ a.sidebar-nav-item:focus {
   outline-offset: 2px;
 }
 
-/* Sidebar toggle button */
-.sidebar-toggle {
-  position: fixed;
-  top: .8rem;
-  left: 1rem;
+/* Header toggles: the menu's (.sidebar-toggle, a <label>) and, on posts, the
+   table of contents' (.toc-toggle, a <button>; features.css). Both carry
+   .icon-toggle: an icon (--toggle-icon, set per toggle) masked over
+   currentColor, so one colour token per theme paints every icon. Open, a
+   toggle sits on the sidebar's blue in both themes, so its icon is white. */
+.icon-toggle {
   display: flex;
   align-items: center;
   padding: .25rem .75rem;
-  color: var(--heading-color);
+  color: var(--toggle-icon-color);
   background-color: var(--body-bg);
   border-radius: .25rem;
   cursor: pointer;
-  z-index: 30;
 }
 
-.sidebar-toggle::before {
+.icon-toggle::before {
   display: inline-block;
   width: 32px;
   height: 32px;
   content: "";
-  background: var(--hamburger-icon) no-repeat;
+  background-color: currentColor;
+  -webkit-mask: var(--toggle-icon) no-repeat center / contain;
+          mask: var(--toggle-icon) no-repeat center / contain;
 }
 
-/* When sidebar is open/active/focused, always use white icon (background is dark) */
-.sidebar-toggle:active::before,
-#sidebar-checkbox:checked ~ .sidebar-toggle::before {
-  background: var(--hamburger-icon-active) no-repeat;
-}
-
-.sidebar-toggle:active,
+.icon-toggle:active,
+.icon-toggle[aria-expanded="true"],
 #sidebar-checkbox:checked ~ .sidebar-toggle {
-  color: var(--heading-color);
+  color: var(--toggle-icon-active-color);
   background-color: var(--sidebar-bg);
 }
 
-@media (min-width: 30.1em) {
-  .sidebar-toggle {
-    position: fixed;
-  }
+/* Bootstrap Icons "list" (MIT) */
+.sidebar-toggle {
+  position: fixed;
+  top: .8rem;
+  left: 1rem;
+  z-index: 30;
+  --toggle-icon: url("data:image/svg+xml,%3Csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' d='M2.5 11.5A.5.5 0 013 11h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 7h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5zm0-4A.5.5 0 013 3h10a.5.5 0 010 1H3a.5.5 0 01-.5-.5z' clip-rule='evenodd'/%3E%3C/svg%3E");
 }
 
 @media print {
-  .sidebar-toggle {
+  .icon-toggle {
     display: none;
   }
 }
@@ -554,54 +553,6 @@ a.sidebar-nav-item:focus {
 
 
 /* ==========================================================================
-   Pagination
-   ========================================================================== */
-
-.pagination {
-  overflow: hidden;
-  margin-left: -1rem;
-  margin-right: -1rem;
-  font-family: "PT Sans", Helvetica, Arial, sans-serif;
-  color: var(--pagination-color);
-  text-align: center;
-}
-
-.pagination-item {
-  display: block;
-  padding: 1rem;
-  border: 1px solid var(--pagination-border);
-}
-
-.pagination-item:first-child {
-  margin-bottom: -1px;
-}
-
-a.pagination-item:hover {
-  background-color: var(--pagination-hover-bg);
-}
-
-@media (min-width: 30em) {
-  .pagination {
-    margin: 3rem 0;
-  }
-  .pagination-item {
-    float: left;
-    width: 50%;
-  }
-  .pagination-item:first-child {
-    margin-bottom: 0;
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-  }
-  .pagination-item:last-child {
-    margin-left: -1px;
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-  }
-}
-
-
-/* ==========================================================================
    Reverse Layout
    ========================================================================== */
 
@@ -634,7 +585,8 @@ a.pagination-item:hover {
           transform: translateX(0);
 }
 
-.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar-toggle {
+.sidebar-overlay #sidebar-checkbox:checked ~ .sidebar-toggle,
+.icon-toggle[aria-expanded="true"] {
   box-shadow: 0 0 0 1px var(--toggle-shadow);
 }
 

@@ -6,7 +6,7 @@ This document captures the rationale behind the design of the development contai
 
 The previous workflow relied on recalling specific commands on jekyll, and ran based off the host machine's ruby and python environment. I picked up `poetry` and then `uv` for my python projects, and felt more comfortable with how it handled virtual environments. The container extends that to the whole site and allows me to experiment e.g. with direct LLM editing of this codebase.
 
-## Implelmentation details
+## Implementation details
 
 I wanted to grow my familiarity with containers, and found `podman` as a solution that doesn't use a daemon thread and avoids issues with root access that are a risk for docker.
 
@@ -18,18 +18,28 @@ Over time, the `Makefile` and container helped land a habitual, simple workflow,
 
 Defined in `Containerfile`, run through rootless Podman:
 
-- **Base:** `ruby:3.3-slim-bookworm`, pinned to track what GitHub Pages builds with. The `github-pages` gem pins Jekyll 3.10, so bump the base deliberately to keep parity.
+- **Base:** `ruby:3.3.4-slim-bookworm`, the exact Ruby that GitHub Pages builds with ([versions.json](https://pages.github.com/versions.json)). The `github-pages` gem pins Jekyll and its plugins, and the Gemfile pins `nokogiri`, which `github-pages` leaves as a range. `BUNDLE_FROZEN` makes the image build fail if `Gemfile.lock` doesn't match the Gemfile, rather than quietly installing something else. When versions.json changes, bump the base tag, `github-pages` and `nokogiri` together. Dependabot ignores the last two for this reason; its Python and Actions PRs don't touch the Pages build and are safe to merge (see `.github/dependabot.yml`).
 - **uv 0.9.5** (static binary, copied from its official image) for the Python toolchain.
 - **System libraries** for native gem and wheel builds: `build-essential`, `git`, `curl`, `ca-certificates`.
 - **Bundler pinned to 2.4.22**, matching `Gemfile.lock`'s `BUNDLED WITH`, so dependency resolution matches the lockfile exactly.
 
 ### Layer order
 
-TODO
+Layers run from least to most likely to change, so a change only rebuilds its own layer and those after it:
+
+1. Base Ruby image
+2. System libraries
+3. Bundler and gems (`Gemfile`, `Gemfile.lock`)
+4. Python interpreter (`.python-version`), then venv (`pyproject.toml`, `uv.lock`)
+5. Playwright browsers
+
+Dependency manifests are copied in on their own, before any source, so editing a post or a test never reinstalls gems or wheels. Browsers come last because their build is locked to the installed `playwright` version, so they must be installed after the venv sync that fixes that version.
 
 ### Why gems and the venv live outside `/app`
 
-TODO
+At runtime the repo is bind-mounted over `/app`, which hides whatever the image put there. Gems (`BUNDLE_PATH=/usr/local/bundle`), the venv (`/opt/venv`), the uv-managed Python (`/opt/python`) and the browsers (`/opt/ms-playwright`) therefore live elsewhere. This also keeps installed dependencies out of the working tree.
+
+The venv is also a named volume (`jrmylow-venv`). Podman fills an empty named volume from the image the first time it is mounted, and never again after that. A rebuilt image therefore does not update the venv, which is why `uv.lock` changes need `make sync`.
 
 ## Makefile targets
 

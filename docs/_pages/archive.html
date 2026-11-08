@@ -1,0 +1,25 @@
+---
+layout: page
+title: All Essays
+permalink: /essays/all/
+---
+{% comment %}
+  Every post on one page, grouped by year, newest first. At a handful of posts
+  a year this stays short for a long time, so it isn't paginated.
+{% endcomment %}
+<p><a href="{{ '/essays/' | relative_url }}">&larr; Back to Essays</a></p>
+
+{% assign years = site.posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+{% for year in years %}
+<section class="archive-year" aria-labelledby="archive-{{ year.name }}">
+  <h2 id="archive-{{ year.name }}">{{ year.name }}</h2>
+  <ul class="archive-list">
+    {% for post in year.items %}
+    <li>
+      <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+      <span class="archive-meta">{{ post.date | date: "%-d %b" }} &middot; {% include reading_time.html content=post.content %}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</section>
+{% endfor %}

@@ -144,18 +144,39 @@ By area (`_tests/<file>` -> what it guards):
   stored.
 - `test_theme_flash` — `data-theme` is set on `<html>` before the first
   stylesheet is inserted and keeps that value for the rest of the load.
-- `test_hamburger` — the sidebar toggle icon renders per theme.
+- `test_header_toggles` — both header toggles (menu, contents), in both themes:
+  the icon renders in the theme's colour on the page background, and open, it
+  is white on the sidebar blue with a 1px ring; each has hover text matching its
+  accessible name.
 - `test_cards` — card grid presence, required card elements, clickable cards,
   hover styling.
-- `test_pagination` — the essays landing (max 5 posts + archive link) and the
-  paginated `/essays/all/` archive: the page count follows `paginate`, every
-  post appears exactly once, and each page's nav matches its position.
+- `test_essays` — the essays landing (max 5 posts + archive link) and the
+  `/essays/all/` archive: one page, every post exactly once under its year,
+  years and posts newest first, each entry with a reading time.
+- `test_feed` — `/atom.xml` uses the Atom namespace, the autodiscovery link
+  declares `application/atom+xml`, and the sidebar links to the feed.
+- `test_reading_time` — the designed long post rounds up to the expected
+  minutes on its page and its card; a one-line post shows one minute.
 - `test_search` — sidebar search, the `/search/` page, and `search-index.json`
   shape/contents.
 - `test_details` — the collapsible box includes: Markdown in the summary and
   body is converted in the post's own pass (footnotes, reference links, heading
   ids), boxes start closed unless `open` is passed, and toggle by mouse and
   keyboard (see `collapsible.md`).
+- `test_toc` — the post table of contents (`toc-demo` previews): entries follow
+  the h2/h3 outline; the panel hangs from the header line at every scroll
+  position; from 80em it opens without animating, in the right margin clear of
+  the column, stays open while reading, toggles, remembers being closed, closes
+  on Escape from inside, and stays put when the menu opens; below 80em it starts
+  closed, covers the screen below the header when opened, closes on a header
+  click, Escape or a followed link, and keeps its open or closed state when
+  the window is resized across the breakpoint, whatever is stored, morphing
+  between its shapes as it crosses (but not when resized within one, or with
+  reduced motion); the section
+  being read is marked; entries are on the menu's type scale, below the
+  article's, at every width; jumps land below the masthead and open a closed box
+  around their target; `toc: false`, a single heading, no headings and non-post
+  pages get none.
 - `test_analytics` — the GoatCounter script and dynamic noscript fallback (see
   `analytics.md`).
 - `test_performance` — the budget below.
@@ -172,7 +193,9 @@ By area (`_tests/<file>` -> what it guards):
   - one `<h1>` per page and no skipped heading levels (1.3.1, 2.4.6);
   - a visible focus ring on every Tab stop (2.4.7);
   - focus and jump targets not hidden by the sticky masthead (2.4.11);
-  - nothing clipped at 320px (1.4.10);
+  - nothing clipped at 320px, the open table of contents included (1.4.10);
+  - icon contrast of the header toggles, closed and open, and of the TOC's
+    current-section bar (1.4.11);
   - control-edge and placeholder contrast (1.4.11, 1.4.3).
 
   It adds about 30 seconds to a run.

@@ -19,7 +19,7 @@
   <article class="card">
     <div class="card-content">
       <{{ card_heading }} class="card-title">{{ post.title }}</{{ card_heading }}>
-      <span class="card-meta">{{ post.date | date_to_long_string }}</span>
+      <span class="card-meta">{{ post.date | date_to_long_string }} &middot; {% include reading_time.html content=post.content %}</span>
       <div class="card-body">
         {% if post.summary %}{% for paragraph in post.summary limit:1 %}<p>{{ paragraph.p }}</p>{% endfor %}{% else %}{{ post.excerpt }}{% endif %}
       </div>

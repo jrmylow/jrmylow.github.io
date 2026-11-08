@@ -18,15 +18,16 @@ the masthead, and the content container. Other layouts wrap it:
   merge with it.
 
 Shared partials live in `_includes`: `head.html`, `sidebar.html`,
-`post_card.html`, `toc.html`, and `details_open.html`/`details_close.html`, the
+`post_card.html`, `toc.html` and `post_toc.html`, and `details_open.html`/`details_close.html`, the
 collapsible box used inside Markdown (`collapsible.md`).
 
 ## The post card is a single source of truth
 
-Every post preview renders through `_includes/post_card.html`. The caller owns
+Every post card (home page, essays landing) renders through
+`_includes/post_card.html`. The caller owns
 post selection, ordering, the limit, and the `.card-grid` wrapper; the include
-renders exactly one card — title, date, and the first `summary` paragraph (or the
-`excerpt` as a fallback). It takes a `heading` parameter so the card title sits
+renders exactly one card — title, date and reading time, and the first `summary`
+paragraph (or the `excerpt` as a fallback). It takes a `heading` parameter so the card title sits
 at the correct level beneath each page's surrounding heading. It was extracted to
 kill three drifting copies of the same markup across the index, essays landing,
 and archive.
@@ -46,14 +47,14 @@ quote) followed by the five most recent posts in a single column
 
 ## Essays archive (`/essays/all/`)
 
-`docs/essays/all/index.html`, paginated. `jekyll-paginate` only paginates
-`index.html` files, which is why the archive is its own `index.html` rather than
-a Markdown page. `paginate: 10` and `paginate_path: /essays/all/page/:num/` are
-set in `_config.yml`; the template renders `paginator.posts` in a single-column
-grid with prev/next controls and a "Page X of Y" line. Note that
-`jekyll-paginate` v1 (the GitHub Pages-whitelisted version) has no front-matter
-filter — one reason drafts are kept out of the archive by living in a separate
-collection rather than behind a flag (see `workflow.md`).
+`_pages/archive.html`: every post on one page, grouped by year (`group_by_exp`
+on `post.date`), newest first. Each entry is the title, the day and month, and
+the reading time, as a compact list rather than cards.
+
+It isn't paginated. At a handful of posts a year the page stays short for a
+long time, and one page is easier to scan and search with the browser's find
+than a run of numbered pages. `jekyll-paginate` was removed with it. If the page
+ever gets too long, collapsing older years is the next step, before pagination.
 
 ## Card grid
 
@@ -61,6 +62,19 @@ collection rather than behind a flag (see `workflow.md`).
 step up at `em` breakpoints (48em / 64em / 80em); every variant is single-column
 on mobile. Choose a post count divisible by the column number for an even grid.
 Visual detail is in `styling.md`.
+
+## Reading time
+
+`_includes/reading_time.html` takes rendered `content`, strips the HTML, and
+prints words / 220, rounded up, at least one minute ("5 min read"). The post
+header and the post card both use it, so the two always agree. Code blocks and
+maths count as words, so technical posts read slightly long.
+
+## Feed links
+
+Browsers no longer show `<link rel="alternate">` feeds, so the feed is linked
+visibly as well, as an "Atom feed" link in the sidebar footer. The
+autodiscovery link in `head.html` stays for feed readers.
 
 ## Navigation
 
@@ -74,7 +88,56 @@ matter.
 ## Table of contents
 
 kramdown generates heading IDs (`auto_ids: true`, `toc_levels: 1..6` in
-`_config.yml`); `toc.html` builds the list from them.
+`_config.yml`); `toc.html` (allejo/jekyll-toc) builds a list from them, and
+`post_toc.html` turns it into a panel that drops down from the header bar,
+toggled by a button at the bar's right end (the menu button's mirror image;
+both share `.icon-toggle`, see `styling.md`).
+
+- **When.** On by default for posts and previews; `toc: false` in front matter
+  turns it off. It lists h2 and h3 only, and a post with fewer than two of them
+  gets no panel, no button and no `toc.js` request.
+- **Where in the DOM.** `default.html` includes it (with `page.content`) inside
+  `.masthead`. The masthead is sticky, so the panel, absolutely positioned
+  against its bottom edge, hangs from the header line wherever the page is
+  scrolled, and the line stays visible above it. Being absolute rather than
+  fixed, it isn't carried off by the transform the open menu puts on `.wrap`.
+- **Unroll and fold.** Closed, the panel is clipped to nothing at its top edge;
+  opening animates the clip down (it unrolls from the header line), closing
+  animates it back up into the bar. Open, the clip edge sits above the panel:
+  one on the panel's own top, at a fractional pixel, is antialiased and lets a
+  sliver of page text show under the line.
+- **Wide (>= 80em).** It hangs in the right margin, from the 38rem column's edge
+  to the window's (up to 16rem), and down to the window's bottom: a column edged
+  by one rule, like the menu, rather than a box that stops under its list. It covers nothing, so it
+  starts open and stays open while the reader scrolls and clicks the page.
+  Closing or opening it here is remembered in `localStorage` (key `toc`);
+  Escape closes it when focus is inside.
+- **Narrow (< 80em).** It covers the screen below the header and starts closed;
+  a click on the header bar, Escape, or following one of its links closes it.
+  The stored choice doesn't apply here. Its height is the window less the
+  header: `toc.js` keeps `--masthead-height` on `<html>` current (CSS falls
+  back to 3.7rem, the header's computed height at both type sizes).
+- **Crossing the breakpoint.** With the panel open, it morphs between its two
+  shapes (full width, the right margin) over 0.3s rather than snapping: `toc.js`
+  animates from the old shape on the media query's `change`, leaving the end as
+  the live layout. Not a CSS transition: the browser applies the new layout
+  before any handler could switch one on, and one left on would make the panel
+  lag behind every resize within a shape. Reduced motion skips it.
+- **Type.** The menu's scale at every width (0.875rem, then 0.75rem from
+  30em, as `.sidebar`): navigation reads smaller than the article, and the
+  size doesn't jump at 80em. Phones keep taller entries for touch.
+- **State.** One toggle at every width: `data-toc="open|closed"` on `<html>`.
+  Resizing across 80em leaves it as the reader left it (only the layout
+  changes); the stored desktop choice decides how a page loads, never what a
+  resize does. It is set by an inline script before the panel is parsed, so
+  the first paint is already right and nothing unrolls on load; transitions switch on (`.toc-ready`) a frame later.
+- **Current section.** `toc.js` marks the entry being read with
+  `aria-current="location"`: the last heading scrolled past the masthead line
+  (`scroll-padding-top`), or the last heading once the page hits the bottom,
+  since a short final section can't scroll that far. Following an entry whose
+  heading sits in a closed collapsible box opens the box first.
+
+Styles are in `features.css`, section 6; tests in `test_toc.py`.
 
 ## Head and metadata
 
@@ -86,4 +149,6 @@ when social-share link previews matter.
 ## References
 - Jekyll pagination: <https://jekyllrb.com/docs/pagination/>
 - Jekyll collections: <https://jekyllrb.com/docs/collections/>
+- allejo/jekyll-toc: <https://github.com/allejo/jekyll-toc>
+- `aria-current`: <https://www.w3.org/TR/wai-aria-1.2/#aria-current>
 - kramdown automatic IDs: <https://kramdown.gettalong.org/converter/html.html#auto-ids>
