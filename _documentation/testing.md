@@ -154,7 +154,7 @@ By area (`_tests/<file>` -> what it guards):
   `/essays/all/` archive: one page, every post exactly once under its year,
   years and posts newest first, each entry with a reading time.
 - `test_feed` — `/atom.xml` uses the Atom namespace, the autodiscovery link
-  declares `application/atom+xml`, and posts and the sidebar link to the feed.
+  declares `application/atom+xml`, and the sidebar links to the feed.
 - `test_reading_time` — the designed long post rounds up to the expected
   minutes on its page and its card; a one-line post shows one minute.
 - `test_search` — sidebar search, the `/search/` page, and `search-index.json`
