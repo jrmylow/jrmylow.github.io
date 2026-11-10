@@ -25,6 +25,7 @@ class Post:
     title: str
     tags: tuple[str, ...] = ()
     body: str = "A designed post."
+    summary: str | None = None  # front-matter summary; None leaves cards and the feed to the excerpt
 
     @property
     def filename(self) -> str:
@@ -32,17 +33,32 @@ class Post:
 
     def render(self) -> str:
         front = {"layout": "post", "title": self.title, "date": self.date, "tags": list(self.tags)}
+        if self.summary is not None:
+            front["summary"] = [{"p": self.summary}]
         return f"---\n{yaml.safe_dump(front, sort_keys=False, allow_unicode=True)}---\n\n{self.body}\n"
 
 
 # Words in the designed long post: 1000 / 220 wpm is about 4.5 minutes, which rounds up to 5.
 LONG_WORDS = 1000
 
+# Text that each output context must escape its own way. Unescaped, "&" and "<" make the feed
+# malformed XML, and in a mailto: subject "&" ends the subject while a "+" for the space shows
+# as a plus. Its summary differs from its body, so "the summary wins over the excerpt" shows.
+ESCAPING_POST = Post(
+    dt.date(2025, 1, 15),
+    "designed-escaping",
+    "Designed R&D: a < b",
+    (),
+    "Escaping body, R&D: a < b.",
+    "Escaping summary, R&D: a < b.",
+)
+
 # Hand-picked cases, newest first. P2 grows this list; say what each case is for.
 DESIGNED = [
     # Tag sets where AND and OR filtering differ: A only, B only, both.
     Post(dt.date(2025, 3, 1), "designed-alpha", "Designed alpha", ("alpha",)),
     Post(dt.date(2025, 2, 1), "designed-beta", "Designed beta", ("beta",)),
+    ESCAPING_POST,
     Post(dt.date(2025, 1, 1), "designed-alpha-beta", "Designed alpha and beta", ("alpha", "beta")),
     # Reading time: a long body whose minutes round up, against the one-line bodies above.
     # Also the only 2024 post, so the year-grouped archive has more than one year.
