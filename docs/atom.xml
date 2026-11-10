@@ -16,11 +16,18 @@ layout: null
  </author>
 
  {% for post in site.posts %}
+ {% comment %}
+   The summary is the first front-matter summary paragraph, as on the post card, or else
+   the start of the excerpt. Both are HTML fragments, hence type="html".
+ {% endcomment %}
+ {% assign summary = post.summary.first.p %}
+ {% unless summary %}{% assign summary = post.excerpt | strip_html | truncatewords: 50 %}{% endunless %}
  <entry>
    <title>{{ post.title | xml_escape }}</title>
    <link href="{{ site.url }}{{ post.url }}"/>
    <updated>{{ post.date | date_to_xmlschema }}</updated>
    <id>{{ site.url }}{{ site.baseurl }}{{ post.id }}</id>
+   <summary type="html">{{ summary | strip | xml_escape }}</summary>
    <content type="html">{{ post.content | xml_escape }}</content>
  </entry>
  {% endfor %}

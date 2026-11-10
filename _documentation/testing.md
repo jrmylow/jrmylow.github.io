@@ -153,7 +153,11 @@ By area (`_tests/<file>` -> what it guards):
 - `test_essays` — the essays landing (max 5 posts + archive link) and the
   `/essays/all/` archive: one page, every post exactly once under its year,
   years and posts newest first, each entry with a reading time.
-- `test_feed` — `/atom.xml` uses the Atom namespace, the autodiscovery link
+- `test_feed` — `/atom.xml` parses as XML in both builds and uses the Atom
+  namespace; its entries are the published posts, newest first, with their
+  titles and links (the designed build has a title containing `&` and `<`);
+  every entry has a summary, taken from front matter when there is one and
+  otherwise from the first paragraph, cut to 50 words; the autodiscovery link
   declares `application/atom+xml`, and the sidebar links to the feed.
 - `test_reading_time` — the designed long post rounds up to the expected
   minutes on its page and its card; a one-line post shows one minute.
