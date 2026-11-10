@@ -7,7 +7,7 @@
  * its feature. Colours reuse the existing theme variables.
  *
  * Sections:
- *   1. Post navs (related, backlinks, series)
+ *   1. Post footer (reply by email; related, backlinks, series)
  *   2. Sidenotes
  *   3. Command palette
  *   4. Webmentions
@@ -16,9 +16,10 @@
  */
 
 /* ==========================================================================
-   1. Post navs: related / backlinks / series
+   1. Post footer: reply by email / related / backlinks / series
    ========================================================================== */
 
+.reply-by-email,
 .related,
 .backlinks,
 .series {

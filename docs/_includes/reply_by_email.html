@@ -1,0 +1,11 @@
+{% comment %}
+  Reply-by-email link: a mailto: to the site address with the post's title as the subject.
+  Included by post.html, so previews get it too (a preview is shared to get feedback).
+
+  A mailto: URL is read literally (RFC 6068), which neither Liquid URL filter suits alone:
+    - url_encode writes a space as "+", which mail clients show as a plus sign, so each "+"
+      becomes "%20" afterwards (a real plus is already "%2B" by then);
+    - uri_escape leaves "&" alone, and an "&" in a title would end the subject.
+{% endcomment %}
+{% assign reply_subject = "Re: " | append: page.title | url_encode | replace: "+", "%20" %}
+<p class="reply-by-email">Comments or corrections? <a href="mailto:{{ site.author.email }}?subject={{ reply_subject }}">Reply by email</a>.</p>
