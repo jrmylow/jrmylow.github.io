@@ -63,6 +63,19 @@ step up at `em` breakpoints (48em / 64em / 80em); every variant is single-column
 on mobile. Choose a post count divisible by the column number for an even grid.
 Visual detail is in `styling.md`.
 
+## Reply by email
+
+`_includes/reply_by_email.html`, included by `post.html` straight after the
+body. It is one sentence with two links: "email me", a mailto: link to
+`site.author.email` with the subject "Re: " plus the post's title, and
+"elsewhere", which goes to the contact page. It stands in for comments.
+Previews get it too, since a preview is shared to get feedback.
+
+The subject is `url_encode`d and then each `+` is replaced with `%20`. A mailto:
+URL is read literally, so the `+` that `url_encode` writes for a space would
+show as a plus sign; `uri_escape` is no better, because it leaves `&`, which
+would end the subject. Tests in `test_reply_by_email.py`.
+
 ## Reading time
 
 `_includes/reading_time.html` takes rendered `content`, strips the HTML, and
@@ -152,3 +165,4 @@ when social-share link previews matter.
 - allejo/jekyll-toc: <https://github.com/allejo/jekyll-toc>
 - `aria-current`: <https://www.w3.org/TR/wai-aria-1.2/#aria-current>
 - kramdown automatic IDs: <https://kramdown.gettalong.org/converter/html.html#auto-ids>
+- mailto: URLs (RFC 6068): <https://www.rfc-editor.org/rfc/rfc6068>
