@@ -83,6 +83,18 @@ prints words / 220, rounded up, at least one minute ("5 min read"). The post
 header and the post card both use it, so the two always agree. Code blocks and
 maths count as words, so technical posts read slightly long.
 
+## Feed
+
+`atom.xml` is a hand-written Liquid template, not `jekyll-feed`. Every text
+field goes through `xml_escape`: one unescaped `&` in a title makes the whole
+feed malformed, and readers then show nothing.
+
+Each entry carries a `<summary>` as well as the full `<content>`, for readers
+that show a list view. It is the first `summary` paragraph from front matter,
+the same text as the post card, or else the excerpt with its tags stripped and
+cut to 50 words. Both are HTML fragments, so it is `type="html"`. Entries have
+no `<author>` of their own; RFC 4287 has them inherit the feed's.
+
 ## Feed links
 
 Browsers no longer show `<link rel="alternate">` feeds, so the feed is linked
@@ -160,6 +172,7 @@ Graph and Twitter Card tags are **not** currently present — a known gap if and
 when social-share link previews matter.
 
 ## References
+- Atom (RFC 4287): <https://www.rfc-editor.org/rfc/rfc4287>
 - Jekyll pagination: <https://jekyllrb.com/docs/pagination/>
 - Jekyll collections: <https://jekyllrb.com/docs/collections/>
 - allejo/jekyll-toc: <https://github.com/allejo/jekyll-toc>
