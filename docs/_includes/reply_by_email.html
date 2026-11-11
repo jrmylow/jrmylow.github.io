@@ -1,5 +1,6 @@
 {% comment %}
-  Reply-by-email link: a mailto: to the site address with the post's title as the subject.
+  Get-in-touch line: a mailto: to the site address with the post's title as the subject,
+  and a link to the contact page for every other route.
   Included by post.html, so previews get it too (a preview is shared to get feedback).
 
   A mailto: URL is read literally (RFC 6068), which neither Liquid URL filter suits alone:
@@ -8,4 +9,4 @@
     - uri_escape leaves "&" alone, and an "&" in a title would end the subject.
 {% endcomment %}
 {% assign reply_subject = "Re: " | append: page.title | url_encode | replace: "+", "%20" %}
-<p class="reply-by-email">Comments or corrections? <a href="mailto:{{ site.author.email }}?subject={{ reply_subject }}">Reply by email</a>.</p>
+<p class="reply-by-email">I enjoy hearing from readers. Please feel free to <a href="mailto:{{ site.author.email }}?subject={{ reply_subject }}">email me</a> or get in touch <a href="{{ '/contact/' | relative_url }}">elsewhere</a>.</p>

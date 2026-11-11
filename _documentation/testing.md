@@ -159,8 +159,8 @@ By area (`_tests/<file>` -> what it guards):
   minutes on its page and its card; a one-line post shows one minute.
 - `test_reply_by_email` — every post and preview ends with one mailto: link to
   the site address whose subject, percent-decoded, is "Re: " plus the post's
-  title (the designed build has a title with spaces, `&` and `<`); other pages
-  have none.
+  title (the designed build has a title with spaces, `&` and `<`); the line's
+  only other link leads to the contact page; other pages have no such line.
 - `test_search` — sidebar search, the `/search/` page, and `search-index.json`
   shape/contents.
 - `test_details` — the collapsible box includes: Markdown in the summary and

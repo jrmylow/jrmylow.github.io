@@ -66,9 +66,10 @@ Visual detail is in `styling.md`.
 ## Reply by email
 
 `_includes/reply_by_email.html`, included by `post.html` straight after the
-body: a mailto: link to `site.author.email` with the subject "Re: " plus the
-post's title. It stands in for comments. Previews get it too, since a preview
-is shared to get feedback.
+body. It is one sentence with two links: "email me", a mailto: link to
+`site.author.email` with the subject "Re: " plus the post's title, and
+"elsewhere", which goes to the contact page. It stands in for comments.
+Previews get it too, since a preview is shared to get feedback.
 
 The subject is `url_encode`d and then each `+` is replaced with `%20`. A mailto:
 URL is read literally, so the `+` that `url_encode` writes for a space would
