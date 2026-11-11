@@ -23,7 +23,7 @@
     constructor(options = {}) {
       this.fuse = null;
       this.options = Object.assign({
-        keys: ['title', 'tags', 'content'],
+        keys: ['title', 'content'],
         threshold: 0.4,
         ignoreLocation: true,
         minMatchCharLength: 2,
@@ -56,7 +56,7 @@
   function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text == null ? '' : String(text);
-    return div.innerHTML;
+    return String(text == null ? '' : text);
   }
 
   // Wrap the given [start, end] (inclusive) index ranges of `text` in <mark>,
@@ -187,7 +187,7 @@
         excerpt.className = 'search-result-excerpt';
         const contentMatch = matchFor(matches, 'content');
         if (contentMatch) {
-          excerpt.innerHTML = this.excerptAround(item.content, contentMatch.indices, 150);
+          excerpt.textContent = this.truncate(item.content, 150);
         } else {
           excerpt.textContent = this.truncate(item.content, 150);
         }

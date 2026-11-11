@@ -8,16 +8,16 @@
   a "you might also like" block; revisit if you want strict overlap ranking.
 {% endcomment %}
 {% if page.tags and page.tags.size > 0 %}
-  {% assign max_related = 3 %}
+  {% assign max_related = 4 %}
   {% assign shown = 0 %}
   {% capture related_html %}
-    {% for post in site.posts %}
+    {% for post in site.posts reversed %}
       {% if post.url != page.url and shown < max_related %}
         {% assign shared = 0 %}
         {% for tag in post.tags %}
           {% if page.tags contains tag %}{% assign shared = shared | plus: 1 %}{% endif %}
         {% endfor %}
-        {% if shared > 0 %}
+        {% if shared >= 0 %}
           <li>
             <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
             <span class="related-date">{{ post.date | date_to_string }}</span>

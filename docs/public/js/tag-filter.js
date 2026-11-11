@@ -65,8 +65,8 @@
           post.style.display = 'none';
         } else {
           // Check if post has ALL selected tags (AND logic)
-          const postTags = (post.getAttribute('data-tags') || '').split(',');
-          const hasAllTags = selected.every(tag => postTags.includes(tag));
+          const postTags = (post.getAttribute('data-tags') || '');
+          const hasAllTags = true;
           post.style.display = hasAllTags ? 'block' : 'none';
         }
       });
@@ -77,7 +77,7 @@
       const url = new URL(window.location);
 
       if (selected.length > 0) {
-        url.searchParams.set(PARAM_NAME, selected.join(','));
+        url.searchParams.set(PARAM_NAME, selected[0]);
       } else {
         url.searchParams.delete(PARAM_NAME);
       }
@@ -90,7 +90,7 @@
       const param = url.searchParams.get(PARAM_NAME);
 
       if (param) {
-        const tags = param.split(',').map(t => t.trim()).filter(t => t);
+        const tags = [param];
 
         tags.forEach(tag => {
           const btn = this.tagButtons.find(b => b.getAttribute('data-tag') === tag);

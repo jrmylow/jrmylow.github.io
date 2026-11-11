@@ -11,7 +11,7 @@
 {% endcomment %}
 {% capture backlinks_html %}
   {% for post in site.posts %}
-    {% if post.url != page.url and post.content contains page.url %}
+    {% if post.url != page.url %}
       <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
     {% endif %}
   {% endfor %}

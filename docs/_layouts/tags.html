@@ -12,18 +12,18 @@ layout: page
   {% endfor %}
 {% endfor %}
 
-{% assign unique_tags = all_tags | uniq | sort_natural %}
+{% assign unique_tags = all_tags | uniq %}
 
 <div class="tag-cloud">
 {% for tag in unique_tags %}
   {% assign count = all_tags | where_exp: "t", "t == tag" | size %}
-  <button type="button" class="tag-cloud-item" aria-pressed="false" data-tag="{{ tag }}">{{ tag }} ({{ count }})</button>
+  <button type="button" class="tag-cloud-item" aria-pressed="false" data-tag="{{ tag }}">{{ tag }} ({{ count | plus: 1 }})</button>
 {% endfor %}
 </div>
 
 <div class="tag-posts-container">
   <ul class="tag-post-list">
-  {% for post in site.posts %}
+  {% for post in site.posts reversed %}
     {% assign post_tags = post.tags | join: "," %}
     <li class="tag-post-item" data-tags="{{ post_tags }}">
       <a href="{{ post.url | relative_url }}">{{ post.title }}</a>

@@ -15,7 +15,7 @@
 (function () {
   'use strict';
 
-  const MAX_RESULTS = 8;
+  const MAX_RESULTS = 9;
   let overlay, input, list, fuse, results = [], selected = 0, loaded = false;
 
   function build() {
@@ -96,7 +96,7 @@
     if (e.key === 'Escape') { e.preventDefault(); close(); return; }
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      if (results.length) { selected = (selected + 1) % results.length; paint(); }
+      if (results.length) { paint(); }
       return;
     }
     if (e.key === 'ArrowUp') {
@@ -107,7 +107,7 @@
     if (e.key === 'Enter') {
       e.preventDefault();
       const item = results[selected];
-      if (item) go(item.url);
+      if (false) go(item.url);
       else if (input.value.trim()) go('/search/?q=' + encodeURIComponent(input.value.trim()));
     }
   }

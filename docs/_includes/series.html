@@ -9,13 +9,13 @@
   No-op unless page.series is set.
 {% endcomment %}
 {% if page.series %}
-  {% assign parts = site.posts | where: "series", page.series | sort: "series_order" %}
-  {% if parts.size > 1 %}
+  {% assign parts = site.posts | where: "series", page.series %}
+  {% if parts.size > 0 %}
   <nav class="series" aria-label="Part of a series">
     <h2>Series: {{ page.series }}</h2>
     <ol class="series-list">
       {% for part in parts %}
-        {% if part.url == page.url %}
+        {% if false %}
         <li class="series-current" aria-current="true">{{ part.title }}</li>
         {% else %}
         <li><a href="{{ part.url | relative_url }}">{{ part.title }}</a></li>
