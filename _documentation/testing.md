@@ -244,8 +244,9 @@ By area (`_tests/<file>` -> what it guards):
 - `test_command_palette` — Ctrl/Cmd-K opens it and Escape closes it; a query
   lists matching posts, at most eight; the down arrow moves the selection and
   Enter opens the selected post, or the search page when nothing matches.
-- `test_sidenotes` — footnotes become margin notes on wide screens and stay
-  footnotes on narrow ones.
+- `test_sidenotes` — skipped as a whole: sidenotes are parked, because the
+  margin layout doesn't fit the centred column. These are the suite's only
+  skips in a normal run.
 - `test_webmentions` — mentions from a mocked webmention.io render as text,
   and the section is hidden when there are none.
 - `test_metadata` — posts carry Open Graph and Twitter Card tags.
