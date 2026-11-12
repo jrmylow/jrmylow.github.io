@@ -1,23 +1,31 @@
-"""Tests for the command palette (Cmd/Ctrl-K)."""
+"""Tests for the command palette (Cmd/Ctrl-K): a quick jump to a post by title or tag.
 
+Result expectations are the designed corpus's cases (corpus.py).
+"""
+
+import urllib.parse
+
+import corpus
 from playwright.sync_api import Page, expect
 
+MAX_RESULTS = 8
+IN_EVERY_TITLE = "designed"
+TAG_ONLY = "quokka"  # a tag of UNSHARED_TAGS, in no title
+NO_MATCH = "xyznonexistent123456"
 
-def _first_title_word(page: Page, jekyll_server: str) -> str:
-    """A real query term drawn from the live index, so results are deterministic."""
-    page.goto(f"{jekyll_server}/search-index.json")
-    return page.evaluate(
-        """() => {
-            const data = JSON.parse(document.body.innerText);
-            const title = (data[0] && data[0].title) || '';
-            return (title.split(/\\s+/).find(w => w.length >= 3) || '').toLowerCase();
-        }"""
-    )
+
+def _open_and_type(page: Page, site, query: str) -> None:
+    page.goto(site.url)
+    page.keyboard.press("Control+k")
+    page.locator(".command-palette-input").fill(query)
+
+
+def _selected(page: Page) -> list[str]:
+    """Titles of the results marked as selected; there should be exactly one."""
+    return page.locator(".command-palette-results li[aria-selected='true']").all_inner_texts()
 
 
 class TestCommandPalette:
-    """The palette opens on shortcut, searches the index, and navigates."""
-
     def test_shortcut_opens_palette(self, page: Page, jekyll_server: str):
         """Ctrl/Cmd-K opens the overlay and focuses the input."""
         page.goto(jekyll_server)
@@ -35,34 +43,39 @@ class TestCommandPalette:
         page.keyboard.press("Escape")
         expect(page.locator(".command-palette")).to_be_hidden()
 
-    def test_query_renders_results(self, page: Page, jekyll_server: str):
-        """Typing a real term shows at least one result."""
-        word = _first_title_word(page, jekyll_server)
-        if not word:
-            import pytest
+    def test_query_lists_the_matching_post_and_enter_opens_it(self, page: Page, designed_site):
+        post = corpus.UNSHARED_TAGS
+        _open_and_type(page, designed_site, TAG_ONLY)
+        expect(page.locator(".command-palette-result")).to_have_text([post.title])
+        assert _selected(page) == [post.title], "the first result starts selected"
 
-            pytest.skip("no indexable post titles")
+        with page.expect_navigation():
+            page.keyboard.press("Enter")
+        assert page.url == designed_site.page_url(post.filename)
 
-        page.goto(jekyll_server)
-        page.keyboard.press("Control+k")
-        page.locator(".command-palette-input").fill(word)
+    def test_results_stop_at_eight(self, page: Page, designed_site):
+        assert len(corpus.DESIGNED) > MAX_RESULTS, "this case needs more matching posts than the palette shows"
+        _open_and_type(page, designed_site, IN_EVERY_TITLE)
+        expect(page.locator(".command-palette-result")).to_have_count(MAX_RESULTS)
 
-        expect(page.locator(".command-palette-results li").first).to_be_visible()
+    def test_down_arrow_selects_the_next_result_and_enter_opens_it(self, page: Page, designed_site):
+        _open_and_type(page, designed_site, IN_EVERY_TITLE)
+        results = page.locator(".command-palette-result")
+        expect(results).to_have_count(MAX_RESULTS)
+        titles = results.all_inner_texts()
+        second = results.nth(1).get_attribute("href")
+        assert _selected(page) == [titles[0]]
 
-    def test_enter_navigates_away_from_home(self, page: Page, jekyll_server: str):
-        """Enter on a selected result navigates to it."""
-        word = _first_title_word(page, jekyll_server)
-        if not word:
-            import pytest
+        page.keyboard.press("ArrowDown")
+        assert _selected(page) == [titles[1]]
 
-            pytest.skip("no indexable post titles")
+        with page.expect_navigation():
+            page.keyboard.press("Enter")
+        assert urllib.parse.urlsplit(page.url).path == second
 
-        page.goto(jekyll_server)
-        home = page.url
-        page.keyboard.press("Control+k")
-        palette_input = page.locator(".command-palette-input")
-        palette_input.fill(word)
-        expect(page.locator(".command-palette-results li").first).to_be_visible()
-        palette_input.press("Enter")
-
-        expect(page).not_to_have_url(home)
+    def test_enter_with_no_match_opens_the_search_page_for_the_query(self, page: Page, designed_site):
+        _open_and_type(page, designed_site, NO_MATCH)
+        with page.expect_navigation():
+            page.keyboard.press("Enter")
+        assert urllib.parse.urlsplit(page.url).path == "/search/"
+        assert urllib.parse.parse_qs(urllib.parse.urlsplit(page.url).query) == {"q": [NO_MATCH]}
