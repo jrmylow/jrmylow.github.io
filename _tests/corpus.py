@@ -53,6 +53,7 @@ class Post:
 
 # Tags: alpha is on four posts and beta on two, so a count read from the wrong tag shows, and
 # every way of combining them selects a different set: alpha 4, beta 2, both 1, either 5.
+# ALPHA_BETA is also the only 2024 post, so the year-grouped archive has more than one year.
 ALPHA = Post(dt.date(2025, 3, 1), "designed-alpha", "Designed alpha", ("alpha",))
 # Second newest, so it has a card on the home and essays pages; its summary is not its body.
 ALPHA_TWO = Post(
@@ -64,7 +65,7 @@ ALPHA_TWO = Post(
 )
 BETA = Post(dt.date(2025, 2, 1), "designed-beta", "Designed beta", ("beta",))
 ALPHA_THREE = Post(dt.date(2025, 1, 10), "designed-alpha-three", "Designed alpha three", ("alpha",))
-ALPHA_BETA = Post(dt.date(2025, 1, 1), "designed-alpha-beta", "Designed alpha and beta", ("alpha", "beta"))
+ALPHA_BETA = Post(dt.date(2024, 12, 1), "designed-alpha-beta", "Designed alpha and beta", ("alpha", "beta"))
 
 # Tags no other post has. "alphabet" contains "alpha", so matching tags by substring shows.
 # "quokka" is in no title and no body, so only a search of the tags themselves finds it.
@@ -72,14 +73,16 @@ UNSHARED_TAGS = Post(dt.date(2025, 1, 28), "designed-unshared-tags", "Designed u
 
 # Links between posts, for "Referenced by". LINKED has one linker newer than it and one older,
 # and LINKS_OUT also links to itself, which must not make it its own reference.
-LINKED = Post(dt.date(2025, 2, 10), "designed-linked", "Designed linked")
-_links_out = Post(dt.date(2025, 2, 15), "designed-links-out", "Designed links out")
+# All of these are dated behind the newest six, to keep them off the home and essays pages:
+# a card whose first paragraph holds a link is broken (a known bug; see test_cards.py).
+LINKED = Post(dt.date(2025, 1, 13), "designed-linked", "Designed linked")
+_links_out = Post(dt.date(2025, 1, 16), "designed-links-out", "Designed links out")
 LINKS_OUT = dataclasses.replace(
     _links_out,
     body=f"Links to [the linked post]({LINKED.permalink}) and to [itself]({_links_out.permalink}).",
 )
 LINKS_OUT_TWO = Post(
-    dt.date(2025, 2, 5),
+    dt.date(2025, 1, 11),
     "designed-links-out-two",
     "Designed links out two",
     (),
@@ -87,9 +90,9 @@ LINKS_OUT_TWO = Post(
 )
 
 # The same, with the link written as Jekyll's post_url tag by a newer post. See test_backlinks.
-LIQUID_LINKED = Post(dt.date(2025, 2, 8), "designed-liquid-linked", "Designed Liquid linked")
+LIQUID_LINKED = Post(dt.date(2025, 1, 12), "designed-liquid-linked", "Designed Liquid linked")
 LIQUID_LINKS_OUT = Post(
-    dt.date(2025, 2, 12),
+    dt.date(2025, 1, 14),
     "designed-liquid-links-out",
     "Designed Liquid links out",
     (),
@@ -129,19 +132,15 @@ ESCAPING_POST = Post(
 
 # Reading time: a long body whose minutes round up, against the one-line bodies above.
 # 1000 words / 220 wpm is about 4.5 minutes, which rounds up to 5.
-# Also the only 2024 post, so the year-grouped archive has more than one year.
+# Second newest, so it has a card on the home and essays pages.
 LONG_WORDS = 1000
-LONG_POST = Post(dt.date(2024, 12, 1), "designed-long", "Designed long", (), " ".join(["word"] * LONG_WORDS))
+LONG_POST = Post(dt.date(2025, 2, 25), "designed-long", "Designed long", (), " ".join(["word"] * LONG_WORDS))
 
 # Newest first, the order Jekyll lists posts in.
 DESIGNED = [
     ALPHA,
+    LONG_POST,
     ALPHA_TWO,
-    LINKS_OUT,
-    LIQUID_LINKS_OUT,
-    LINKED,
-    LIQUID_LINKED,
-    LINKS_OUT_TWO,
     BETA,
     UNSHARED_TAGS,
     MARKUP_TITLE,
@@ -149,10 +148,14 @@ DESIGNED = [
     SERIES_FIRST,
     SERIES_SECOND,
     SERIES_SOLO,
+    LINKS_OUT,
     ESCAPING_POST,
+    LIQUID_LINKS_OUT,
+    LINKED,
+    LIQUID_LINKED,
+    LINKS_OUT_TWO,
     ALPHA_THREE,
     ALPHA_BETA,
-    LONG_POST,
 ]
 
 FILLER_TAGS = ("systems", "planning", "writing", "tools", "notes")

@@ -10,6 +10,7 @@ TOGGLE_ICON_OPEN_COLOR = "rgb(255, 255, 255)"
 
 # Written into each session's build so tests can confirm which server they hit
 BUILD_TOKEN_FILE = "__test_build_token__.txt"
+ALL_CARDS_PAGE = "test-cards.html"  # designed build only: every post's card on one page
 
 # =============================================================================
 # Performance Test Constants

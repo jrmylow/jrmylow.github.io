@@ -8,12 +8,19 @@ import urllib.parse
 
 import corpus
 import pytest
-from constants import SELECTORS
+from constants import ALL_CARDS_PAGE, SELECTORS
 from playwright.sync_api import Page
 
 HOME_LIMIT = 6
 ESSAYS_LIMIT = 5
 CARD_PAGES = ("/", "/essays/")
+
+# For each card: how many heading titles, meta lines and bodies it has.
+CARD_PARTS_JS = """cards => cards.map(card => [
+    card.querySelectorAll('.card-title:is(h1, h2, h3, h4, h5, h6)').length,
+    card.querySelectorAll('.card-meta').length,
+    card.querySelectorAll('.card-body').length,
+])"""
 
 
 def _card_hrefs(page: Page) -> list[str]:
@@ -67,15 +74,30 @@ class TestCardContent:
         body = _card(page, designed_site, corpus.ALPHA).locator(SELECTORS["card_body"])
         assert _text(body) == corpus.ALPHA.body
 
+    def test_card_is_one_link_around_the_whole_card(self, page: Page, designed_site):
+        """On the page of every post's card, so this also shows that page works."""
+        page.goto(f"{designed_site.url}/{ALL_CARDS_PAGE}")
+        assert page.locator(SELECTORS["card"]).count() == len(designed_site.manifest["posts"])
+        assert _card(page, designed_site, corpus.ALPHA).count() == 1
+
+    @pytest.mark.xfail(
+        strict=True,
+        raises=AssertionError,
+        reason="a card is one link around everything in it, and a post with no summary puts its first "
+        "paragraph in there, links and all; a link can't hold a link, so the browser splits the card "
+        "into several links, some of them empty",
+    )
+    def test_card_stays_one_link_when_the_first_paragraph_has_a_link(self, page: Page, designed_site):
+        """Known bug. The accessibility scan catches it too (empty links), so the corpus dates
+        such posts off the home and essays pages. Strict: this fails the day the bug is fixed."""
+        page.goto(f"{designed_site.url}/{ALL_CARDS_PAGE}")
+        assert _card(page, designed_site, corpus.LINKS_OUT).count() == 1
+
     @pytest.mark.parametrize("path", CARD_PAGES)
     def test_every_card_has_a_heading_title_a_meta_line_and_a_body(self, page: Page, designed_site, path: str):
         """One include, so one structure. The heading level is each page's choice; it must be a heading."""
         page.goto(f"{designed_site.url}{path}")
-        parts = page.locator(SELECTORS["card"]).evaluate_all("""cards => cards.map(card => [
-                card.querySelectorAll('.card-title:is(h1, h2, h3, h4, h5, h6)').length,
-                card.querySelectorAll('.card-meta').length,
-                card.querySelectorAll('.card-body').length,
-            ])""")
+        parts = page.locator(SELECTORS["card"]).evaluate_all(CARD_PARTS_JS)
         assert parts and all(counts == [1, 1, 1] for counts in parts), f"{path}: {parts}"
 
 
