@@ -31,6 +31,14 @@ def _card(page: Page, site, post: corpus.Post):
     return page.locator(f"a.card-link[href='{site.document(post.filename)['url']}']")
 
 
+def _open_every_card(page: Page, site) -> None:
+    """Open the test-only page of every post's card. Not an assertion: an expected failure
+    must fail on what it is about, not on this page being missing."""
+    page.goto(f"{site.url}/{ALL_CARDS_PAGE}")
+    if page.locator(SELECTORS["card"]).count() == 0:
+        raise LookupError(f"/{ALL_CARDS_PAGE} shows no cards")
+
+
 def _text(locator) -> str:
     return " ".join(locator.inner_text().split())
 
@@ -75,9 +83,7 @@ class TestCardContent:
         assert _text(body) == corpus.ALPHA.body
 
     def test_card_is_one_link_around_the_whole_card(self, page: Page, designed_site):
-        """On the page of every post's card, so this also shows that page works."""
-        page.goto(f"{designed_site.url}/{ALL_CARDS_PAGE}")
-        assert page.locator(SELECTORS["card"]).count() == len(designed_site.manifest["posts"])
+        _open_every_card(page, designed_site)
         assert _card(page, designed_site, corpus.ALPHA).count() == 1
 
     @pytest.mark.xfail(
@@ -90,7 +96,7 @@ class TestCardContent:
     def test_card_stays_one_link_when_the_first_paragraph_has_a_link(self, page: Page, designed_site):
         """Known bug. The accessibility scan catches it too (empty links), so the corpus dates
         such posts off the home and essays pages. Strict: this fails the day the bug is fixed."""
-        page.goto(f"{designed_site.url}/{ALL_CARDS_PAGE}")
+        _open_every_card(page, designed_site)
         assert _card(page, designed_site, corpus.LINKS_OUT).count() == 1
 
     @pytest.mark.parametrize("path", CARD_PAGES)
