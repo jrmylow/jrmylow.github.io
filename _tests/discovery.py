@@ -96,34 +96,6 @@ def post_urls() -> list[str]:
     return [u for p in post_paths() if (u := url_for(p))]
 
 
-def post_tags() -> list[str]:
-    """Sorted, de-duplicated tags declared across published posts.
-
-    Scoped to _posts because the tag cloud and search index are built from
-    site.posts; previews are excluded from both.
-    """
-    seen = set()
-    for p in post_paths():
-        tags = _front_matter(p).get("tags") or []
-        if isinstance(tags, str):
-            tags = [tags]
-        seen.update(t.strip() for t in tags if isinstance(t, str) and t.strip())
-    return sorted(seen)
-
-
-def preview_urls() -> list[str]:
-    return [u for p in preview_paths() if (u := url_for(p))]
-
-
-def tagged_post_urls() -> list[str]:
-    """Posts and previews whose front matter declares at least one tag."""
-    out = []
-    for p in post_paths() + preview_paths():
-        if _front_matter(p).get("tags") and (u := url_for(p)):
-            out.append(u)
-    return out
-
-
 def params(urls: list[str], label: str):
     """Parametrize values, or a single skip marker when the source folder is
     empty, so missing content skips cleanly instead of erroring at collection."""

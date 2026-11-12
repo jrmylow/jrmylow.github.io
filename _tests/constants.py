@@ -60,7 +60,5 @@ SELECTORS = {
     "card_body": ".card-body",
     "view_all_link": ".view-all-link a",
     "pagination": ".pagination",
-    "search_container": ".search-container",
     "search_input": ".search-input",
-    "search_results": ".search-results",
 }

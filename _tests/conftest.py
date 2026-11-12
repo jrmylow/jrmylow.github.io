@@ -60,15 +60,6 @@ def any_post_url() -> str:
     return urls[0]
 
 
-@pytest.fixture
-def any_post_tag() -> str:
-    """A tag declared by some published post; skips if none exist."""
-    tags = discovery.post_tags()
-    if not tags:
-        pytest.skip("no post tags found in source tree")
-    return tags[0]
-
-
 @pytest.fixture(scope="session")
 def real_site(tmp_path_factory):
     """The site built from docs/ as-is (production content), served for the session.
