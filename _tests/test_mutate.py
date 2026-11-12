@@ -1,6 +1,5 @@
 """mutate.py: the check that each known bug in mutations.py fails the tests named for it."""
 
-import textwrap
 from pathlib import Path
 
 import mutate
@@ -8,6 +7,19 @@ import pytest
 from mutations import MUTATIONS
 
 REPO = Path(__file__).resolve().parent.parent
+
+# The tiny repo's tests: one that checks the function, and one that never runs.
+THING_TESTS = """
+import pytest
+from thing import double
+
+def test_double():
+    assert double(3) == 6
+
+@pytest.mark.skip(reason="always")
+def test_skipped():
+    assert double(3) == 0
+"""
 
 
 def _mutation(old: str, new: str, tests: tuple[str, ...] = ("test_thing.py",)) -> mutate.Mutation:
@@ -18,17 +30,7 @@ def _mutation(old: str, new: str, tests: tuple[str, ...] = ("test_thing.py",)) -
 def tiny_repo(tmp_path) -> Path:
     """A repo of one function and one test of it, with a comment the test cannot see."""
     (tmp_path / "thing.py").write_text("def double(n):\n    return n * 2  # twice n\n")
-    (tmp_path / "test_thing.py").write_text(textwrap.dedent("""
-            import pytest
-            from thing import double
-
-            def test_double():
-                assert double(3) == 6
-
-            @pytest.mark.skip(reason="always")
-            def test_skipped():
-                assert double(3) == 0
-            """))
+    (tmp_path / "test_thing.py").write_text(THING_TESTS)
     return tmp_path
 
 
