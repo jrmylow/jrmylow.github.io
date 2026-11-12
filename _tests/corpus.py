@@ -8,9 +8,9 @@ Filler is for scale runs (`--scale-posts=N`): generated posts, all dated before 
 designed cases, so newest-first pages (home, /essays/) still show the designed cases.
 """
 
+import dataclasses
 import datetime as dt
 import shutil
-from dataclasses import dataclass
 from pathlib import Path
 
 import yaml
@@ -18,7 +18,7 @@ import yaml
 FIXTURE_PREVIEWS = Path(__file__).resolve().parent / "fixtures" / "_previews"
 
 
-@dataclass(frozen=True)
+@dataclasses.dataclass(frozen=True)
 class Post:
     date: dt.date
     slug: str
@@ -26,20 +26,94 @@ class Post:
     tags: tuple[str, ...] = ()
     body: str = "A designed post."
     summary: str | None = None  # front-matter summary; None leaves cards and the feed to the excerpt
+    series: str | None = None
+    series_order: int | None = None
 
     @property
     def filename(self) -> str:
         return f"{self.date.isoformat()}-{self.slug}.md"
 
+    @property
+    def permalink(self) -> str:
+        """The URL an author would type to link here. Tests take URLs from the build's manifest."""
+        return f"/{self.date:%Y/%m/%d}/{self.slug}/"
+
     def render(self) -> str:
         front = {"layout": "post", "title": self.title, "date": self.date, "tags": list(self.tags)}
         if self.summary is not None:
             front["summary"] = [{"p": self.summary}]
+        if self.series is not None:
+            front["series"] = self.series
+            front["series_order"] = self.series_order
         return f"---\n{yaml.safe_dump(front, sort_keys=False, allow_unicode=True)}---\n\n{self.body}\n"
 
 
-# Words in the designed long post: 1000 / 220 wpm is about 4.5 minutes, which rounds up to 5.
-LONG_WORDS = 1000
+# Each case below is named for the one thing it is there to show. Dates are spread so that
+# "newest first" is a different order from the order the cases are listed in any other way.
+
+# Tags: alpha is on four posts and beta on two, so a count read from the wrong tag shows, and
+# every way of combining them selects a different set: alpha 4, beta 2, both 1, either 5.
+ALPHA = Post(dt.date(2025, 3, 1), "designed-alpha", "Designed alpha", ("alpha",))
+# Second newest, so it has a card on the home and essays pages; its summary is not its body.
+ALPHA_TWO = Post(
+    dt.date(2025, 2, 20),
+    "designed-alpha-two",
+    "Designed alpha two",
+    ("alpha",),
+    summary="The summary of alpha two, which its body does not contain.",
+)
+BETA = Post(dt.date(2025, 2, 1), "designed-beta", "Designed beta", ("beta",))
+ALPHA_THREE = Post(dt.date(2025, 1, 10), "designed-alpha-three", "Designed alpha three", ("alpha",))
+ALPHA_BETA = Post(dt.date(2025, 1, 1), "designed-alpha-beta", "Designed alpha and beta", ("alpha", "beta"))
+
+# Tags no other post has. "alphabet" contains "alpha", so matching tags by substring shows.
+# "quokka" is in no title and no body, so only a search of the tags themselves finds it.
+UNSHARED_TAGS = Post(dt.date(2025, 1, 28), "designed-unshared-tags", "Designed unshared tags", ("alphabet", "quokka"))
+
+# Links between posts, for "Referenced by". LINKED has one linker newer than it and one older,
+# and LINKS_OUT also links to itself, which must not make it its own reference.
+LINKED = Post(dt.date(2025, 2, 10), "designed-linked", "Designed linked")
+_links_out = Post(dt.date(2025, 2, 15), "designed-links-out", "Designed links out")
+LINKS_OUT = dataclasses.replace(
+    _links_out,
+    body=f"Links to [the linked post]({LINKED.permalink}) and to [itself]({_links_out.permalink}).",
+)
+LINKS_OUT_TWO = Post(
+    dt.date(2025, 2, 5),
+    "designed-links-out-two",
+    "Designed links out two",
+    (),
+    f"Also links to [the linked post]({LINKED.permalink}).",
+)
+
+# The same, with the link written as Jekyll's post_url tag by a newer post. See test_backlinks.
+LIQUID_LINKED = Post(dt.date(2025, 2, 8), "designed-liquid-linked", "Designed Liquid linked")
+LIQUID_LINKS_OUT = Post(
+    dt.date(2025, 2, 12),
+    "designed-liquid-links-out",
+    "Designed Liquid links out",
+    (),
+    f"Links to [the Liquid-linked post]({{% post_url {LIQUID_LINKED.filename.removesuffix('.md')} %}}).",
+)
+
+# A series whose order is neither date order: by date the parts run second, first, third.
+SERIES = "Designed series"
+SERIES_THIRD = Post(
+    dt.date(2025, 1, 22), "designed-series-third", "Designed series third", series=SERIES, series_order=3
+)
+SERIES_FIRST = Post(
+    dt.date(2025, 1, 21), "designed-series-first", "Designed series first", series=SERIES, series_order=1
+)
+SERIES_SECOND = Post(
+    dt.date(2025, 1, 20), "designed-series-second", "Designed series second", series=SERIES, series_order=2
+)
+# A series of one, which gets no series navigation.
+SERIES_SOLO = Post(
+    dt.date(2025, 1, 18), "designed-series-solo", "Designed series solo", series="Designed solo series", series_order=1
+)
+
+# A title holding markup. Search results must show it as text, never as an element.
+MARKUP_TITLE = Post(dt.date(2025, 1, 25), "designed-markup-title", "Designed <i>markup</i> title")
 
 # Text that each output context must escape its own way. Unescaped, "&" and "<" make the feed
 # malformed XML, and in a mailto: subject "&" ends the subject while a "+" for the space shows
@@ -53,18 +127,33 @@ ESCAPING_POST = Post(
     "Escaping summary, R&D: a < b.",
 )
 
-# Hand-picked cases, newest first. P2 grows this list; say what each case is for.
+# Reading time: a long body whose minutes round up, against the one-line bodies above.
+# 1000 words / 220 wpm is about 4.5 minutes, which rounds up to 5.
+# Also the only 2024 post, so the year-grouped archive has more than one year.
+LONG_WORDS = 1000
+LONG_POST = Post(dt.date(2024, 12, 1), "designed-long", "Designed long", (), " ".join(["word"] * LONG_WORDS))
+
+# Newest first, the order Jekyll lists posts in.
 DESIGNED = [
-    # Tag sets where AND and OR filtering differ: A only, B only, both.
-    Post(dt.date(2025, 3, 1), "designed-alpha", "Designed alpha", ("alpha",)),
-    Post(dt.date(2025, 2, 1), "designed-beta", "Designed beta", ("beta",)),
+    ALPHA,
+    ALPHA_TWO,
+    LINKS_OUT,
+    LIQUID_LINKS_OUT,
+    LINKED,
+    LIQUID_LINKED,
+    LINKS_OUT_TWO,
+    BETA,
+    UNSHARED_TAGS,
+    MARKUP_TITLE,
+    SERIES_THIRD,
+    SERIES_FIRST,
+    SERIES_SECOND,
+    SERIES_SOLO,
     ESCAPING_POST,
-    Post(dt.date(2025, 1, 1), "designed-alpha-beta", "Designed alpha and beta", ("alpha", "beta")),
-    # Reading time: a long body whose minutes round up, against the one-line bodies above.
-    # Also the only 2024 post, so the year-grouped archive has more than one year.
-    Post(dt.date(2024, 12, 1), "designed-long", "Designed long", (), " ".join(["word"] * LONG_WORDS)),
+    ALPHA_THREE,
+    ALPHA_BETA,
+    LONG_POST,
 ]
-LONG_POST = DESIGNED[-1]
 
 FILLER_TAGS = ("systems", "planning", "writing", "tools", "notes")
 FILLER_WORDS = 300

@@ -56,6 +56,10 @@ class Site:
                 return entry
         raise LookupError(f"{filename} is not in {self.url}/{MANIFEST}: Jekyll didn't build it")
 
+    def page_url(self, filename: str) -> str:
+        """The full address of a post or preview, by source file name."""
+        return f"{self.url}{self.document(filename)['url']}"
+
 
 def _answers(url: str) -> bool:
     """True if something responds at url."""
