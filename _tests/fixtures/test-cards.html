@@ -1,0 +1,18 @@
+---
+layout: null
+permalink: /test-cards.html
+---
+{% comment %}
+  Test-only page, injected into the designed build by _tests/sites.py and never
+  published. It shows every post's card, so a test can look at the card of any
+  post, not only the newest few that the home and essays pages show.
+{% endcomment %}
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Every post's card</title></head>
+<body>
+{% for post in site.posts %}
+  {% include post_card.html post=post %}
+{% endfor %}
+</body>
+</html>

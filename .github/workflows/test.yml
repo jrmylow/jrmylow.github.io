@@ -31,3 +31,5 @@ jobs:
         run: make sync IT=
       - name: Run the suite sealed offline
         run: make test IT=
+      - name: Check the suite catches known bugs
+        run: make mutate IT=

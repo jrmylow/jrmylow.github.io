@@ -31,7 +31,7 @@ from pathlib import Path
 
 import corpus
 import pytest
-from constants import BUILD_TOKEN_FILE
+from constants import ALL_CARDS_PAGE, BUILD_TOKEN_FILE
 
 TESTS = Path(__file__).resolve().parent
 REPO = TESTS.parent
@@ -55,6 +55,10 @@ class Site:
             if Path(entry["path"]).name == filename:
                 return entry
         raise LookupError(f"{filename} is not in {self.url}/{MANIFEST}: Jekyll didn't build it")
+
+    def page_url(self, filename: str) -> str:
+        """The full address of a post or preview, by source file name."""
+        return f"{self.url}{self.document(filename)['url']}"
 
 
 def _answers(url: str) -> bool:
@@ -86,9 +90,11 @@ def real_source(dest: Path) -> Path:
 
 
 def designed_source(dest: Path, total_posts: int | None = None) -> Path:
-    """docs/ layouts and pages with corpus.py's posts and previews, plus the test manifest."""
+    """docs/ layouts and pages with corpus.py's posts and previews, plus the test manifest
+    and a page showing every post's card."""
     src = _copy_docs(dest, with_content=False)
     corpus.write(src, total_posts)
+    shutil.copy(TESTS / "fixtures" / ALL_CARDS_PAGE, src / ALL_CARDS_PAGE)
     return src
 
 

@@ -1,6 +1,7 @@
 """Tests for the essays landing page and the year-grouped archive."""
 
 import itertools
+import urllib.parse
 
 import pytest
 from constants import SELECTORS
@@ -30,42 +31,19 @@ def _expected_by_year(site) -> list[tuple[str, list[str]]]:
 
 
 class TestEssaysLandingPage:
-    """Tests for the essays landing page (/essays/)."""
+    """The essays landing page (/essays/). Which posts it shows is in test_cards.py."""
 
-    def test_essays_landing_loads(self, page: Page, jekyll_server: str):
-        """Essays landing page should load successfully."""
-        response = page.goto(f"{jekyll_server}/essays/")
-        assert response.status == 200, "Essays page should return 200"
-
-    def test_essays_landing_has_card_grid(self, page: Page, jekyll_server: str):
-        """Essays landing should display recent posts in card grid."""
+    def test_view_all_link_goes_to_the_archive(self, page: Page, jekyll_server: str):
         page.goto(f"{jekyll_server}/essays/")
+        with page.expect_navigation():
+            page.locator(SELECTORS["view_all_link"]).click()
+        assert urllib.parse.urlsplit(page.url).path == ARCHIVE
 
-        card_grid = page.locator(SELECTORS["card_grid"])
-        assert card_grid.count() >= 1, "Essays page should have a card grid"
-
-    def test_essays_landing_shows_limited_posts(self, page: Page, jekyll_server: str):
-        """Essays landing should show max 5 recent posts."""
-        page.goto(f"{jekyll_server}/essays/")
-
-        cards = page.locator(f"{SELECTORS['card_grid']} {SELECTORS['card']}")
-        assert cards.count() <= 5, "Landing should show max 5 posts"
-
-    def test_essays_landing_has_archive_link(self, page: Page, jekyll_server: str):
-        """Essays landing should link to full archive."""
-        page.goto(f"{jekyll_server}/essays/")
-
-        archive_link = page.locator("a[href='/essays/all/']")
-        assert archive_link.count() >= 1, "Should have link to /essays/all/"
-
-    def test_essays_in_sidebar(self, page: Page, jekyll_server: str):
-        """Essays should appear in sidebar navigation."""
+    def test_essays_is_in_the_sidebar_once(self, page: Page, jekyll_server: str):
         page.goto(f"{jekyll_server}/")
-
         page.locator(".sidebar-toggle").click()
-
-        essays_link = page.locator(".sidebar-nav-item", has_text="Essays")
-        assert essays_link.count() >= 1, "Essays should appear in sidebar"
+        link = page.locator(".sidebar-nav-item", has_text="Essays")
+        assert link.evaluate_all("els => els.map(a => a.getAttribute('href'))") == ["/essays/"]
 
     def test_essays_landing_shows_intro_prose(self, page: Page, jekyll_server: str):
         """Essays landing should render the Markdown body (Lamport quote)."""
@@ -77,13 +55,11 @@ class TestEssaysLandingPage:
 class TestEssaysArchive:
     """/essays/all/ is one page listing every post under its year, newest first."""
 
-    def test_archive_loads(self, page: Page, jekyll_server: str):
-        response = page.goto(f"{jekyll_server}{ARCHIVE}")
-        assert response.status == 200, "Archive should return 200"
-
-    def test_archive_has_back_link(self, page: Page, jekyll_server: str):
+    def test_back_link_goes_to_the_essays_page(self, page: Page, jekyll_server: str):
         page.goto(f"{jekyll_server}{ARCHIVE}")
-        assert page.locator("a[href='/essays/']").count() >= 1, "Should have back link"
+        with page.expect_navigation():
+            page.get_by_role("link", name="Back to Essays").click()
+        assert urllib.parse.urlsplit(page.url).path == "/essays/"
 
     def test_posts_are_grouped_by_year_newest_first(self, page: Page, designed_site):
         """Runs at any --scale-posts: every post appears once, on one page, under its own year."""

@@ -9,6 +9,7 @@
 #   make preview  like serve, but also renders _drafts (local WIP preview)
 #   make sync     re-sync the venv volume from uv.lock (networked)
 #   make test     run the pytest/Playwright suite sealed offline
+#   make mutate   check the suite catches the known bugs in _tests/mutations.py
 #
 # `make test IT=` disables the TTY flags for CI (no terminal attached).
 
@@ -18,7 +19,7 @@ MOUNTS := -v $(CURDIR):/app -v $(VENV):/opt/venv
 IT     := -it
 ARGS   :=
 
-.PHONY: build shell serve preview sync test
+.PHONY: build shell serve preview sync test mutate
 
 build:
 	podman build -t $(IMAGE) .
@@ -44,3 +45,8 @@ sync:
 #   make test     run the pytest/Playwright suite sealed offline (ARGS="..." passes flags to pytest)
 test:
 	podman run --rm $(IT) --network=none $(MOUNTS) $(IMAGE) uv run pytest $(ARGS)
+
+#   make mutate   apply each known bug to a copy of the repo and expect its tests to fail
+#                 (ARGS="tag" runs the mutations whose name contains "tag")
+mutate:
+	podman run --rm $(IT) --network=none $(MOUNTS) $(IMAGE) uv run python _tests/mutate.py $(ARGS)

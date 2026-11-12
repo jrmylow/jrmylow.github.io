@@ -63,6 +63,30 @@ step up at `em` breakpoints (48em / 64em / 80em); every variant is single-column
 on mobile. Choose a post count divisible by the column number for an even grid.
 Visual detail is in `styling.md`.
 
+## Post blocks: series, references, related
+
+Three includes add navigation to a post when it has something to show; each
+renders nothing otherwise. All three read `site.posts`, so previews never
+appear in them.
+
+- **Series** (`series.html`, above the body). Posts with the same `series:`
+  front matter, sorted by `series_order`. The part being read is marked with
+  `aria-current` and is not a link. A series of one gets no block.
+- **Referenced by** (`backlinks.html`, after the body). The other posts whose
+  content contains this post's URL, newest first. A post's link to itself
+  doesn't count.
+- **Related** (`related.html`, after the post). Up to three other posts sharing
+  at least one tag, newest first.
+
+Write links between posts as plain URLs, `[text](/2026/06/20/building/)`, not
+`{% post_url %}`. "Referenced by" searches other posts' content for this
+post's URL, and Jekyll renders posts oldest first: while an older post is being
+rendered, a newer post's `{% post_url %}` is still an unexpanded tag, so that
+link is missed. `test_backlinks.py` records this as an expected failure.
+
+Tests in `test_series.py`, `test_backlinks.py` and `test_related.py`, on the
+designed build's cases.
+
 ## Reply by email
 
 `_includes/reply_by_email.html`, included by `post.html` straight after the

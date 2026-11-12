@@ -1,6 +1,6 @@
 # Styling and Theming
 
-The CSS architecture, the light/dark theming mechanism, the no-flash fix, and the consolidation decisions. Page structure is in `page_layout.md`.
+The CSS architecture, the light/dark theming mechanism, the no-flash fix, and the consolidation decisions. Page structure is in `page.md`.
 
 ## Stylesheets and load order
 

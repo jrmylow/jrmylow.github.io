@@ -13,6 +13,23 @@ been through several CSS and template consolidations, and behavioural tests stay
 green across refactors that would break tests coupled to selectors-as-structure
 or to specific markup.
 
+A test earns its place by failing when the behaviour breaks. Three habits keep
+that true:
+
+- **State the answer.** Assert the exact list, text or count, not "at least
+  one" or "not empty". `count() >= 1` passes on the wrong posts.
+- **Design the case.** Put content on both sides of each boundary, and make the
+  sides unequal. With alpha on four posts and beta on two, of which one has
+  both, "all selected tags", "any selected tag" and "no filter at all" each
+  show a different number of posts. With two posts and one tag each, they
+  don't.
+- **No guards.** A test that skips or passes when its content is missing is not
+  testing. If the real site has no post with a series, the series test belongs
+  on the designed build, which does.
+
+`make mutate` (below) checks the result: it breaks the site in known ways and
+expects the suite to notice.
+
 ## Stack and layout
 
 `uv` + `pytest` + `pytest-playwright`. Tests live in `_tests/`.
@@ -22,9 +39,13 @@ or to specific markup.
   use. The autouse `http_errors` fixture fails tests on HTTP errors (below). The
   browser runs headless at 1280x720.
 - **`sites.py`** builds and serves both sites and loads each build's manifest.
-- **`corpus.py`** is the designed build's content: hand-picked cases as data,
-  plus generated filler for scale runs. The fixture files it copies in live in
-  `_tests/fixtures/`.
+  The designed build also gets `/test-cards.html`, a test-only page showing
+  every post's card, since the home and essays pages show only the newest few.
+- **`corpus.py`** is the designed build's content: named cases as data
+  (`ALPHA_BETA`, `LINKS_OUT`, `SERIES_FIRST`, ...), each there to show one
+  thing, plus generated filler for scale runs. The fixture files it copies in
+  live in `_tests/fixtures/`.
+- **`mutate.py`** and **`mutations.py`** are the mutation check (below).
 - **`constants.py`** is the single source of shared values: `SELECTORS`, the
   theme colours (`DARK_BG_COLOR`, `LIGHT_BG_COLOR`), and the
   `PERF_` budget. Import from here rather than hardcoding, so a UI change is a
@@ -119,6 +140,38 @@ Features are built test-first:
 
 This is the working loop for new work, not just a description of past work.
 
+## Mutation check
+
+`_tests/mutations.py` lists known bugs: each is a one-line edit to a template or
+script, such as "the tag filter shows posts with any selected tag, not all of
+them", with the test files that must catch it. `make mutate` copies the repo to
+a temp directory once per bug, makes the edit in the copy, and runs those tests
+there. The working tree is never touched.
+
+```sh
+make mutate                # every mutation, a few at a time
+make mutate ARGS="tag"     # those whose name contains "tag"
+```
+
+Each mutation ends one of three ways, and the command fails unless all are
+caught:
+
+- **caught** — a named test failed. The output names the test.
+- **survived** — the named tests passed, or all skipped. They don't check what
+  they appear to.
+- **broken** — the tests couldn't run, because the edit broke the build or an
+  import. That says nothing about the tests, so rewrite the mutation.
+
+When a bug gets past the suite, add it to the list along with the test that now
+catches it. A mutation should be a mistake someone could plausibly make that
+leaves the site building. `test_mutate.py` checks, without a build, that each
+mutation's text still occurs exactly once in its file, so a mutation the source
+has moved away from fails loudly.
+
+The list is not coverage: a feature with no mutation is unchecked, not safe.
+It covers tags, related, references, series, search, the command palette and
+cards.
+
 ## Test content must not depend on real essays
 
 Real posts come and go, so tests never hardcode their URLs:
@@ -148,11 +201,28 @@ By area (`_tests/<file>` -> what it guards):
   the icon renders in the theme's colour on the page background, and open, it
   is white on the sidebar blue with a 1px ring; each has hover text matching its
   accessible name.
-- `test_cards` — card grid presence, required card elements, clickable cards,
-  hover styling.
-- `test_essays` — the essays landing (max 5 posts + archive link) and the
-  `/essays/all/` archive: one page, every post exactly once under its year,
-  years and posts newest first, each entry with a reading time.
+- `test_cards` — the home page shows the six newest posts and the essays
+  landing the five newest, newest first (the designed build has more than
+  either); a card shows the title, date and reading time, and the summary when
+  the post has one, otherwise its first paragraph; the home grid is two columns
+  on a desktop and one on a phone. One strict xfail records a bug: see
+  "Known bugs" below.
+- `test_essays` — the essays landing's archive link, sidebar entry and intro,
+  and the `/essays/all/` archive: one page, every post exactly once under its
+  year, years and posts newest first, each entry with a reading time.
+- `test_tags` — a post lists its tags, each linking to the tags page filtered
+  to it; the cloud lists each tag once, in order, with its post count; each
+  selection, by click or by address, shows exactly the posts with every
+  selected tag, including when no post has them all, and a tag is not matched
+  inside a longer tag; deselecting widens the filter, then empties it.
+- `test_related` — "Related" lists the newest three other posts sharing a tag,
+  at, under and over the limit; a post with no tags, or tags nobody shares, has
+  no block.
+- `test_backlinks` — "Referenced by" lists the posts that link to this one,
+  newest first; a post nobody links to, or that only links to itself, has no
+  block. One strict xfail records a gap: see `page.md`.
+- `test_series` — each part lists the series in series order, which differs
+  from date order, and marks itself; a series of one has no navigation.
 - `test_feed` — `/atom.xml` parses as XML in both builds and uses the Atom
   namespace; its entries are the published posts, newest first, with their
   titles and links (the designed build has a title containing `&` and `<`);
@@ -165,8 +235,24 @@ By area (`_tests/<file>` -> what it guards):
   the site address whose subject, percent-decoded, is "Re: " plus the post's
   title (the designed build has a title with spaces, `&` and `<`); the line's
   only other link leads to the contact page; other pages have no such line.
-- `test_search` — sidebar search, the `/search/` page, and `search-index.json`
-  shape/contents.
+- `test_search` — the sidebar box only redirects to `/search/`;
+  `search-index.json` lists every post, newest first, with its title, address
+  and tags; a word found only in a tag, only in a title or only in a body finds
+  that one post and highlights where it matched; a typo still finds it; markup
+  in a title is shown as text. One strict xfail records a bug: see "Known
+  bugs" below.
+- `test_command_palette` — Ctrl/Cmd-K opens it and Escape closes it; a query
+  lists matching posts, at most eight; the down arrow moves the selection and
+  Enter opens the selected post, or the search page when nothing matches.
+- `test_sidenotes` — skipped as a whole: sidenotes are parked, because the
+  margin layout doesn't fit the centred column. These are the suite's only
+  skips in a normal run.
+- `test_webmentions` — mentions from a mocked webmention.io render as text,
+  and the section is hidden when there are none.
+- `test_metadata` — posts carry Open Graph and Twitter Card tags.
+- `test_typography`, `test_theme_colours` — characterization tests pinning
+  heading weight, the font request, and theme colours across CSS
+  consolidations.
 - `test_details` — the collapsible box includes: Markdown in the summary and
   body is converted in the post's own pass (footnotes, reference links, heading
   ids), boxes start closed unless `open` is passed, and toggle by mouse and
@@ -206,14 +292,34 @@ By area (`_tests/<file>` -> what it guards):
     current-section bar (1.4.11);
   - control-edge and placeholder contrast (1.4.11, 1.4.3).
 
-  It adds about 30 seconds to a run.
-- `test_harness`, `test_discovery`, `test_corpus` — the suite itself: HTTP
-  errors fail tests, each server is this session's build, each manifest lists
-  exactly its build's sources, the pre-commit gates fail when they should,
-  discovery refuses a wrong site root, and the corpus scales as asked.
+  The scan ends CSS transitions before it looks, so it judges the colours a
+  reader is left with, not a fade part-way through. It adds about 30 seconds to
+  a run.
+- `test_harness`, `test_discovery`, `test_corpus`, `test_mutate` — the suite
+  itself: HTTP errors fail tests, each server is this session's build, each
+  manifest lists exactly its build's sources, the pre-commit gates fail when
+  they should, discovery refuses a wrong site root, the corpus scales as asked,
+  and the mutation check tells caught from survived from broken and leaves the
+  repo alone.
 
-Tag and callout suites may also exist depending on what has shipped; check
-`_tests/` for the current set.
+## Known bugs
+
+Three tests are marked `xfail(strict=True)`. Each states what should happen,
+fails today, and so is reported as an expected failure. Strict means the suite
+goes red the day one starts passing, which is the cue to delete its marker.
+
+- **A card breaks when the post's first paragraph has a link**
+  (`test_cards.py`). A card is one link around its content; a post with no
+  `summary` puts its first paragraph inside, links included, and a link can't
+  contain a link, so the browser splits the card into several links, some
+  empty. Posts with a `summary` are unaffected, which is why the real site
+  hasn't shown it. The accessibility scan fails on such a card too, so
+  `corpus.py` dates its linking posts off the home and essays pages.
+- **Search excerpts show `&amp;` for `&`** (`test_search.py`).
+  `search-index.json` strips tags from a post's HTML, which leaves its
+  entities, and the results page escapes them again.
+- **"Referenced by" misses `{% post_url %}` links from newer posts**
+  (`test_backlinks.py`). See "Post blocks" in `page.md`.
 
 ## Performance budget
 
@@ -280,7 +386,8 @@ Two workflows run on every pull request and every push to `master`, and can be
 started by hand from the Actions tab:
 
 - `.github/workflows/test.yml` builds the image, syncs the venv volume, and runs
-  `make test IT=`, so CI and local runs use the same sealed container.
+  `make test IT=` and then `make mutate IT=`, so CI and local runs use the same
+  sealed container.
 - `.github/workflows/lint.yml` checks `uv.lock` matches `pyproject.toml` and runs
   the pre-commit hooks over every file. It skips the Jekyll build hook, since
   the test workflow already builds the site.
@@ -298,6 +405,8 @@ serve a static build (`jekyll build` plus any static file server), not
 only, and tests that need the manifest skip unless that server has one.
 
 ## References
+- Dan Luu, "How well do agents use test/verification techniques?", on tests that look thorough and aren't: <https://danluu.com/agentic-testing/>
+- Petrović and Ivanković, "State of Mutation Testing at Google", the idea behind `make mutate`: <https://research.google/pubs/state-of-mutation-testing-at-google/>
 - Playwright (Python): <https://playwright.dev/python/docs/intro>
 - Playwright actionability checks: <https://playwright.dev/python/docs/actionability>
 - pytest: <https://docs.pytest.org/>

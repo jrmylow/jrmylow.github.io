@@ -88,6 +88,9 @@ def _open_palette(page: Page) -> None:
 
 DESIGNED_POST = corpus.DESIGNED[0].filename
 
+# Ends every CSS transition at once, leaving each element in the colours it was heading for.
+SETTLED = "*, *::before, *::after { transition: none !important; }"
+
 # Violations in markup this suite's CSS can't fix, switched off only on the view where they
 # fire, so the scan keeps checking everything else there (contrast included). Open items in
 # css_audit.md (B9); delete an entry when its fix lands.
@@ -109,6 +112,9 @@ SCANS = [
     ("tags", "/tags/?t=alpha", lambda page: expect(page.locator(".tag-post-item").first).to_be_visible()),
     ("search", f"/search/?q={QUERY}", lambda page: expect(page.locator(".search-result-item").first).to_be_visible()),
     ("post", lambda site: f"{site.url}{site.document(DESIGNED_POST)['url']}", None),
+    # The post above has a "Related" block; these two have the other blocks a post can carry.
+    ("post with references", lambda site: site.page_url(corpus.LINKED.filename), None),
+    ("post in a series", lambda site: site.page_url(corpus.SERIES_SECOND.filename), None),
     ("demo", _demo_url, _wait_for_maths),
     ("collapsible", _details_url, _open_details),
     ("toc", _toc_url, None),
@@ -116,6 +122,21 @@ SCANS = [
     ("sidebar open", "/", _open_sidebar),
     ("command palette", "/", _open_palette),
 ]
+
+
+# A transition that starts half-way through and then barely moves: 100s long, begun 50s ago.
+# The doubled class outranks the site's own rule without !important, so SETTLED still ends it.
+HELD_HALF_WAY = (
+    "button.tag-cloud-item.tag-cloud-item" " { transition: color 100s linear -50s, background-color 100s linear -50s; }"
+)
+
+
+def _scan(page: Page, name: str):
+    """axe's WCAG A/AA findings for the page as it stands, once its colours have settled."""
+    page.add_style_tag(content=SETTLED)
+    options = {"runOnly": {"type": "tag", "values": WCAG_A_AA}}
+    options["rules"] = {rule: {"enabled": False} for rule in KNOWN_MARKUP_ISSUES.get(name, [])}
+    return AXE.run(page, options=options)
 
 
 @pytest.mark.parametrize("theme", THEMES)
@@ -132,10 +153,26 @@ def test_axe_finds_no_wcag_violations(page: Page, designed_site, theme: str, nam
     _open(page, url, theme)
     if ready:
         ready(page)
-    options = {"runOnly": {"type": "tag", "values": WCAG_A_AA}}
-    options["rules"] = {rule: {"enabled": False} for rule in KNOWN_MARKUP_ISSUES.get(name, [])}
-    results = AXE.run(page, options=options)
+    results = _scan(page, name)
     assert results.violations_count == 0, f"{name} ({theme}): {results.generate_report()}"
+
+
+def test_scan_judges_colours_once_transitions_have_finished(page: Page, designed_site):
+    """A selected tag fades to its new colours over 0.2s, and part-way through the fade its
+    text is too faint to pass. A scan that sampled then failed the build for a state nobody
+    is left looking at, now and again (the light tags scan, 2.09:1).
+
+    This holds the fade at its half-way point, where that would happen every time.
+    """
+    _open(page, f"{designed_site.url}/tags/", "light")
+    page.add_style_tag(content=HELD_HALF_WAY)
+    tag = page.locator(".tag-cloud-item[data-tag='alpha']")
+    tag.click()
+    held = tag.evaluate(a11y.TEXT_COLOURS_JS)
+    assert a11y.contrast(held["fg"], held["bg"]) < a11y.TEXT_MIN, "the fade isn't being held where it fails"
+
+    results = _scan(page, "tags")
+    assert results.violations_count == 0, results.generate_report()
 
 
 # =============================================================================
