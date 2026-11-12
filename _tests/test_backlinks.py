@@ -42,6 +42,7 @@ class TestBacklinks:
 
     @pytest.mark.xfail(
         strict=True,
+        raises=AssertionError,
         reason="backlinks.html looks for this page's URL in other posts' content, but Jekyll renders posts "
         "oldest first: while this page renders, a newer post's {% post_url %} tag is still a tag, not a URL",
     )

@@ -8,6 +8,7 @@ shows where the match was made as well as that a match was made.
 import urllib.parse
 
 import corpus
+import pytest
 from constants import SELECTORS
 from playwright.sync_api import Page, expect
 
@@ -25,7 +26,7 @@ RESULT_JS = """els => els.map(el => ({
     titleElements: el.querySelectorAll('.search-result-title *:not(mark)').length,
     excerpt: el.querySelector('.search-result-excerpt').textContent.trim(),
     excerptMarks: [...el.querySelectorAll('.search-result-excerpt mark')].map(mark => mark.textContent),
-})"""
+}))"""
 
 
 def _search(page: Page, site, query: str) -> list[dict]:
@@ -118,6 +119,19 @@ class TestSearchResults:
         assert result["title"] == corpus.LINKS_OUT.title
         assert BODY_WORD in result["excerptMarks"]
         assert result["titleMarks"] == [], "the title doesn't contain the word"
+
+    @pytest.mark.xfail(
+        strict=True,
+        raises=AssertionError,
+        reason="the index's content is the post's HTML with tags stripped, which leaves entities such as "
+        "&amp; in it, and the results page then escapes those a second time",
+    )
+    def test_excerpt_shows_ampersands_and_angle_brackets_as_written(self, page: Page, designed_site):
+        """Known bug: "R&D: a < b" in a body shows as "R&amp;D: a &lt; b" in its excerpt.
+        Strict, so this fails, and gets noticed, the day the bug is fixed."""
+        post = corpus.ESCAPING_POST
+        excerpts = {result["title"]: result["excerpt"] for result in _search(page, designed_site, "escaping")}
+        assert excerpts[post.title] == post.body
 
     def test_typo_still_finds_the_post(self, page: Page, designed_site):
         results = _search(page, designed_site, TITLE_TYPO)
