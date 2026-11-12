@@ -1,40 +1,41 @@
-"""Tests for the related-by-tag block.
+"""Tests for the "Related" block: up to three other posts that share a tag, newest first.
 
-This is a corpus-level feature (it ranges over site.posts), so a true red->green
-needs at least two published posts sharing a tag. These tests assert the block's
-structural contract and skip when the live corpus has no tag overlap; see
-README for the fixture note.
+Expectations are the designed corpus's tag cases (corpus.py), written out here by hand so
+the test doesn't repeat the template's own logic.
 """
 
+import corpus
 import pytest
 from playwright.sync_api import Page
 
+RELATED = [
+    # Four other posts share a tag with this one. The newest three are listed; the fourth,
+    # alpha three, is cut by the limit.
+    (corpus.ALPHA_BETA, [corpus.ALPHA, corpus.ALPHA_TWO, corpus.BETA]),
+    # Exactly three share a tag, so the limit cuts nothing.
+    (corpus.ALPHA, [corpus.ALPHA_TWO, corpus.ALPHA_THREE, corpus.ALPHA_BETA]),
+    (corpus.BETA, [corpus.ALPHA_BETA]),
+]
+NOT_RELATED = [
+    pytest.param(corpus.UNSHARED_TAGS, id="tags-nobody-shares"),
+    pytest.param(corpus.LINKED, id="no-tags"),
+]
+
 
 class TestRelated:
-    """When shown, the block links to at most three other posts."""
+    @pytest.mark.parametrize("post, related", RELATED, ids=[post.slug for post, _ in RELATED])
+    def test_lists_the_newest_three_posts_sharing_a_tag(self, page: Page, designed_site, post, related):
+        page.goto(designed_site.page_url(post.filename))
+        block = page.locator(".related")
+        assert block.locator("h2").inner_text() == "Related"
+        links = block.locator(".related-list a")
+        assert links.all_inner_texts() == [other.title for other in related]
+        hrefs = links.evaluate_all("els => els.map(a => a.getAttribute('href'))")
+        assert hrefs == [designed_site.document(other.filename)["url"] for other in related]
+        dates = block.locator(".related-date").all_inner_texts()
+        assert dates == [f"{other.date:%d %b %Y}" for other in related]
 
-    def test_related_excludes_current_post(self, page: Page, jekyll_server: str, any_post_url: str):
-        """The related list never links back to the current post."""
-        page.goto(f"{jekyll_server}{any_post_url}")
-        related = page.locator(".related")
-        if related.count() == 0:
-            pytest.skip("no tag-related posts in the current corpus")
-
-        hrefs = related.locator("a").evaluate_all("els => els.map(a => a.getAttribute('href'))")
-        assert all(any_post_url not in (h or "") for h in hrefs), "related list should not include the current post"
-
-    def test_related_capped_at_three(self, page: Page, jekyll_server: str, any_post_url: str):
-        """At most three related posts are shown."""
-        page.goto(f"{jekyll_server}{any_post_url}")
-        related = page.locator(".related")
-        if related.count() == 0:
-            pytest.skip("no tag-related posts in the current corpus")
-
-        assert related.locator(".related-list li").count() <= 3
-
-    def test_old_related_posts_block_gone(self, page: Page, jekyll_server: str, any_post_url: str):
-        """The old site.related_posts markup is no longer emitted."""
-        page.goto(f"{jekyll_server}{any_post_url}")
-        assert (
-            page.locator(".related-posts").count() == 0
-        ), "old .related-posts block should be replaced by .related-list"
+    @pytest.mark.parametrize("post", NOT_RELATED)
+    def test_post_with_nothing_related_has_no_block(self, page: Page, designed_site, post):
+        page.goto(designed_site.page_url(post.filename))
+        assert page.locator(".related").count() == 0
