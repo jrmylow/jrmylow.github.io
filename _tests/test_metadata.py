@@ -1,8 +1,4 @@
-"""Tests for Open Graph / Twitter Card metadata via jekyll-seo-tag.
-
-Red until `{% seo %}` is added to head.html and jekyll-seo-tag is enabled in
-_config.yml (the gem is already bundled by github-pages).
-"""
+"""Tests for Open Graph / Twitter Card metadata, which jekyll-seo-tag writes from `{% seo %}` in head.html."""
 
 from playwright.sync_api import Page
 

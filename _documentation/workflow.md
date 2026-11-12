@@ -1,6 +1,6 @@
 # Authoring and Publishing Workflow
 
-How to write, preview, and publish an essay on this site. This is the day-to-day user guide. For the environment the commands run in, see `container.md`; for how pages are assembled, see `page_layout.md`.
+How to write, preview, and publish an essay on this site. This is the day-to-day user guide. For the environment the commands run in, see `container.md`; for how pages are assembled, see `page.md`.
 
 ## Location encodes state
 
@@ -64,7 +64,7 @@ See `container.md` for the full target list.
 
 ## Navigation
 
-Pages join the sidebar nav by declaring `nav_order` in their front matter; posts and essays do not appear there. See `page_layout.md` for details.
+Pages join the sidebar nav by declaring `nav_order` in their front matter; posts and essays do not appear there. See `page.md` for details.
 
 ## References
 - Jekyll drafts: <https://jekyllrb.com/docs/posts/#drafts>

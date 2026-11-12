@@ -145,19 +145,10 @@ All card styles are in `public/css/cards.css`.
 }
 ```
 
-## Using Related Posts
+## Related posts
 
-Include related posts in any template:
-
-```liquid
-{% include related.html posts=site.related_posts limit=3 columns=3 %}
-```
-
-Parameters:
-- `posts`: Array of posts (required)
-- `limit`: Number to show (default: 3)
-- `columns`: Grid columns 1-4 (default: 3)
-- `title`: Section heading (default: "Related Posts")
+`_includes/related.html` is not a card grid and takes no parameters: it is a
+plain list of up to three posts sharing a tag. See "Post blocks" in `page.md`.
 
 ## Breakpoint Reference
 
@@ -170,4 +161,4 @@ Parameters:
 
 - `public/css/cards.css` - All card styles
 - `_layouts/index.html` - Index page using cards
-- `_includes/related.html` - Related posts include
+- `_includes/post_card.html` - The card used on the home and essays pages
